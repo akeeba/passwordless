@@ -1,0 +1,8 @@
+<component name="CopyrightManager">
+  <copyright>
+    <option name="allowReplaceRegexp" value="Copyright\s\(c\)" />
+    <option name="keyword" value="Copyright\s\(c\)" />
+    <option name="notice" value="@package   AkeebaPasswordlessLogin&#10;@copyright Copyright (c)2018-&amp;#36;today.year Nicholas K. Dionysopoulos / Akeeba Ltd&#10;@license   GNU General Public License version 3, or later" />
+    <option name="myName" value="Akeeba" />
+  </copyright>
+</component>

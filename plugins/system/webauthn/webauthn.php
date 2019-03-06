@@ -1,17 +1,14 @@
 <?php
 /**
- * @package   AkeebaSocialLogin
- * @copyright Copyright (c)2016-2019 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @package   AkeebaPasswordlessLogin
+ * @copyright Copyright (c)2018-2019 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
 // Protect from unauthorized access
 use Akeeba\SocialLogin\Library\Helper\Joomla;
 use Joomla\CMS\Document\HtmlDocument;
-use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Plugin\CMSPlugin;
-use Joomla\CMS\Uri\Uri;
-use Joomla\CMS\User\User;
 
 defined('_JEXEC') or die();
 
