@@ -24,7 +24,7 @@ Akeeba Passwordless Login comes with English (Great Britain) language built-in. 
 
 ## No support - For developers only
 
-This software is provided **WITHOUT ANY KIND OF END USER SUPPORT**. You are free to consult [consult the documentation Wiki](https://github.com/akeeba/sociallogin/wiki).
+This software is provided **WITHOUT ANY KIND OF END USER SUPPORT**. You are free to consult [consult the documentation Wiki](https://github.com/akeeba/passwordless/wiki).
 
 If you are a developer you are free to submit a pull request with your code fix, as long as there is a clear description of what was not working for you, why and how you fixed it. 
  

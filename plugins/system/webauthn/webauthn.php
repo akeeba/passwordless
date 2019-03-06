@@ -452,11 +452,11 @@ CSS;
 			return true;
 		}
 
-		// Add the fields to the form. The custom Sociallogin field uses the Integrations to render the buttons.
+		// Add the fields to the form.
 		Joomla::log('system', 'Injecting Akeeba Passwordless Login fields in user profile edit page');
 		$this->loadLanguage();
 		Form::addFormPath(dirname(__FILE__) . '/fields');
-		$form->loadFile('sociallogin', false);
+		$form->loadFile('webauthn', false);
 
 		return true;
 	}
