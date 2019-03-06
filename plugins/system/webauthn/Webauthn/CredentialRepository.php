@@ -55,7 +55,7 @@ class CredentialRepository implements CredentialRepositoryInterface
 	{
 		$db    = Factory::getDbo();
 		$query = $db->getQuery(true)
-			->select('credential')
+			->select($db->qn('credential'))
 			->from($db->qn('#__webauthn_credentials'))
 			->where($db->qn('id') . ' = ' . $db->q($credentialId));
 
@@ -74,6 +74,38 @@ class CredentialRepository implements CredentialRepositoryInterface
 		}
 
 		return new AttestedCredentialData($data['aaguid'], $credentialId, $data['credentialPublicKey']);
+	}
+
+	/**
+	 * Get all credentials for a given user ID
+	 *
+	 * @param   int  $user_id  The user ID
+	 *
+	 * @return  array
+	 */
+	public function getAll(int $user_id): array
+	{
+		$db    = Factory::getDbo();
+		$query = $db->getQuery(true)
+			->select('*')
+			->from($db->qn('#__webauthn_credentials'))
+			->where($db->qn('user_id') . ' = ' . $db->q($user_id));
+
+		try
+		{
+			$results = $db->setQuery($query)->loadAssocList();
+		}
+		catch (Exception $e)
+		{
+			return [];
+		}
+
+		if (empty($results))
+		{
+			return [];
+		}
+
+		return $results;
 	}
 
 	/**
