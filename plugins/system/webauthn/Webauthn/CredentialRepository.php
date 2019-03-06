@@ -63,14 +63,14 @@ class CredentialRepository implements CredentialRepositoryInterface
 
 		if (empty($json))
 		{
-			throw new RuntimeException(Text::_('PLG_SOCIALLOGIN_WEBAUTHN_ERR_NO_STORED_CREDENTIAL'));
+			throw new RuntimeException(Text::_('PLG_SYSTSEM_WEBAUTHN_ERR_NO_STORED_CREDENTIAL'));
 		}
 
 		$data = @json_decode($json, true);
 
 		if (is_null($data))
 		{
-			throw new RuntimeException(Text::_('PLG_SOCIALLOGIN_WEBAUTHN_ERR_CORRUPT_STORED_CREDENTIAL'));
+			throw new RuntimeException(Text::_('PLG_SYSTSEM_WEBAUTHN_ERR_CORRUPT_STORED_CREDENTIAL'));
 		}
 
 		return new AttestedCredentialData($data['aaguid'], $credentialId, $data['credentialPublicKey']);
@@ -94,7 +94,7 @@ class CredentialRepository implements CredentialRepositoryInterface
 
 		if ($user->guest)
 		{
-			throw new RuntimeException(Text::_('PLG_SOCIALLOGIN_WEBAUTHN_ERR_CANT_STORE_FOR_GUEST'));
+			throw new RuntimeException(Text::_('PLG_SYSTSEM_WEBAUTHN_ERR_CANT_STORE_FOR_GUEST'));
 		}
 
 		$update = false;
@@ -105,7 +105,7 @@ class CredentialRepository implements CredentialRepositoryInterface
 
 			if ($otherUsername != $user->username)
 			{
-				throw new RuntimeException(Text::_('PLG_SOCIALLOGIN_WEBAUTHN_ERR_CREDENTIAL_ID_ALREADY_IN_USE'));
+				throw new RuntimeException(Text::_('PLG_SYSTSEM_WEBAUTHN_ERR_CREDENTIAL_ID_ALREADY_IN_USE'));
 			}
 
 			$update = true;
@@ -174,14 +174,14 @@ class CredentialRepository implements CredentialRepositoryInterface
 
 		if (empty($user_id))
 		{
-			throw new RuntimeException(Text::_('PLG_SOCIALLOGIN_WEBAUTHN_ERR_NO_STORED_CREDENTIAL'));
+			throw new RuntimeException(Text::_('PLG_SYSTSEM_WEBAUTHN_ERR_NO_STORED_CREDENTIAL'));
 		}
 
 		$user = Factory::getUser($user_id);
 
 		if ($user->id != $user_id)
 		{
-			throw new RuntimeException(Text::sprintf('PLG_SOCIALLOGIN_WEBAUTHN_ERR_USER_REMOVED', $user_id));
+			throw new RuntimeException(Text::sprintf('PLG_SYSTSEM_WEBAUTHN_ERR_USER_REMOVED', $user_id));
 		}
 
 		return $user->username;
@@ -208,7 +208,7 @@ class CredentialRepository implements CredentialRepositoryInterface
 
 		if (is_null($counter))
 		{
-			throw new RuntimeException(Text::_('PLG_SOCIALLOGIN_WEBAUTHN_ERR_NO_STORED_CREDENTIAL'));
+			throw new RuntimeException(Text::_('PLG_SYSTSEM_WEBAUTHN_ERR_NO_STORED_CREDENTIAL'));
 		}
 
 		return (int) $counter;
