@@ -1,0 +1,15 @@
+# PhpStorm project directory
+.idea/
+
+# Build property overrides (unused)
+/build/override.properties
+
+# Built packages
+/release
+
+# Internal language symlinks
+/modules/*/*/language/en-GB
+/plugins/*/*/language/en-GB
+
+# Dependencies
+/plugins/system/webauthn/vendor
