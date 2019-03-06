@@ -5,7 +5,7 @@
  * @license   GNU General Public License version 3, or later
  */
 
-namespace Akeeba\SocialLogin\Webauthn;
+namespace Akeeba\Passwordless\Webauthn;
 
 use Exception;
 use Joomla\CMS\Factory;

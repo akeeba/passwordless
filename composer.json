@@ -11,7 +11,7 @@
     }
   ],
   "config": {
-    "vendor-dir": "plugins/system/passwordless/vendor"
+    "vendor-dir": "plugins/system/webauthn/vendor"
   },
   "require": {
     "php": "^7.1",
