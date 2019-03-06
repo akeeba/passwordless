@@ -102,9 +102,12 @@ class CredentialRepository implements CredentialRepositoryInterface
 
 		if ($this->has($credentialData->getCredentialId()))
 		{
-			$otherUsername = $this->getUserHandleFor($credentialData->getCredentialId());
+			$secret      = Factory::getConfig()->get('secret', '');
+			$data        = sprintf('%010u', $user->id);
+			$myHandle    = hash_hmac('sha512', $data, $secret, true);
+			$otherHandle = $this->getUserHandleFor($credentialData->getCredentialId());
 
-			if ($otherUsername != $user->username)
+			if ($otherHandle != $myHandle)
 			{
 				throw new RuntimeException(Text::_('PLG_SYSTSEM_WEBAUTHN_ERR_CREDENTIAL_ID_ALREADY_IN_USE'));
 			}
@@ -180,7 +183,11 @@ class CredentialRepository implements CredentialRepositoryInterface
 	}
 
 	/**
-	 * Return the username for the stored credential given its ID
+	 * Return the user handle for the stored credential given its ID.
+	 *
+	 * The user handle must not be personally identifiable. Per https://w3c.github.io/webauthn/#user-handle it is
+	 * acceptable to have a salted hash with a salt private to our server, e.g. Joomla's secret. The only immutable
+	 * information in Joomla is the user ID so that's what we will be using.
 	 *
 	 * @param   string  $credentialId
 	 *
@@ -210,7 +217,10 @@ class CredentialRepository implements CredentialRepositoryInterface
 			throw new RuntimeException(Text::sprintf('PLG_SYSTSEM_WEBAUTHN_ERR_USER_REMOVED', $user_id));
 		}
 
-		return $user->username;
+		$secret = Factory::getConfig()->get('secret', '');
+		$data   = sprintf('%010u', $user->id);
+
+		return hash_hmac('sha512', $data, $secret, true);
 	}
 
 	/**
