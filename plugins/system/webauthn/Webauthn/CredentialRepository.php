@@ -81,11 +81,12 @@ class CredentialRepository implements CredentialRepositoryInterface
 	 * process will fail.
 	 *
 	 * @param   AttestedCredentialData  $credentialData  The attested credential data to store
+	 * @param   string|null             $label           The human readable label to attach
 	 * @param   User|null               $user            The user to store it for
 	 *
 	 * @return  void
 	 */
-	public function set(AttestedCredentialData $credentialData, User $user = null): void
+	public function set(AttestedCredentialData $credentialData, string $label = '', User $user = null): void
 	{
 		if (empty($user))
 		{
@@ -111,11 +112,17 @@ class CredentialRepository implements CredentialRepositoryInterface
 			$update = true;
 		}
 
+		if (empty($label))
+		{
+			$label = $credentialData->getCredentialId();
+		}
+
 		$json = $credentialData->jsonSerialize();
 
 		$o = (object) [
 			'id'         => $credentialData->getCredentialId(),
 			'user_id'    => $user->id,
+			'label'      => $label,
 			'credential' => $json,
 		];
 
@@ -129,6 +136,25 @@ class CredentialRepository implements CredentialRepositoryInterface
 		}
 
 		$db->insertObject('#__webauthn_credentials', $o);
+	}
+
+	/**
+	 * Update the human readable label of a credential
+	 *
+	 * @param   string  $credentialId  The credential ID
+	 * @param   string  $label         The human readable label to set
+	 *
+	 * @return  void
+	 */
+	public function setLabel(string $credentialId, string $label): void
+	{
+		$db = Factory::getDbo();
+		$o  = (object) [
+			'id'      => $credentialId,
+			'label'   => $label,
+		];
+
+		$db->updateObject('#__webauthn_credentials', $o, ['id'], false);
 	}
 
 	/**

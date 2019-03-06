@@ -4,6 +4,7 @@ CREATE TABLE [#__webauthn_credentials]
 (
   [id]         [NVARCHAR](1000) NOT NULL,
   [user_id]    [BIGINT]         NOT NULL DEFAULT 0,
+  [label]      [NVARCHAR](190)  NOT NULL,
   [credential] [NVARCHAR](max)  NOT NULL,
   [counter]    [BIGINT]         NOT NULL DEFAULT 0,
   CONSTRAINT "#__webauthn_credentials_id" UNIQUE NONCLUSTERED
