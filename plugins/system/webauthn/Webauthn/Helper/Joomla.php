@@ -9,7 +9,6 @@ namespace Akeeba\Passwordless\Helper;
 
 // Protect from unauthorized access
 use Exception;
-use JAuthentication;
 use JDatabaseDriver;
 use JEventDispatcher;
 use JLoader;
@@ -23,7 +22,6 @@ use Joomla\CMS\Http\Http;
 use Joomla\CMS\Http\HttpFactory;
 use Joomla\CMS\Layout\FileLayout;
 use Joomla\CMS\Log\Log;
-use Joomla\CMS\Log\LogEntry;
 use Joomla\CMS\Mail\Mail;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\String\PunycodeHelper;
