@@ -6,6 +6,7 @@
  */
 
 // Prevent direct access
+use Akeeba\Passwordless\Helper\Joomla;
 use Joomla\CMS\Form\FormField;
 
 defined('_JEXEC') or die;
@@ -31,6 +32,6 @@ class JFormFieldWebauthn extends FormField
 		$user = Joomla::getUser($user_id);
 
 		// TODO Render and return the security keys management interface
-		return '';
+		return '<h1>TODO Render and return the security keys management interface</h1>';
 	}
 }
