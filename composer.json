@@ -16,6 +16,7 @@
   "require": {
     "php": "^7.1",
     "ext-json": "*",
-    "web-auth/webauthn-lib": "^1.0.0"
+    "web-auth/webauthn-lib": "^1.0.0",
+    "zendframework/zend-diactoros": "2.1.1"
   }
 }

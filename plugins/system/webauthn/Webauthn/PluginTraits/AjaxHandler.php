@@ -14,6 +14,9 @@ use Joomla\CMS\Log\Log;
 use Joomla\CMS\Uri\Uri;
 use RuntimeException;
 
+// Protect from unauthorized access
+defined('_JEXEC') or die();
+
 /**
  * Allows the plugin to handle AJAX requests in the backend of the site, where com_ajax is not available when we are not
  * logged in.

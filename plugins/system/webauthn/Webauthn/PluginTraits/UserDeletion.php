@@ -7,10 +7,12 @@
 
 namespace Akeeba\Passwordless\Webauthn\PluginTraits;
 
-
 use Akeeba\Passwordless\Webauthn\Helper\Joomla;
 use Exception;
 use Joomla\Utilities\ArrayHelper;
+
+// Protect from unauthorized access
+defined('_JEXEC') or die();
 
 trait UserDeletion
 {

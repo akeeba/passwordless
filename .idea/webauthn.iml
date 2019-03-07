@@ -3,6 +3,16 @@
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/plugins/system/webauthn/Webauthn" isTestSource="false" packagePrefix="Akeeba\Passwordless\Webauthn" />
+      <excludeFolder url="file://$MODULE_DIR$/plugins/system/webauthn/vendor/beberlei/assert" />
+      <excludeFolder url="file://$MODULE_DIR$/plugins/system/webauthn/vendor/composer" />
+      <excludeFolder url="file://$MODULE_DIR$/plugins/system/webauthn/vendor/psr/http-factory" />
+      <excludeFolder url="file://$MODULE_DIR$/plugins/system/webauthn/vendor/psr/http-message" />
+      <excludeFolder url="file://$MODULE_DIR$/plugins/system/webauthn/vendor/spomky-labs/base64url" />
+      <excludeFolder url="file://$MODULE_DIR$/plugins/system/webauthn/vendor/spomky-labs/cbor-php" />
+      <excludeFolder url="file://$MODULE_DIR$/plugins/system/webauthn/vendor/thecodingmachine/safe" />
+      <excludeFolder url="file://$MODULE_DIR$/plugins/system/webauthn/vendor/web-auth/cose-lib" />
+      <excludeFolder url="file://$MODULE_DIR$/plugins/system/webauthn/vendor/web-auth/webauthn-lib" />
+      <excludeFolder url="file://$MODULE_DIR$/plugins/system/webauthn/vendor/zendframework/zend-diactoros" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

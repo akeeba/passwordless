@@ -10,6 +10,9 @@ namespace Akeeba\Passwordless\Webauthn\PluginTraits;
 use Akeeba\Passwordless\Webauthn\Helper\Joomla;
 use Exception;
 
+// Protect from unauthorized access
+defined('_JEXEC') or die();
+
 /**
  * Inserts Webauthn buttons into login modules
  */

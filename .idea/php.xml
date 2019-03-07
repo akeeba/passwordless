@@ -4,7 +4,22 @@
     <include_path>
       <path value="$PROJECT_DIR$/../../master/joomla-cms" />
       <path value="$PROJECT_DIR$/../../dionysopoulos/joomlatypehints/generated_hints" />
+      <path value="$PROJECT_DIR$/plugins/system/webauthn/vendor/psr/http-message" />
+      <path value="$PROJECT_DIR$/plugins/system/webauthn/vendor/beberlei/assert" />
+      <path value="$PROJECT_DIR$/plugins/system/webauthn/vendor/thecodingmachine/safe" />
+      <path value="$PROJECT_DIR$/plugins/system/webauthn/vendor/spomky-labs/cbor-php" />
+      <path value="$PROJECT_DIR$/plugins/system/webauthn/vendor/web-auth/webauthn-lib" />
+      <path value="$PROJECT_DIR$/plugins/system/webauthn/vendor/spomky-labs/base64url" />
+      <path value="$PROJECT_DIR$/plugins/system/webauthn/vendor/web-auth/cose-lib" />
+      <path value="$PROJECT_DIR$/plugins/system/webauthn/vendor/composer" />
+      <path value="$PROJECT_DIR$/plugins/system/webauthn/vendor/psr/http-factory" />
+      <path value="$PROJECT_DIR$/plugins/system/webauthn/vendor/zendframework/zend-diactoros" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="7.1" />
+  <component name="PhpUnit">
+    <phpunit_settings>
+      <PhpUnitSettings load_method="CUSTOM_LOADER" custom_loader_path="$PROJECT_DIR$/plugins/system/webauthn/vendor/autoload.php" />
+    </phpunit_settings>
+  </component>
 </project>

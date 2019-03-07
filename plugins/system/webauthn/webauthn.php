@@ -7,6 +7,7 @@
 
 use Akeeba\Passwordless\Webauthn\Helper\Joomla;
 use Akeeba\Passwordless\Webauthn\PluginTraits\AjaxHandler;
+use Akeeba\Passwordless\Webauthn\PluginTraits\AjaxHandlerCreate;
 use Akeeba\Passwordless\Webauthn\PluginTraits\LoginModuleButtons;
 use Akeeba\Passwordless\Webauthn\PluginTraits\UserDeletion;
 use Akeeba\Passwordless\Webauthn\PluginTraits\UserProfileFields;
@@ -29,8 +30,9 @@ if (!class_exists('Akeeba\\Passwordless\\Webauthn\\Helper\\Joomla', true))
  */
 class plgSystemWebauthn extends CMSPlugin
 {
-	// Generic AJAX request handler
+	// AJAX request handlers
 	use AjaxHandler;
+	use AjaxHandlerCreate;
 
 	// Custom user profile fields
 	use UserProfileFields;

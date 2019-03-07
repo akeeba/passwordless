@@ -15,6 +15,9 @@ use RuntimeException;
 use Webauthn\AttestedCredentialData;
 use Webauthn\CredentialRepository as CredentialRepositoryInterface;
 
+// Protect from unauthorized access
+defined('_JEXEC') or die();
+
 class CredentialRepository implements CredentialRepositoryInterface
 {
 	/**

@@ -37,3 +37,6 @@
 
 # Dependencies
 /plugins/system/webauthn/vendor
+
+# Node.js modules (used to install Babel)
+/node_modules

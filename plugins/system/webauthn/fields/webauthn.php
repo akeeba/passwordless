@@ -8,6 +8,8 @@
 // Prevent direct access
 use Akeeba\Passwordless\Webauthn\Helper\Joomla;
 use Joomla\CMS\Form\FormField;
+use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Language\Text;
 
 defined('_JEXEC') or die;
 
@@ -28,6 +30,13 @@ class JFormFieldWebauthn extends FormField
 		{
 			return Joomla::_('PLG_SYSTEM_WEBAUTHN_ERR_NOUSER');
 		}
+
+		HTMLHelper::_('script', 'plg_system_webauthn/dist/management.js', [
+			'relative'  => true,
+			'framework' => true,
+		]);
+
+		Text::script('PLG_SYSTEM_WEBAUTHN_ERR_NO_BROWSER_SUPPORT', true);
 
 		$credentialRepository = new \Akeeba\Passwordless\Webauthn\CredentialRepository();
 

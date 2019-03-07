@@ -12,6 +12,9 @@ use Exception;
 use Joomla\CMS\Form\Form;
 use Joomla\Registry\Registry;
 
+// Protect from unauthorized access
+defined('_JEXEC') or die();
+
 /**
  * Add extra fields in the User Profile page.
  *
