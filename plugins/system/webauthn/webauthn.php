@@ -5,7 +5,7 @@
  * @license   GNU General Public License version 3, or later
  */
 
-use Akeeba\Passwordless\Helper\Joomla;
+use Akeeba\Passwordless\Webauthn\Helper\Joomla;
 use Akeeba\Passwordless\Webauthn\PluginTraits\AjaxHandler;
 use Akeeba\Passwordless\Webauthn\PluginTraits\LoginModuleButtons;
 use Akeeba\Passwordless\Webauthn\PluginTraits\UserDeletion;

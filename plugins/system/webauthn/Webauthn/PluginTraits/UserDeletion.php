@@ -8,7 +8,7 @@
 namespace Akeeba\Passwordless\Webauthn\PluginTraits;
 
 
-use Akeeba\Passwordless\Helper\Joomla;
+use Akeeba\Passwordless\Webauthn\Helper\Joomla;
 use Exception;
 use Joomla\Utilities\ArrayHelper;
 

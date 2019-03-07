@@ -5,7 +5,7 @@
  * @license   GNU General Public License version 3, or later
  */
 
-namespace Akeeba\Passwordless\Helper;
+namespace Akeeba\Passwordless\Webauthn\Helper;
 
 // Protect from unauthorized access
 use Exception;
@@ -24,6 +24,7 @@ use Joomla\CMS\Layout\FileLayout;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Mail\Mail;
 use Joomla\CMS\Plugin\PluginHelper;
+use Joomla\CMS\Session\Session;
 use Joomla\CMS\String\PunycodeHelper;
 use Joomla\CMS\User\User;
 use Joomla\CMS\User\UserHelper;
@@ -42,6 +43,7 @@ abstract class Joomla
 	 * we manage internally.
 	 *
 	 * @var   Registry
+	 * @since 1.0.0
 	 */
 	protected static $fakeSession = null;
 
@@ -49,6 +51,7 @@ abstract class Joomla
 	 * Are we inside the administrator application
 	 *
 	 * @var   bool
+	 * @since 1.0.0
 	 */
 	protected static $isAdmin = null;
 
@@ -56,6 +59,7 @@ abstract class Joomla
 	 * Are we inside a CLI application
 	 *
 	 * @var   bool
+	 * @since 1.0.0
 	 */
 	protected static $isCli = null;
 
@@ -63,7 +67,7 @@ abstract class Joomla
 	 * Which plugins have already registered a text file logger. Prevents double registration of a log file.
 	 *
 	 * @var   array
-	 * @since 2.1.0
+	 * @since 1.0.0
 	 */
 	protected static $registeredLoggers = [];
 
@@ -75,8 +79,10 @@ abstract class Joomla
 	 * @return  bool
 	 *
 	 * @throws  Exception
+	 *
+	 * @since   1.0.0
 	 */
-	public static function isAdminPage(CMSApplication $app = null)
+	public static function isAdminPage(CMSApplication $app = null): bool
 	{
 		if (is_null(self::$isAdmin))
 		{
@@ -97,8 +103,10 @@ abstract class Joomla
 	 * @param   CMSApplication  $app  The current CMS application which tells us if we are inside an admin page
 	 *
 	 * @return  bool
+	 *
+	 * @since   1.0.0
 	 */
-	public static function isCli(CMSApplication $app = null)
+	public static function isCli(CMSApplication $app = null): bool
 	{
 		if (is_null(self::$isCli))
 		{
@@ -140,8 +148,10 @@ abstract class Joomla
 	 * @param   User  $user  The user you want to know if we're allowed to edit
 	 *
 	 * @return  bool
+	 *
+	 * @since   1.0.0
 	 */
-	public static function canEditUser($user = null)
+	public static function canEditUser(User $user = null): bool
 	{
 		// I can edit myself
 		if (empty($user))
@@ -183,8 +193,10 @@ abstract class Joomla
 	 * @param   mixed   $options      Optional custom options to load. Registry or array format. Set 'debug'=>true to output debug information.
 	 *
 	 * @return  string
+	 *
+	 * @since   1.0.0
 	 */
-	public static function renderLayout($layoutFile, $displayData = null, $includePath = '', $options = null)
+	public static function renderLayout(string $layoutFile, $displayData = null, string $includePath = '', ?array $options = null): string
 	{
 		$basePath = JPATH_SITE . '/plugins/system/webauthn/layout';
 		$layout   = self::getJLayoutFromFile($layoutFile, $options, $basePath);
@@ -209,8 +221,10 @@ abstract class Joomla
 	 *
 	 * @throws  RuntimeException  When we cannot run the plugins
 	 * @throws  Exception         When we cannot create the application
+	 *
+	 * @since   1.0.0
 	 */
-	public static function runPlugins($event, $data, $app = null)
+	public static function runPlugins(string $event, array $data, ?BaseApplication $app = null): array
 	{
 		if (!is_object($app))
 		{
@@ -239,8 +253,10 @@ abstract class Joomla
 	 * @param   string|null  $plugin  The specific plugin to import
 	 *
 	 * @return  void
+	 *
+	 * @since   1.0.0
 	 */
-	public static function importPlugins($group, $plugin = null)
+	public static function importPlugins(string $group, ?string $plugin = null): void
 	{
 		PluginHelper::importPlugin($group, $plugin);
 	}
@@ -251,10 +267,19 @@ abstract class Joomla
 	 * @return  CMSApplication
 	 *
 	 * @throws  Exception
+	 *
+	 * @since   1.0.0
 	 */
-	public static function getApplication()
+	public static function getApplication(): CMSApplication
 	{
-		return Factory::getApplication();
+		$app = Factory::getApplication();
+
+		if (self::isCmsApplication($app))
+		{
+			return $app;
+		}
+
+		throw new RuntimeException('Cannot find a valid CMS application object');
 	}
 
 	/**
@@ -263,8 +288,10 @@ abstract class Joomla
 	 * @param   int|null  $id  The ID of the Joomla! user to load, default null (currently logged in user)
 	 *
 	 * @return  User
+	 *
+	 * @since   1.0.0
 	 */
-	public static function getUser($id = null)
+	public static function getUser(?int $id = null): User
 	{
 		return Factory::getUser($id);
 	}
@@ -272,9 +299,11 @@ abstract class Joomla
 	/**
 	 * Get the Joomla! session
 	 *
-	 * @return  \Joomla\CMS\Session\Session
+	 * @return  Session
+	 *
+	 * @since   1.0.0
 	 */
-	protected static function getSession()
+	protected static function getSession(): Session
 	{
 		return Factory::getSession();
 	}
@@ -287,8 +316,10 @@ abstract class Joomla
 	 * @param   string  $basePath    Base path for the layout file
 	 *
 	 * @return  FileLayout
+	 *
+	 * @since   1.0.0
 	 */
-	public static function getJLayoutFromFile($layoutFile, $options, $basePath)
+	public static function getJLayoutFromFile(string $layoutFile, array $options, string $basePath): FileLayout
 	{
 		return new FileLayout($layoutFile, $basePath, $options);
 	}
@@ -301,8 +332,10 @@ abstract class Joomla
 	 * @param   string  $namespace  (optional) The variable's namespace e.g. the component name. Default: 'default'
 	 *
 	 * @return  void
+	 *
+	 * @since   1.0.0
 	 */
-	public static function setSessionVar($name, $value = null, $namespace = 'default')
+	public static function setSessionVar(string $name, ?string $value = null, string $namespace = 'default'): void
 	{
 		$qualifiedKey = "$namespace.$name";
 
@@ -331,8 +364,10 @@ abstract class Joomla
 	 * @param   string  $namespace  (optional) The variable's namespace e.g. the component name. Default: 'default'
 	 *
 	 * @return  mixed
+	 *
+	 * @since   1.0.0
 	 */
-	public static function getSessionVar($name, $default = null, $namespace = 'default')
+	public static function getSessionVar(string $name, ?string $default = null, string $namespace = 'default')
 	{
 		$qualifiedKey = "$namespace.$name";
 
@@ -356,16 +391,22 @@ abstract class Joomla
 	 * @param   string  $namespace  (optional) The variable's namespace e.g. the component name. Default: 'default'
 	 *
 	 * @return  void
+	 *
+	 * @since   1.0.0
 	 */
-	public static function unsetSessionVar($name, $namespace = 'default')
+	public static function unsetSessionVar(string $name, string $namespace = 'default'): void
 	{
 		self::setSessionVar($name, null, $namespace);
 	}
 
 	/**
+	 * Get a fake session registry for CLI applications
+	 *
 	 * @return  Registry
+	 *
+	 * @since   1.0.0
 	 */
-	protected static function getFakeSession()
+	protected static function getFakeSession(): Registry
 	{
 		if (!is_object(self::$fakeSession))
 		{
@@ -379,8 +420,10 @@ abstract class Joomla
 	 * Return the session token. Two types of tokens can be returned:
 	 *
 	 * @return  mixed
+	 *
+	 * @since   1.0.0
 	 */
-	public static function getToken()
+	public static function getToken(): string
 	{
 		// For CLI apps we implement our own fake token system
 		if (self::isCli())
@@ -395,13 +438,11 @@ abstract class Joomla
 				self::setSessionVar('session.token', $token);
 			}
 
-			return $token;
+			return (string) $token;
 		}
 
 		// Web application, go through the regular Joomla! API.
-		$session = self::getSession();
-
-		return $session->getToken();
+		return self::getSession()->getToken();
 	}
 
 	/**
@@ -410,8 +451,10 @@ abstract class Joomla
 	 * @param   int  $length  Random string length
 	 *
 	 * @return  string
+	 *
+	 * @since   1.0.0
 	 */
-	public static function generateRandom($length)
+	public static function generateRandom(int $length = 32): string
 	{
 		return UserHelper::genRandomPassword($length);
 	}
@@ -422,8 +465,10 @@ abstract class Joomla
 	 * @param   string  $email  The original email, with Unicode characters
 	 *
 	 * @return  string  The punycode-transcribed email address
+	 *
+	 * @since   1.0.0
 	 */
-	public static function emailToPunycode($email)
+	public static function emailToPunycode(string $email): string
 	{
 		return PunycodeHelper::emailToPunycode($email);
 	}
@@ -434,8 +479,10 @@ abstract class Joomla
 	 * @param   mixed  $app
 	 *
 	 * @return  bool
+	 *
+	 * @since   1.0.0
 	 */
-	public static function isCmsApplication($app)
+	public static function isCmsApplication($app): bool
 	{
 		if (!is_object($app))
 		{
@@ -446,9 +493,13 @@ abstract class Joomla
 	}
 
 	/**
-	 * @return JDatabaseDriver
+	 * Get the Joomla! database driver object
+	 *
+	 * @return  JDatabaseDriver
+	 *
+	 * @since   1.0.0
 	 */
-	public static function getDbo()
+	public static function getDbo(): JDatabaseDriver
 	{
 		return Factory::getDbo();
 	}
@@ -457,8 +508,10 @@ abstract class Joomla
 	 * Get the Joomla! global configuration object
 	 *
 	 * @return  Registry
+	 *
+	 * @since   1.0.0
 	 */
-	public static function getConfig()
+	public static function getConfig(): Registry
 	{
 		return Factory::getConfig();
 	}
@@ -467,13 +520,24 @@ abstract class Joomla
 	 * Get the Joomla! mailer object
 	 *
 	 * @return  Mail
+	 *
+	 * @since   1.0.0
 	 */
-	public static function getMailer()
+	public static function getMailer(): Mail
 	{
 		return Factory::getMailer();
 	}
 
-	public static function getUserId($username)
+	/**
+	 * Returns the numeric user ID given a username or 0 if the user does not exist.
+	 *
+	 * @param   string  $username  The username to look up
+	 *
+	 * @return  int
+	 *
+	 * @since   1.0.0
+	 */
+	public static function getUserId(string $username): int
 	{
 		return UserHelper::getUserId($username);
 	}
@@ -484,8 +548,10 @@ abstract class Joomla
 	 * @param   string  $string  The translation key
 	 *
 	 * @return  string
+	 *
+	 * @since   1.0.0
 	 */
-	public static function _($string)
+	public static function _(string $string): string
 	{
 		return call_user_func_array(array('Joomla\\CMS\\Language\\Text', '_'), array($string));
 	}
@@ -506,16 +572,17 @@ abstract class Joomla
 	 * script is a boolean to indicate that the string will be push in the javascript language store.
 	 *
 	 * @param   string  $string  The format string.
+	 * @param   mixed   $args    The variable arguments to sprintf().
 	 *
 	 * @return  string
 	 *
 	 * @see     Text::sprintf().
+	 *
+	 * @since   1.0.0
 	 */
-	public static function sprintf($string)
+	public static function sprintf(string $string, ...$args): string
 	{
-		$args = func_get_args();
-
-		return call_user_func_array(array('Joomla\\CMS\\Language\\Text', 'sprintf'), $args);
+		return call_user_func_array(array('Joomla\\CMS\\Language\\Text', 'sprintf'), array_merge([$string], $args));
 	}
 
 	/**
@@ -524,8 +591,10 @@ abstract class Joomla
 	 * @param   array  $options  The options to pass to the factory when building the client.
 	 *
 	 * @return  Http
+	 *
+	 * @since   1.0.0
 	 */
-	public static function getHttpClient(array $options = array())
+	public static function getHttpClient(array $options = []): Http
 	{
 		$optionRegistry = new Registry($options);
 
@@ -541,9 +610,9 @@ abstract class Joomla
 	 *
 	 * @return  void
 	 *
-	 * @since   2.1.0
+	 * @since   1.0.0
 	 */
-	public static function log($plugin, $message, $priority = Log::DEBUG)
+	public static function log(string $plugin, string $message, $priority = Log::DEBUG): void
 	{
 		Log::add($message, $priority, 'webauthn.' . $plugin);
 	}
@@ -555,9 +624,9 @@ abstract class Joomla
 	 *
 	 * @return  void
 	 *
-	 * @since   2.1.0
+	 * @since   1.0.0
 	 */
-	public static function addLogger($plugin)
+	public static function addLogger(string $plugin): void
 	{
 		// Make sure this logger is not already registered
 		if (in_array($plugin, self::$registeredLoggers))
@@ -591,8 +660,10 @@ abstract class Joomla
 	 * @param   BaseApplication  $app     The application we are running in. Skip to auto-detect (recommended).
 	 *
 	 * @throws  Exception
+	 *
+	 * @since   1.0.0
 	 */
-	public static function loginUser($userId, $app = null)
+	public static function loginUser(int $userId, BaseApplication $app = null): void
 	{
 		// Trick the class auto-loader into loading the necessary classes
 		JLoader::import('joomla.user.authentication');
@@ -693,6 +764,8 @@ abstract class Joomla
 	 * Returns a (blank) Joomla! authentication response
 	 *
 	 * @return  AuthenticationResponse
+	 *
+	 * @since   1.0.0
 	 */
 	public static function getAuthenticationResponseObject(): AuthenticationResponse
 	{
@@ -713,8 +786,10 @@ abstract class Joomla
 	 * @return  bool
 	 *
 	 * @throws  Exception
+	 *
+	 * @since   1.0.0
 	 */
-	public static function processLoginFailure($response, $app = null, $logContext = 'system')
+	public static function processLoginFailure(AuthenticationResponse $response, BaseApplication $app = null, string $logContext = 'system')
 	{
 		// Import the user plugin group.
 		Joomla::importPlugins('user');
@@ -745,5 +820,4 @@ abstract class Joomla
 
 		return false;
 	}
-
 }

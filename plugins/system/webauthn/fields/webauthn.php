@@ -6,7 +6,7 @@
  */
 
 // Prevent direct access
-use Akeeba\Passwordless\Helper\Joomla;
+use Akeeba\Passwordless\Webauthn\Helper\Joomla;
 use Joomla\CMS\Form\FormField;
 
 defined('_JEXEC') or die;
