@@ -23,18 +23,26 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
  * the URL defined in post_url using AJAX. That URL must re-render the management interface. These contents will replace
  * the element identified by the interface_selector CSS selector.
  *
- * @param   {object}  publicKey
- * @param   {String}  post_url
- * @param   {String}  interface_selector
+ * @param   {String}  store_id            CSS ID for the element storing the configuration in its data properties
+ * @param   {String}  interface_selector  CSS selector for the GUI container
  */
-function akeeba_passwordless_create_credentials(publicKey, post_url, interface_selector) {
+function akeeba_passwordless_create_credentials(store_id, interface_selector) {
   // Make sure the browser supports Webauthn
   if (!('credentials' in navigator)) {
     alert(Joomla.JText._('PLG_SYSTEM_WEBAUTHN_ERR_NO_BROWSER_SUPPORT'));
     console.log("This browser does not support Webauthn");
     return;
-  } // Utility function to convert array data to base64 strings
+  } // Extract the configuration from the store
 
+
+  var elStore = document.getElementById(store_id);
+
+  if (!elStore) {
+    return;
+  }
+
+  var publicKey = JSON.parse(atob(elStore.dataset.public_key));
+  var post_url = atob(elStore.dataset.postback_url); // Utility function to convert array data to base64 strings
 
   function arrayToBase64String(a) {
     return btoa(String.fromCharCode.apply(String, _toConsumableArray(a)));

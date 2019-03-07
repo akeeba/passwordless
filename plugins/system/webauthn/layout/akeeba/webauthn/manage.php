@@ -92,18 +92,23 @@ HTMLHelper::_('stylesheet', 'plg_system_webauthn/backend.css', [
 
 	<?php if ($allow_add):
 		/**
-		 * Do NOT replace the inline script tag with a call to JDocument! This will be replaced every time we are
-		 * coming back after adding an authenticator.
+		 * Why not push these configuration variables directly to JavaScript?
+		 *
+		 * We need to reload them every time we return from an attempt to authorize an authenticator. Whenever that
+		 * happens we push raw HTML to the page. However, any SCRIPT tags in that HTML do not get parsed, i.e. they
+		 * do not replace existing values. This causes any retries to fail. By using a data storage object we circumvent
+		 * that problem.
 		 */
-		$publicKey   = CredentialsCreation::createPublicKey($user);
-		$postbackURL = addcslashes(rtrim(Uri::base(), '/') . '/index.php?' . Joomla::getToken() . '=1', '\\');
+		$randomId    = 'akpwl_' . Joomla::generateRandom(32);
+		$publicKey   = base64_encode(CredentialsCreation::createPublicKey($user));
+		$postbackURL = base64_encode(rtrim(Uri::base(), '/') . '/index.php?' . Joomla::getToken() . '=1');
 		?>
-		<script type="text/javascript">
-            var akeeba_pwl_public_key   = <?= $publicKey ?>;
-            var akeeba_pwl_postback_url = "<?= $postbackURL ?>";
-		</script>
+		<span id="<?= $randomId ?>"
+			data-public_key = "<?= $publicKey ?>"
+			data-postback_url = "<?= $postbackURL ?>"
+		></span>
 		<p class="akpwl-manage-add-container">
-			<a onclick="akeeba_passwordless_create_credentials(akeeba_pwl_public_key, akeeba_pwl_postback_url, '#akpwl-management-interface');"
+			<a onclick="akeeba_passwordless_create_credentials('<?= $randomId ?>', '#akpwl-management-interface');"
 			   class="akpwl-btn--green--block">
 				<span class="icon-plus icon-white"></span>
 				<?= Joomla::_('PLG_SYSTEM_WEBAUTHN_MANAGE_BTN_ADD_LABEL') ?>
