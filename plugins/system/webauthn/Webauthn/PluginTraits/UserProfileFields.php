@@ -46,7 +46,9 @@ trait UserProfileFields
 			return true;
 		}
 
-		if (!Joomla::isAdminPage() && (Joomla::getApplication()->input->getCmd('layout', 'default') != 'edit'))
+		$layout = Joomla::getApplication()->input->getCmd('layout', 'default');
+
+		if (!Joomla::isAdminPage() && ($layout == 'edit'))
 		{
 			return true;
 		}
@@ -83,8 +85,8 @@ trait UserProfileFields
 
 		// Add the fields to the form.
 		Joomla::log('system', 'Injecting Akeeba Passwordless Login fields in user profile edit page');
+		Form::addFormPath(dirname(__FILE__) . '/../../fields');
 		$this->loadLanguage();
-		Form::addFormPath(dirname(__FILE__) . '/fields');
 		$form->loadFile('webauthn', false);
 
 		return true;
