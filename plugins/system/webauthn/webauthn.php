@@ -61,6 +61,9 @@ class plgSystemWebauthn extends CMSPlugin
 		// Register a debug log file writer
 		Joomla::addLogger('system');
 
+		// Load the Composer autoloader
+		require_once __DIR__ . '/vendor/autoload.php';
+
 		// Setup login module interception
 		$this->setupLoginModuleButtons();
 	}

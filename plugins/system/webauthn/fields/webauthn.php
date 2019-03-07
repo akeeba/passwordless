@@ -29,9 +29,12 @@ class JFormFieldWebauthn extends FormField
 			return Joomla::_('PLG_SYSTEM_WEBAUTHN_ERR_NOUSER');
 		}
 
-		$user = Joomla::getUser($user_id);
+		$credentialRepository = new \Akeeba\Passwordless\Webauthn\CredentialRepository();
 
-		// TODO Render and return the security keys management interface
-		return '<h1>TODO Render and return the security keys management interface</h1>';
+		return Joomla::renderLayout('akeeba.webauthn.manage', [
+			'user'        => Joomla::getUser($user_id),
+			'allow_add'   => $user_id == Joomla::getUser()->id,
+			'credentials' => $credentialRepository->getAll($user_id),
+		]);
 	}
 }

@@ -196,7 +196,7 @@ abstract class Joomla
 	 *
 	 * @since   1.0.0
 	 */
-	public static function renderLayout(string $layoutFile, $displayData = null, string $includePath = '', ?array $options = null): string
+	public static function renderLayout(string $layoutFile, $displayData = null, string $includePath = '', array $options = []): string
 	{
 		$basePath = JPATH_SITE . '/plugins/system/webauthn/layout';
 		$layout   = self::getJLayoutFromFile($layoutFile, $options, $basePath);
