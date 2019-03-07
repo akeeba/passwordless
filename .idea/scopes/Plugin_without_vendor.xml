@@ -1,3 +1,3 @@
 <component name="DependencyValidationManager">
-  <scope name="Plugin without vendor" pattern="file[webauthn]:plugins/system//*&amp;&amp;!file[webauthn]:plugins/system/webauthn/vendor//*" />
+  <scope name="Plugin without vendor" pattern="file[Passwordless Login / WebAuthn]:plugins/system//*&amp;&amp;!file[webauthn]:plugins/system/webauthn/vendor//*" />
 </component>
