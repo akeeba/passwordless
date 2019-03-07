@@ -72,8 +72,7 @@ trait AjaxHandlerCreate
 		}
 		catch (Exception $e)
 		{
-			// TODO Remove the trace...
-			$error                  = $e->getMessage() . "<pre>" . $e->getTraceAsString() . "</pre>";
+			$error                  = $e->getMessage();
 			$attestedCredentialData = null;
 		}
 

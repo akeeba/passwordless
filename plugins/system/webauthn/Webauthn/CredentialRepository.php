@@ -29,8 +29,9 @@ class CredentialRepository implements CredentialRepositoryInterface
 	 */
 	public function has(string $credentialId): bool
 	{
-		$db    = Factory::getDbo();
-		$query = $db->getQuery(true)
+		$credentialId = base64_encode($credentialId);
+		$db           = Factory::getDbo();
+		$query        = $db->getQuery(true)
 			->select('COUNT(*)')
 			->from($db->qn('#__webauthn_credentials'))
 			->where($db->qn('id') . ' = ' . $db->q($credentialId));
@@ -56,8 +57,9 @@ class CredentialRepository implements CredentialRepositoryInterface
 	 */
 	public function get(string $credentialId): AttestedCredentialData
 	{
-		$db    = Factory::getDbo();
-		$query = $db->getQuery(true)
+		$credentialId = base64_encode($credentialId);
+		$db           = Factory::getDbo();
+		$query        = $db->getQuery(true)
 			->select($db->qn('credential'))
 			->from($db->qn('#__webauthn_credentials'))
 			->where($db->qn('id') . ' = ' . $db->q($credentialId));
@@ -152,16 +154,14 @@ class CredentialRepository implements CredentialRepositoryInterface
 
 		if (empty($label))
 		{
-			$label = $credentialData->getCredentialId();
+			$label = base64_encode($credentialData->getCredentialId());
 		}
 
-		$json = $credentialData->jsonSerialize();
-
 		$o = (object) [
-			'id'         => $credentialData->getCredentialId(),
+			'id'         => base64_encode($credentialData->getCredentialId()),
 			'user_id'    => $user->id,
 			'label'      => $label,
-			'credential' => $json,
+			'credential' => json_encode($credentialData),
 		];
 
 		$db = Factory::getDbo();
@@ -186,10 +186,11 @@ class CredentialRepository implements CredentialRepositoryInterface
 	 */
 	public function setLabel(string $credentialId, string $label): void
 	{
-		$db = Factory::getDbo();
-		$o  = (object) [
-			'id'      => $credentialId,
-			'label'   => $label,
+		$credentialId = base64_encode($credentialId);
+		$db           = Factory::getDbo();
+		$o            = (object) [
+			'id'    => $credentialId,
+			'label' => $label,
 		];
 
 		$db->updateObject('#__webauthn_credentials', $o, ['id'], false);
@@ -209,8 +210,9 @@ class CredentialRepository implements CredentialRepositoryInterface
 			return;
 		}
 
-		$db    = Factory::getDbo();
-		$query = $db->getQuery(true)
+		$credentialId = base64_encode($credentialId);
+		$db           = Factory::getDbo();
+		$query        = $db->getQuery(true)
 			->delete($db->qn('#__webauthn_credentials'))
 			->where($db->qn('id') . ' = ' . $db->q($credentialId));
 
@@ -230,8 +232,9 @@ class CredentialRepository implements CredentialRepositoryInterface
 	 */
 	public function getUserHandleFor(string $credentialId): string
 	{
-		$db    = Factory::getDbo();
-		$query = $db->getQuery(true)
+		$credentialId = base64_encode($credentialId);
+		$db           = Factory::getDbo();
+		$query        = $db->getQuery(true)
 			->select([
 				$db->qn('user_id'),
 			])
@@ -267,8 +270,9 @@ class CredentialRepository implements CredentialRepositoryInterface
 	 */
 	public function getCounterFor(string $credentialId): int
 	{
-		$db    = Factory::getDbo();
-		$query = $db->getQuery(true)
+		$credentialId = base64_encode($credentialId);
+		$db           = Factory::getDbo();
+		$query        = $db->getQuery(true)
 			->select([
 				$db->qn('counter'),
 			])
@@ -293,8 +297,9 @@ class CredentialRepository implements CredentialRepositoryInterface
 	 */
 	public function updateCounterFor(string $credentialId, int $newCounter): void
 	{
-		$db = Factory::getDbo();
-		$o  = (object) [
+		$credentialId = base64_encode($credentialId);
+		$db           = Factory::getDbo();
+		$o            = (object) [
 			'id'      => $credentialId,
 			'counter' => $newCounter,
 		];
