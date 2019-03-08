@@ -7,7 +7,9 @@
 
 namespace Akeeba\Passwordless\Webauthn;
 
+use Akeeba\Passwordless\Webauthn\Helper\Joomla;
 use Exception;
+use Joomla\CMS\Date\Date;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\User\User;
@@ -154,7 +156,7 @@ class CredentialRepository implements CredentialRepositoryInterface
 
 		if (empty($label))
 		{
-			$label = base64_encode($credentialData->getCredentialId());
+			$label = Joomla::sprintf('PLG_SYSTEM_WEBAUTHN_LBL_DEFAULT_AUTHENTICATOR_LABEL', Joomla::formatDate('now'));
 		}
 
 		$o = (object) [

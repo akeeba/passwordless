@@ -8,6 +8,7 @@
 namespace Akeeba\Passwordless\Webauthn\Helper;
 
 // Protect from unauthorized access
+use DateTimeZone;
 use Exception;
 use JDatabaseDriver;
 use JEventDispatcher;
@@ -17,9 +18,11 @@ use Joomla\CMS\Application\CliApplication;
 use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Authentication\Authentication;
 use Joomla\CMS\Authentication\AuthenticationResponse;
+use Joomla\CMS\Date\Date;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Http\Http;
 use Joomla\CMS\Http\HttpFactory;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\Layout\FileLayout;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Mail\Mail;
@@ -819,5 +822,66 @@ abstract class Joomla
 		}
 
 		return false;
+	}
+
+	/**
+	 * Format a date for display.
+	 *
+	 * The $tzAware parameter defines whether the formatted date will be timezone-aware. If set to false the formatted
+	 * date will be rendered in the UTC timezone. If set to true the code will automatically try to use the logged in
+	 * user's timezone or, if none is set, the site's default timezone (Server Timezone). If set to a positive integer
+	 * the same thing will happen but for the specified user ID instead of the currently logged in user.
+	 *
+	 * @param   string|\DateTime  $date     The date to format
+	 * @param   string            $format   The format string, default is Joomla's DATE_FORMAT_LC6 (usually "Y-m-d H:i:s")
+	 * @param   bool|int          $tzAware  Should the format be timezone aware? See notes above.
+	 *
+	 * @return  string
+	 */
+	public static function formatDate($date, ?string $format = null, bool $tzAware = true): string
+	{
+		$utcTimeZone = new DateTimeZone('UTC');
+		$jDate       = new Date($date, $utcTimeZone);
+
+		// Which timezone should I use?
+		$tz = null;
+
+		if ($tzAware !== false)
+		{
+			$userId = is_bool($tzAware) ? null : (int) $tzAware;
+
+			try
+			{
+				$tzDefault = Factory::getApplication()->get('offset');
+			}
+			catch (\Exception $e)
+			{
+				$tzDefault = 'GMT';
+			}
+
+			$user = Factory::getUser($userId);
+			$tz   = $user->getParam('timezone', $tzDefault);
+		}
+
+		if (!empty($tz))
+		{
+			try
+			{
+				$userTimeZone = new DateTimeZone($tz);
+
+				$jDate->setTimezone($userTimeZone);
+			}
+			catch (\Exception $e)
+			{
+				// Nothing. Fall back to UTC.
+			}
+		}
+
+		if (empty($format))
+		{
+			$format = Joomla::_('DATE_FORMAT_LC6');
+		}
+
+		return $jDate->format($format, true);
 	}
 }
