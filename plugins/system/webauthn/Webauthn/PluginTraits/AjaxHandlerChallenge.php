@@ -75,8 +75,6 @@ trait AjaxHandlerChallenge
 			return json_encode(false);
 		}
 
-		$registeredPublicKeyCredentialDescriptors = [];
-
 		foreach ($credentials as $record)
 		{
 			$credential = json_decode($record['credential'], true);
@@ -88,7 +86,7 @@ trait AjaxHandlerChallenge
 
 			try
 			{
-				$descriptor = new PublicKeyCredentialDescriptor(PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY, $credential['credentialPublicKey']);
+				$descriptor = new PublicKeyCredentialDescriptor(PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY, base64_decode($credential['credentialId']));
 			}
 			catch (Exception $e)
 			{

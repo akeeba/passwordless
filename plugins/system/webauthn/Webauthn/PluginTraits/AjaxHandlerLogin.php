@@ -74,13 +74,13 @@ trait AjaxHandlerLogin
 			$this->validateResponse();
 
 			// Login the user
-			Joomla::loginUser($userId);
+			Joomla::log('system', "Logging in the user", Log::INFO);
+			Joomla::loginUser((int) $userId);
 		}
 		catch (\Throwable $e)
 		{
 			Joomla::setSessionVar('publicKeyCredentialRequestOptions', null, 'plg_system_webauthn');
 			Joomla::setSessionVar('userHandle', null, 'plg_system_webauthn');
-
 
 			$response                = Joomla::getAuthenticationResponseObject();
 			$response->status        = Authentication::STATUS_UNKNOWN;
@@ -121,7 +121,8 @@ trait AjaxHandlerLogin
 		$credentialRepository = new CredentialRepository();
 
 		// Retrieve data from the request and session
-		$data = $input->get('data', '', 'raw');
+		$data = $input->getBase64('data', '');
+		$data = base64_decode($data);
 
 		if (empty($data))
 		{

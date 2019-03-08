@@ -11,7 +11,9 @@ use Akeeba\Passwordless\Webauthn\Helper\Joomla;
 use Exception;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\User\User;
+use function MongoDB\BSON\fromJSON;
 use RuntimeException;
+use Throwable;
 use Webauthn\AttestedCredentialData;
 use Webauthn\CredentialRepository as CredentialRepositoryInterface;
 
@@ -71,14 +73,14 @@ class CredentialRepository implements CredentialRepositoryInterface
 			throw new RuntimeException(Text::_('PLG_SYSTSEM_WEBAUTHN_ERR_NO_STORED_CREDENTIAL'));
 		}
 
-		$data = @json_decode($json, true);
-
-		if (is_null($data))
+		try
+		{
+			return AttestedCredentialData::createFromJson(json_decode($json, true));
+		}
+		catch (Throwable $e)
 		{
 			throw new RuntimeException(Text::_('PLG_SYSTSEM_WEBAUTHN_ERR_CORRUPT_STORED_CREDENTIAL'));
 		}
-
-		return new AttestedCredentialData($data['aaguid'], $credentialId, $data['credentialPublicKey']);
 	}
 
 	/**

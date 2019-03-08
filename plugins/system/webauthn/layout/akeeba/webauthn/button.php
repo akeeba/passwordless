@@ -3,6 +3,7 @@
 use Akeeba\Passwordless\Webauthn\Helper\Joomla;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Layout\FileLayout;
+use Joomla\CMS\Uri\Uri;
 
 /**
  * @package   AkeebaPasswordlessLogin
@@ -42,9 +43,12 @@ extract(array_merge([
 	'icon'  => '',
 ], $displayData));
 
+$uri = new Uri(Uri::base() . 'index.php');
+$uri->setVar(Joomla::getToken(), '1');
+
 ?>
 <button class="<?= $class ?> hasTooltip"
-        onclick="return akeeba_passwordless_login()"
+        onclick="return akeeba_passwordless_login(this, '<?= $uri->toString() ?>')"
         title="<?= Joomla::_('PLG_SYSTEM_WEBAUTHN_LOGIN_DESC') ?>">
 	<?php if (!empty($icon)): ?>
         <span class="<?= $icon ?>"></span>
