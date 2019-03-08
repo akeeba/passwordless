@@ -9,6 +9,8 @@ namespace Akeeba\Passwordless\Webauthn\PluginTraits;
 
 use Akeeba\Passwordless\Webauthn\Helper\Joomla;
 use Exception;
+use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Uri\Uri;
 
 // Protect from unauthorized access
 defined('_JEXEC') or die();
@@ -38,6 +40,13 @@ trait LoginModuleButtons
 	 * @var   bool
 	 */
 	private $needButtonInjection = null;
+
+	/**
+	 * Have I already injected CSS and JavaScript? Prevents double inclusion of the same files.
+	 *
+	 * @var   bool
+	 */
+	protected $injectedCSSandJS = false;
 
 	/**
 	 * Set up the login module button injection feature.
@@ -146,9 +155,37 @@ trait LoginModuleButtons
 
 		// Append the passwordless login buttons content to the login module
 		Joomla::log('system', "Injecting Webauthn passwordless login buttons to {$module->module} module.");
-		// TODO Get the content we need to append to the module
-		$passwordlessContent = '<a href="#" class="btn btn-small">TODO - Webauthn</a>';
-		$module->content     .= $passwordlessContent;
+		$this->injectLoginCSSAndJavascript();
+		$module->content .= Joomla::renderLayout('akeeba.webauthn.button', []);
 	}
 
+	/**
+	 * Injects the Webauthn CSS and Javascript for frontend logins, but only once per page load.
+	 *
+	 * @return  void
+	 */
+	protected function injectLoginCSSAndJavascript(): void
+	{
+		if ($this->injectedCSSandJS)
+		{
+			return;
+		}
+
+		// Load the CSS
+		HTMLHelper::_('stylesheet', 'plg_system_webauthn/button.css', [
+			'relative' => true,
+		]);
+
+		// Load the JavaScript
+		HTMLHelper::_('script', 'plg_system_webauthn/login.js', [
+			'relative'  => true,
+			'framework' => true,
+		]);
+
+		// Store the current URL as the return URL after login (or failure)
+		Joomla::setSessionVar('returnUrl', Uri::current(), 'plg_system_webauthn');
+
+		// Set the "don't load again" flag
+		$this->injectedCSSandJS = true;
+	}
 }

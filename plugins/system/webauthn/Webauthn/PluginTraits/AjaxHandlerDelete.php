@@ -17,7 +17,7 @@ defined('_JEXEC') or die();
 /**
  * Ajax handler for akaction=savelabel
  *
- * Stores a new label for a security key
+ * Deletes a security key
  */
 trait AjaxHandlerDelete
 {

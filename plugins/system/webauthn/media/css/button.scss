@@ -1,0 +1,162 @@
+/*!
+ * @package   AkeebaPasswordlessLogin
+ * @copyright Copyright (c)2018-2019 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @license   GNU General Public License version 3, or later
+ */
+
+// ===================================================================================================================
+// Configuration
+// ===================================================================================================================
+
+// Color Declarations
+$grey: #514F50;
+$teal: #40B5B8;
+$red: #E2363C;
+$light-grey: #EFEFEF;
+$white: #ffffff;
+$green: #93C34E;
+$orange: #F0AD4E;
+$black: #000000;
+
+
+// Button display properties
+$border-radius: 3px;
+
+// Default button properties
+$background: $teal !default;
+$backgroundhover: darken($background, 10%) !default;
+$fontcolor: $white !default;
+$fonthover: $fontcolor !default;
+
+// ===================================================================================================================
+// Mixins
+// ===================================================================================================================
+
+// Mixin for button variations
+@mixin button($name, $background, $backgroundhover, $fontcolor, $fonthover, $border: 1px solid darken($background, 10%)) {
+  &[class*=#{$name}] {
+    background: $background;
+    color: $fontcolor;
+    border: $border;
+
+    &:hover {
+      background: $backgroundhover;
+      color: $fonthover;
+    }
+
+    &:focus {
+      background: $backgroundhover;
+      box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 6px $background;
+    }
+  }
+}
+
+button[class*=akeeba-passwordless-login-button] {
+  // Default button
+  display: inline-block;
+  padding: .6em 1.2em;
+  color: $grey;
+  background: darken($light-grey, 3%);
+  border-radius: $border-radius;
+  border: 1px solid darken($light-grey, 13%);
+  cursor: pointer;
+  text-decoration: none;
+
+  &[class*=block] {
+    display: block;
+    text-align: center;
+  }
+
+  span[class*=icon] {
+    font-size: 1.25em;
+    vertical-align: sub;
+    display: inline-block;
+    width: 1em;
+    text-align: center;
+  }
+
+  img[class*=icon] {
+    font-size: 1.5em;
+    vertical-align: middle;
+    display: inline-block;
+    width: 1.25em;
+    max-height: 1.25em;
+    text-align: center;
+  }
+
+  span[class*=icon]:not(:last-child) {
+    margin-right: .5em;
+  }
+
+  &:hover {
+    background: darken($light-grey, 13%);
+  }
+
+  &:focus {
+    background: darken($light-grey, 13%);
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 6px darken($light-grey, 3%);
+  }
+
+  // Button variations -- Colors
+  @include button("primary", $teal, $backgroundhover, $white, $fonthover);
+
+  $ghost_bg: $white;
+  $ghost_bghover: lighten($teal, 45%);
+  $ghost_color: darken($teal, 10%);
+  $ghost_colorhover: darken($teal, 25%);
+  $ghost_border: 1px solid $teal;
+
+  $dark_bg: $grey;
+  $dark_bghover: darken($grey, 10%);
+  $dark_color: $white;
+  $dark_colorhover: $white;
+  $dark_border: 1px solid $grey;
+
+  @include button("ghost", $ghost_bg, $ghost_bghover, $ghost_color, $ghost_colorhover, $ghost_border);
+  @include button("dark", $dark_bg, $dark_bghover, $dark_color, $dark_colorhover, $dark_border);
+  @include button("teal", $teal, $backgroundhover, $white, $fonthover);
+  @include button("red", $red, darken($red, 10%), $white, $white);
+  @include button("orange", darken($orange, 5%), darken($orange, 15%), $white, $white);
+  @include button("green", $green, darken($green, 10%), $white, $white);
+  @include button("grey", darken($light-grey, 3%), darken($light-grey, 13%), $grey, $grey);
+
+  // Button variations -- Sizes
+  &[class*=small] {
+    padding: .3em 1em;
+    font-size: .9em;
+  }
+
+  &[class*=mini] {
+    padding: .2em 0.5em .2em 1em;
+    font-size: .8em;
+  }
+
+  &[class*=big] {
+    padding: .5em 1.3em;
+    font-size: 1.4em;
+  }
+
+  &:disabled {
+    background: $light-grey;
+    color: lighten($grey, 30%);
+    border: 1px solid darken($light-grey, 5%);
+
+    &:hover {
+      background: $light-grey;
+      color: lighten($grey, 30%);
+      cursor: not-allowed;
+    }
+
+    &:focus {
+      box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 6px $background;
+    }
+  }
+
+  // Buttons next to each other
+  + a[class*=akpwl-btn],
+  + button[class*=akpwl-btn],
+  + span[class*=akpwl-btn],
+  + input[type=submit][class*=akpwl-btn] {
+    margin-left: 5px;
+  }
+}
