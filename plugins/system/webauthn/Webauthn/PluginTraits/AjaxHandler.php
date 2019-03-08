@@ -102,7 +102,6 @@ trait AjaxHandler
 
 		// Get the return URL from the session
 		$returnURL = Joomla::getSessionVar('returnUrl', Uri::base(), 'plg_system_webauthn');
-		Joomla::setSessionVar('returnUrl', null, 'plg_system_webauthn');
 		$result = null;
 
 		try
@@ -156,6 +155,7 @@ trait AjaxHandler
 		catch (Exception $e)
 		{
 			Joomla::log('system', "Callback failure, redirecting to $returnURL.");
+			Joomla::setSessionVar('returnUrl', null, 'plg_system_webauthn');
 			$app->enqueueMessage($e->getMessage(), 'error');
 			$app->redirect($returnURL);
 
@@ -214,6 +214,7 @@ trait AjaxHandler
 		}
 
 		Joomla::log('system', "Null response from AJAX callback, redirecting to $returnURL");
+		Joomla::setSessionVar('returnUrl', null, 'plg_system_webauthn');
 
 		$app->redirect($returnURL);
 	}

@@ -20,7 +20,7 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 // TODO Write the akeeba_passwordless_login() function
 // See https://github.com/web-auth/webauthn-framework/blob/v1.0/doc/webauthn/PublicKeyCredentialRequest.md
 function akeeba_passwordless_login(that, callback_url) {
-  function findUsernameField(elForm) {
+  function findNamedField(elForm, fieldName) {
     var elInputs = elForm.querySelectorAll("input");
 
     if (!elInputs.length) {
@@ -30,7 +30,7 @@ function akeeba_passwordless_login(that, callback_url) {
     for (var i = 0; i < elInputs.length; i++) {
       var elInput = elInputs[i];
 
-      if (elInput.name === "username") {
+      if (elInput.name === fieldName) {
         return elInput;
       }
     }
@@ -38,13 +38,13 @@ function akeeba_passwordless_login(that, callback_url) {
     return null;
   }
 
-  function trawlParentElements(innerElement) {
+  function trawlParentElements(innerElement, fieldName) {
     var elElement = innerElement.parentElement;
     var elInput = null;
 
     while (true) {
       if (elElement.nodeName === "FORM") {
-        elInput = findUsernameField(elElement);
+        elInput = findNamedField(elElement, fieldName);
 
         if (elInput !== null) {
           return elInput;
@@ -57,7 +57,7 @@ function akeeba_passwordless_login(that, callback_url) {
 
       if (elForms.length) {
         for (var i = 0; i < elForms.length; i++) {
-          elInput = findUsernameField(elForms[i]);
+          elInput = findNamedField(elForms[i], fieldName);
 
           if (elInput !== null) {
             return elInput;
@@ -76,14 +76,16 @@ function akeeba_passwordless_login(that, callback_url) {
   } // Get the username
 
 
-  var elUsername = trawlParentElements(that);
+  var elUsername = trawlParentElements(that, "username");
+  var elReturn = trawlParentElements(that, "return");
 
   if (elUsername === null) {
     alert(Joomla.JText._("PLG_SYSTEM_WEBAUTHN_ERR_CANNOT_FIND_USERNAME"));
     return false;
   }
 
-  var username = elUsername.value; // No username? We cannot proceed. We need a username to find the acceptable public keys :(
+  var username = elUsername.value;
+  var returnUrl = elReturn ? elReturn.value : null; // No username? We cannot proceed. We need a username to find the acceptable public keys :(
 
   if (username === "") {
     alert(Joomla.JText._("PLG_SYSTEM_WEBAUTHN_ERR_EMPTY_USERNAME"));
@@ -98,7 +100,8 @@ function akeeba_passwordless_login(that, callback_url) {
     "format": "raw",
     "akaction": "challenge",
     "encoding": "raw",
-    "username": username
+    "username": username,
+    "returnUrl": returnUrl
   };
   window.jQuery.ajax({
     type: "POST",
@@ -108,7 +111,7 @@ function akeeba_passwordless_login(that, callback_url) {
   }).done(function (jsonData) {
     akeeba_passwordless_handle_login_challenge(jsonData, callback_url);
   }).fail(function (error) {
-    akeeba_passwordless_handle_login_error(error.status + ' ' + error.statusText);
+    akeeba_passwordless_handle_login_error(error.status + " " + error.statusText);
   });
 }
 

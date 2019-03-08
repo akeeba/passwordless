@@ -9,7 +9,7 @@
 
 function akeeba_passwordless_login(that, callback_url)
 {
-    function findUsernameField(elForm)
+    function findNamedField(elForm, fieldName)
     {
         let elInputs = elForm.querySelectorAll("input");
 
@@ -22,7 +22,7 @@ function akeeba_passwordless_login(that, callback_url)
         {
             var elInput = elInputs[i];
 
-            if (elInput.name === "username")
+            if (elInput.name === fieldName)
             {
                 return elInput;
             }
@@ -31,7 +31,7 @@ function akeeba_passwordless_login(that, callback_url)
         return null;
     }
 
-    function trawlParentElements(innerElement)
+    function trawlParentElements(innerElement, fieldName)
     {
         var elElement = innerElement.parentElement;
         var elInput   = null;
@@ -40,7 +40,7 @@ function akeeba_passwordless_login(that, callback_url)
         {
             if (elElement.nodeName === "FORM")
             {
-                elInput = findUsernameField(elElement);
+                elInput = findNamedField(elElement, fieldName);
 
                 if (elInput !== null)
                 {
@@ -56,7 +56,7 @@ function akeeba_passwordless_login(that, callback_url)
             {
                 for (var i = 0; i < elForms.length; i++)
                 {
-                    elInput = findUsernameField(elForms[i]);
+                    elInput = findNamedField(elForms[i], fieldName);
 
                     if (elInput !== null)
                     {
@@ -77,7 +77,8 @@ function akeeba_passwordless_login(that, callback_url)
     }
 
     // Get the username
-    let elUsername = trawlParentElements(that);
+    let elUsername = trawlParentElements(that, "username");
+    let elReturn   = trawlParentElements(that, "return");
 
     if (elUsername === null)
     {
@@ -86,7 +87,8 @@ function akeeba_passwordless_login(that, callback_url)
         return false;
     }
 
-    let username = elUsername.value;
+    let username  = elUsername.value;
+    let returnUrl = elReturn ? elReturn.value : null;
 
     // No username? We cannot proceed. We need a username to find the acceptable public keys :(
     if (username === "")
@@ -98,13 +100,14 @@ function akeeba_passwordless_login(that, callback_url)
 
     // Get the Public Key Credential Request Options (challenge and acceptable public keys)
     let postBackData = {
-        "option":   "com_ajax",
-        "group":    "system",
-        "plugin":   "webauthn",
-        "format":   "raw",
-        "akaction": "challenge",
-        "encoding": "raw",
-        "username": username
+        "option":    "com_ajax",
+        "group":     "system",
+        "plugin":    "webauthn",
+        "format":    "raw",
+        "akaction":  "challenge",
+        "encoding":  "raw",
+        "username":  username,
+        "returnUrl": returnUrl,
     };
 
     window.jQuery.ajax({
@@ -115,9 +118,9 @@ function akeeba_passwordless_login(that, callback_url)
     })
         .done(function (jsonData) {
             akeeba_passwordless_handle_login_challenge(jsonData, callback_url);
-    })
+        })
         .fail(function (error) {
-            akeeba_passwordless_handle_login_error(error.status + ' ' + error.statusText);
+            akeeba_passwordless_handle_login_error(error.status + " " + error.statusText);
         })
 
 

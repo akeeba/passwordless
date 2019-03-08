@@ -42,7 +42,19 @@ trait AjaxHandlerChallenge
 		$repository = new CredentialRepository();
 
 		// Retrieve data from the request
-		$username = $input->getUsername('username', '');
+		$username  = $input->getUsername('username', '');
+		$returnUrl   = base64_encode(Joomla::getSessionVar('returnUrl', Uri::current(), 'plg_system_webauthn'));
+		$returnUrl = $input->getBase64('returnUrl', $returnUrl);
+		$returnUrl = base64_decode($returnUrl);
+
+		// For security reasons the post-login redirection URL must be internal to the site.
+		if (!Uri::isInternal($returnUrl))
+		{
+			// If the URL wasn't internal redirect to the site's root.
+			$returnUrl = Uri::base();
+		}
+
+		Joomla::setSessionVar('returnUrl', $returnUrl, 'plg_system_webauthn');
 
 		// Do I have a username?
 		if (empty($username))

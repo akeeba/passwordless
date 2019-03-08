@@ -703,7 +703,7 @@ abstract class Joomla
 		$response->fullname      = $user->name;
 		$response->error_message = '';
 		$response->language      = $user->getParam('language');
-		$response->type          = 'Webauthn';
+		$response->type          = 'Passwordless';
 
 		if ($isAdmin)
 		{
