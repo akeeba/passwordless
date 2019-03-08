@@ -1,5 +1,4 @@
 Inject login button in login modules
-    Give feedback when the username is invalid or no authenticators are enrolled instead of sitting there like a lifeless lemming.
     Move the login button rendering and necessary plumbing (like lang loading) into a helper, like Social Login does.
     Create temp Markdown document with template override instructions
 

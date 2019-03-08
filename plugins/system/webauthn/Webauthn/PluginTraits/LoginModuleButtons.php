@@ -186,6 +186,7 @@ trait LoginModuleButtons
 		// Load language strings client-side
 		Text::script('PLG_SYSTEM_WEBAUTHN_ERR_CANNOT_FIND_USERNAME');
 		Text::script('PLG_SYSTEM_WEBAUTHN_ERR_EMPTY_USERNAME');
+		Text::script('PLG_SYSTEM_WEBAUTHN_ERR_INVALID_USERNAME');
 
 		// Store the current URL as the return URL after login (or failure)
 		Joomla::setSessionVar('returnUrl', Uri::current(), 'plg_system_webauthn');
