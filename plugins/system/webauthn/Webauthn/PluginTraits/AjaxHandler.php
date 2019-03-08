@@ -162,7 +162,7 @@ trait AjaxHandler
 			return;
 		}
 
-		if ($result != null)
+		if (!is_null($result))
 		{
 			switch ($input->getCmd('encoding', 'json'))
 			{

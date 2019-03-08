@@ -116,4 +116,87 @@ function akeeba_passwordless_handle_creation_error(message) {
   alert(message);
   console.log(message);
 }
+/**
+ * Edit label button
+ *
+ * @param   {Element} that      The button being clicked
+ * @param   {String}  store_id  CSS ID for the element storing the configuration in its data properties
+ */
+
+
+function akeeba_passwordless_edit_label(that, store_id) {
+  // Extract the configuration from the store
+  var elStore = document.getElementById(store_id);
+
+  if (!elStore) {
+    return;
+  }
+
+  var post_url = atob(elStore.dataset.postback_url); // Find the UI elements
+
+  var elTR = that.parentElement.parentElement;
+  var credentialId = elTR.dataset.credential_id;
+  var elTDs = elTR.querySelectorAll("td");
+  var elLabelTD = elTDs[0];
+  var elButtonsTD = elTDs[1];
+  var elButtons = elButtonsTD.querySelectorAll("button");
+  var elEdit = elButtons[0];
+  var elDelete = elButtons[1]; // Show the editor
+
+  var oldLabel = elLabelTD.innerText;
+  var elInput = document.createElement("input");
+  elInput.type = "text";
+  elInput.name = "label";
+  elInput.defaultValue = oldLabel;
+  var elSave = document.createElement("button");
+  elSave.className = "akpwl-btn--green--small";
+  elSave.innerText = Joomla.JText._("PLG_SYSTEM_WEBAUTHN_MANAGE_BTN_SAVE_LABEL");
+  elSave.addEventListener("click", function (e) {
+    var elNewLabel = elInput.value;
+
+    if (elNewLabel !== '') {
+      var postBackData = {
+        "option": "com_ajax",
+        "group": "system",
+        "plugin": "webauthn",
+        "format": "json",
+        "encoding": "json",
+        "akaction": "savelabel",
+        "credential_id": credentialId,
+        "new_label": elNewLabel
+      };
+      window.jQuery.post(post_url, postBackData).done(function (result) {
+        if (result !== true && result !== "true") {
+          akeeba_passwordless_handle_creation_error(Joomla.JText._('PLG_SYSTEM_WEBAUTHN_ERR_LABEL_NOT_SAVED'));
+          return;
+        }
+
+        alert(Joomla.JText._('PLG_SYSTEM_WEBAUTHN_MSG_SAVED_LABEL'));
+      }).fail(function (data) {
+        akeeba_passwordless_handle_creation_error(Joomla.JText._('PLG_SYSTEM_WEBAUTHN_ERR_LABEL_NOT_SAVED') + ' -- ' + data.status + ' ' + data.statusText);
+      });
+    }
+
+    elLabelTD.innerText = elNewLabel;
+    elEdit.disabled = false;
+    elDelete.disabled = false;
+    return false;
+  }, false);
+  var elCancel = document.createElement("button");
+  elCancel.className = "akpwl-btn--red--small";
+  elCancel.innerText = Joomla.JText._("PLG_SYSTEM_WEBAUTHN_MANAGE_BTN_CANCEL_LABEL");
+  elCancel.addEventListener("click", function (e) {
+    elLabelTD.innerText = oldLabel;
+    elEdit.disabled = false;
+    elDelete.disabled = false;
+    return false;
+  }, false);
+  elLabelTD.innerHTML = "";
+  elLabelTD.appendChild(elInput);
+  elLabelTD.appendChild(elSave);
+  elLabelTD.appendChild(elCancel);
+  elEdit.disabled = true;
+  elDelete.disabled = true;
+  return false;
+}
 //# sourceMappingURL=management.js.map

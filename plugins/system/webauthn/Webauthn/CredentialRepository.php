@@ -9,8 +9,6 @@ namespace Akeeba\Passwordless\Webauthn;
 
 use Akeeba\Passwordless\Webauthn\Helper\Joomla;
 use Exception;
-use Joomla\CMS\Date\Date;
-use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\User\User;
 use RuntimeException;
@@ -32,7 +30,7 @@ class CredentialRepository implements CredentialRepositoryInterface
 	public function has(string $credentialId): bool
 	{
 		$credentialId = base64_encode($credentialId);
-		$db           = Factory::getDbo();
+		$db           = Joomla::getDbo();
 		$query        = $db->getQuery(true)
 			->select('COUNT(*)')
 			->from($db->qn('#__webauthn_credentials'))
@@ -60,7 +58,7 @@ class CredentialRepository implements CredentialRepositoryInterface
 	public function get(string $credentialId): AttestedCredentialData
 	{
 		$credentialId = base64_encode($credentialId);
-		$db           = Factory::getDbo();
+		$db           = Joomla::getDbo();
 		$query        = $db->getQuery(true)
 			->select($db->qn('credential'))
 			->from($db->qn('#__webauthn_credentials'))
@@ -92,7 +90,7 @@ class CredentialRepository implements CredentialRepositoryInterface
 	 */
 	public function getAll(int $user_id): array
 	{
-		$db    = Factory::getDbo();
+		$db    = Joomla::getDbo();
 		$query = $db->getQuery(true)
 			->select('*')
 			->from($db->qn('#__webauthn_credentials'))
@@ -129,7 +127,7 @@ class CredentialRepository implements CredentialRepositoryInterface
 	{
 		if (empty($user))
 		{
-			$user = Factory::getUser();
+			$user = Joomla::getUser();
 		}
 
 		if ($user->guest)
@@ -141,9 +139,7 @@ class CredentialRepository implements CredentialRepositoryInterface
 
 		if ($this->has($credentialData->getCredentialId()))
 		{
-			$secret      = Factory::getConfig()->get('secret', '');
-			$data        = sprintf('%010u', $user->id);
-			$myHandle    = hash_hmac('sha512', $data, $secret, true);
+			$myHandle    = $this->getHandleFromUserId($user->id);
 			$otherHandle = $this->getUserHandleFor($credentialData->getCredentialId());
 
 			if ($otherHandle != $myHandle)
@@ -166,7 +162,7 @@ class CredentialRepository implements CredentialRepositoryInterface
 			'credential' => json_encode($credentialData),
 		];
 
-		$db = Factory::getDbo();
+		$db = Joomla::getDbo();
 
 		if ($update)
 		{
@@ -189,7 +185,7 @@ class CredentialRepository implements CredentialRepositoryInterface
 	public function setLabel(string $credentialId, string $label): void
 	{
 		$credentialId = base64_encode($credentialId);
-		$db           = Factory::getDbo();
+		$db           = Joomla::getDbo();
 		$o            = (object) [
 			'id'    => $credentialId,
 			'label' => $label,
@@ -213,7 +209,7 @@ class CredentialRepository implements CredentialRepositoryInterface
 		}
 
 		$credentialId = base64_encode($credentialId);
-		$db           = Factory::getDbo();
+		$db           = Joomla::getDbo();
 		$query        = $db->getQuery(true)
 			->delete($db->qn('#__webauthn_credentials'))
 			->where($db->qn('id') . ' = ' . $db->q($credentialId));
@@ -234,14 +230,13 @@ class CredentialRepository implements CredentialRepositoryInterface
 	 */
 	public function getUserHandleFor(string $credentialId): string
 	{
-		$credentialId = base64_encode($credentialId);
-		$db           = Factory::getDbo();
+		$db           = Joomla::getDbo();
 		$query        = $db->getQuery(true)
 			->select([
 				$db->qn('user_id'),
 			])
 			->from($db->qn('#__webauthn_credentials'))
-			->where($db->qn('id') . ' = ' . $db->q($credentialId));
+			->where($db->qn('id') . ' = ' . $db->q(base64_encode($credentialId)));
 
 		$user_id = $db->setQuery($query)->loadResult();
 
@@ -250,17 +245,14 @@ class CredentialRepository implements CredentialRepositoryInterface
 			throw new RuntimeException(Text::_('PLG_SYSTSEM_WEBAUTHN_ERR_NO_STORED_CREDENTIAL'));
 		}
 
-		$user = Factory::getUser($user_id);
+		$user = Joomla::getUser($user_id);
 
 		if ($user->id != $user_id)
 		{
 			throw new RuntimeException(Text::sprintf('PLG_SYSTSEM_WEBAUTHN_ERR_USER_REMOVED', $user_id));
 		}
 
-		$secret = Factory::getConfig()->get('secret', '');
-		$data   = sprintf('%010u', $user->id);
-
-		return hash_hmac('sha512', $data, $secret, true);
+		return $this->getHandleFromUserId((int) $user_id);
 	}
 
 	/**
@@ -273,7 +265,7 @@ class CredentialRepository implements CredentialRepositoryInterface
 	public function getCounterFor(string $credentialId): int
 	{
 		$credentialId = base64_encode($credentialId);
-		$db           = Factory::getDbo();
+		$db           = Joomla::getDbo();
 		$query        = $db->getQuery(true)
 			->select([
 				$db->qn('counter'),
@@ -300,7 +292,7 @@ class CredentialRepository implements CredentialRepositoryInterface
 	public function updateCounterFor(string $credentialId, int $newCounter): void
 	{
 		$credentialId = base64_encode($credentialId);
-		$db           = Factory::getDbo();
+		$db           = Joomla::getDbo();
 		$o            = (object) [
 			'id'      => $credentialId,
 			'counter' => $newCounter,
@@ -309,4 +301,18 @@ class CredentialRepository implements CredentialRepositoryInterface
 		$db->updateObject('#__webauthn_credentials', $o, ['id'], false);
 	}
 
+	/**
+	 * Return a user handle given an integer Joomla user ID
+	 *
+	 * @param   int  $id  The user ID to convert
+	 *
+	 * @return  string  The user handle (HMAC-SHA-512 of the user ID)
+	 */
+	public function getHandleFromUserId(int $id): string
+	{
+		$secret = Joomla::getConfig()->get('secret', '');
+		$data   = sprintf('%010u', $id);
+
+		return hash_hmac('sha512', $data, $secret, true);
+	}
 }

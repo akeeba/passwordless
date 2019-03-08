@@ -1,7 +1,5 @@
 Management
 
-    Implement edit label functionality (inline editing, like I do in Akeeba Backup)
-
     Implement delete
 
 Inject login button in login modules
