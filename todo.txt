@@ -1,7 +1,5 @@
 Management
 
-    Port error dialogs, replace the hardcoded Joomla 3 "alert alert-error" CSS.
-
     Better default label e.g. "Authenticator added 2019/03/01, 20:19:18"
 
     Implement edit label functionality (inline editing, like I do in Akeeba Backup)

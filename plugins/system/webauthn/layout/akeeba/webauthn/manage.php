@@ -50,7 +50,7 @@ HTMLHelper::_('stylesheet', 'plg_system_webauthn/backend.css', [
 <div class="akpwl" id="akpwl-management-interface">
 
 	<?php if (is_string($error) && !empty($error)): ?>
-		<div class="alert alert-error">
+		<div class="akpwn-block--error">
 			<?= htmlentities($error) ?>
 		</div>
 	<?php endif; ?>

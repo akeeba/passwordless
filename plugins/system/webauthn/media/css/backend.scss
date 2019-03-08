@@ -51,6 +51,19 @@ $fonthover: $fontcolor !default;
   }
 }
 
+// Mixin for blocks
+@mixin block($color) {
+  border: 1px solid $color;
+  border-radius: $border-radius;
+  @if $color == $teal {
+    background: lighten($color, 45%);
+  } @else if $color == $green or $color == $red {
+    background: lighten($color, 38%);
+  } @else {
+    background: lighten($color, 33%);
+  }
+}
+
 div.akpwl {
   // ===================================================================================================================
   // Buttons
@@ -224,6 +237,45 @@ div.akpwl {
     }
   }
 
+  // ===================================================================================================================
+  // Blocks
+  // ===================================================================================================================
+  [class*=akpwl-block] {
+    margin-bottom: 10px;
+    padding: 1em 1em 1em 4em;
+    position: relative;
+
+    :last-child {
+      margin-bottom: 0;
+    }
+
+    &:before {
+      font-size: 1.75em;
+      position: absolute;
+      top: .5em;
+      left: .75em;
+    }
+
+    &[class*=info] {
+      @include block($teal);
+    }
+
+    &[class*=warning] {
+      @include block($orange);
+    }
+
+    &[class*=success] {
+      @include block($green);
+    }
+
+    &[class*=failure] {
+      @include block($red);
+    }
+  }
+
+  // ===================================================================================================================
+  // Other elements
+  // ===================================================================================================================
   p.akpwl-manage-add-container {
     margin-top: 2em;
   }
