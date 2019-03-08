@@ -1,7 +1,3 @@
-Management
-
-    Implement delete
-
 Inject login button in login modules
     Idea is similar to Social Login.
     Create temp Markdown document with template override instructions

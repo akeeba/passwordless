@@ -199,4 +199,56 @@ function akeeba_passwordless_edit_label(that, store_id) {
   elDelete.disabled = true;
   return false;
 }
+/**
+ * Delete button
+ *
+ * @param   {Element} that      The button being clicked
+ * @param   {String}  store_id  CSS ID for the element storing the configuration in its data properties
+ */
+
+
+function akeeba_passwordless_delete(that, store_id) {
+  // Extract the configuration from the store
+  var elStore = document.getElementById(store_id);
+
+  if (!elStore) {
+    return;
+  }
+
+  var post_url = atob(elStore.dataset.postback_url); // Find the UI elements
+
+  var elTR = that.parentElement.parentElement;
+  var credentialId = elTR.dataset.credential_id;
+  var elTDs = elTR.querySelectorAll("td");
+  var elButtonsTD = elTDs[1];
+  var elButtons = elButtonsTD.querySelectorAll("button");
+  var elEdit = elButtons[0];
+  var elDelete = elButtons[1];
+  elEdit.disabled = true;
+  elDelete.disabled = true; // Delete the record
+
+  var postBackData = {
+    "option": "com_ajax",
+    "group": "system",
+    "plugin": "webauthn",
+    "format": "json",
+    "encoding": "json",
+    "akaction": "delete",
+    "credential_id": credentialId
+  };
+  window.jQuery.post(post_url, postBackData).done(function (result) {
+    if (result !== true && result !== "true") {
+      akeeba_passwordless_handle_creation_error(Joomla.JText._("PLG_SYSTEM_WEBAUTHN_ERR_NOT_DELETED"));
+      return;
+    }
+
+    elTR.parentElement.removeChild(elTR);
+    alert(Joomla.JText._("PLG_SYSTEM_WEBAUTHN_MSG_DELETED"));
+  }).fail(function (data) {
+    elEdit.disabled = false;
+    elDelete.disabled = false;
+    akeeba_passwordless_handle_creation_error(Joomla.JText._("PLG_SYSTEM_WEBAUTHN_ERR_NOT_DELETED") + " -- " + data.status + " " + data.statusText);
+  });
+  return false;
+}
 //# sourceMappingURL=management.js.map

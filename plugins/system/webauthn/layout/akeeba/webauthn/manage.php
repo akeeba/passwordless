@@ -90,7 +90,7 @@ $postbackURL = base64_encode(rtrim(Uri::base(), '/') . '/index.php?' . Joomla::g
                         <span class="icon-edit icon-white"></span>
 						<?= Joomla::_('PLG_SYSTEM_WEBAUTHN_MANAGE_BTN_EDIT_LABEL') ?>
                     </button>
-                    <button onclick="alert('TODO'); return false;"
+                    <button onclick="return akeeba_passwordless_delete(this, '<?= $randomId ?>');"
                        class="akpwl-btn--red">
                         <span class="icon-minus-sign icon-white"></span>
 						<?= Joomla::_('PLG_SYSTEM_WEBAUTHN_MANAGE_BTN_DELETE_LABEL') ?>
