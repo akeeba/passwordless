@@ -30,6 +30,8 @@ use Joomla\CMS\Uri\Uri;
  * @var   string     $class        The button class
  * @var   string     $image        An image file relative path (passed to JHtml::image)
  * @var   string     $icon         An icon class to be used instead of the image (if provided)
+ * @var   bool       $relocate     Should I try to move the passwordless login button next to the regular login button?
+ * @var   string[]   $selectors    A list of CSS selectors I will use to find the regular login button in the module.
  *
  * ---------------------------------------------------------------------------------------------------------------------
  * Additional information for customisation of the button.
@@ -68,18 +70,45 @@ use Joomla\CMS\Uri\Uri;
 
 // BEGIN - MANDATORY CODE
 extract(array_merge([
-	'class' => 'akeeba-passwordless-login-button',
-	'image' => 'plg_system_webauthn/webauthn-black.png',
-	'icon'  => '',
+	'class'     => 'akeeba-passwordless-login-button',
+	'image'     => 'plg_system_webauthn/webauthn-black.png',
+	'icon'      => '',
+	'relocate'  => false,
+	'selectors' => [
+		"#form-login-submit > button",
+		"button[type=submit]",
+		"[type=submit]",
+		"[id*=\"submit\"]",
+	],
 ], $displayData));
 
 $uri = new Uri(Uri::base() . 'index.php');
 $uri->setVar(Joomla::getToken(), '1');
+
+$randomId = 'akpwl-login-' . Joomla::generateRandom(12) . '-' . Joomla::generateRandom(8);
+
+$jsSelectors = implode(", ", array_map(function ($selector) {
+	return '"' . addslashes($selector) . '"';
+}, $selectors));
+
+if ($relocate)
+{
+	$js = <<< JS
+
+window.jQuery(document).ready(function(){
+	akeeba_passwordless_login_move_button(document.getElementById('{$randomId}'), [{$jsSelectors}]); 
+});
+
+JS;
+	Joomla::getApplication()->getDocument()->addScriptDeclaration($js);
+}
 // END - MANDATORY CODE
 ?>
 <button class="<?= $class ?> hasTooltip"
         onclick="return akeeba_passwordless_login(this, '<?= $uri->toString() ?>')"
-        title="<?= Joomla::_('PLG_SYSTEM_WEBAUTHN_LOGIN_DESC') ?>">
+        title="<?= Joomla::_('PLG_SYSTEM_WEBAUTHN_LOGIN_DESC') ?>"
+		id="<?= $randomId ?>"
+>
 	<?php if (!empty($icon)): ?>
         <span class="<?= $icon ?>"></span>
 	<?php elseif (!empty($image)): ?>

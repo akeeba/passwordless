@@ -1,10 +1,6 @@
 Inject login button in login modules
     Create temp Markdown document with template override instructions
 
-Can I create a mod of the injector which tries to place the button next to Login?
-    If so, make it an option.
-    Preferably filter this feature by module name or type.
-
 Inject login button in the com_user frontend page
 
 Options

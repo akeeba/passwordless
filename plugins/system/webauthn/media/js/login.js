@@ -7,78 +7,100 @@
 // TODO Write the akeeba_passwordless_login() function
 // See https://github.com/web-auth/webauthn-framework/blob/v1.0/doc/webauthn/PublicKeyCredentialRequest.md
 
-function akeeba_passwordless_login(that, callback_url)
+/**
+ * Finds the first field matching a selector inside a form
+ *
+ * @param   {HTMLFormElement}  elForm         The FORM element
+ * @param   {String}           fieldSelector  The CSS selector to locate the field
+ *
+ * @returns {Element|null}  NULL when no element is found
+ */
+function akeeba_passwordless_findField(elForm, fieldSelector)
 {
-    function findNamedField(elForm, fieldName)
-    {
-        let elInputs = elForm.querySelectorAll("input");
+    let elInputs = elForm.querySelectorAll(fieldSelector);
 
-        if (!elInputs.length)
+    if (!elInputs.length)
+    {
+        return null;
+    }
+
+    return elInputs[0];
+}
+
+/**
+ * Walks the DOM outwards (towards the parents) to find the form innerElement is located in. Then it looks inside the
+ * form for the first element that matches the fieldSelector CSS selector.
+ *
+ * @param   {Element}  innerElement   The innerElement that's inside or adjacent to the form.
+ * @param   {String}   fieldSelector  The CSS selector to locate the field
+ *
+ * @returns {null|Element}  NULL when no element is found
+ */
+function akeeba_passwordless_lookInParentElementsForField(innerElement, fieldSelector)
+{
+    var elElement = innerElement.parentElement;
+    var elInput   = null;
+
+    while (true)
+    {
+        if (elElement === undefined)
         {
             return null;
         }
 
-        for (var i = 0; i < elInputs.length; i++)
+        if (elElement.nodeName === "FORM")
         {
-            var elInput = elInputs[i];
+            elInput = akeeba_passwordless_findField(elElement, fieldSelector);
 
-            if (elInput.name === fieldName)
+            if (elInput !== null)
             {
                 return elInput;
             }
+
+            break;
         }
 
-        return null;
-    }
+        var elForms = elElement.querySelectorAll("form");
 
-    function trawlParentElements(innerElement, fieldName)
-    {
-        var elElement = innerElement.parentElement;
-        var elInput   = null;
-
-        while (true)
+        if (elForms.length)
         {
-            if (elElement.nodeName === "FORM")
+            for (var i = 0; i < elForms.length; i++)
             {
-                elInput = findNamedField(elElement, fieldName);
+                elInput = akeeba_passwordless_findField(elForms[i], fieldSelector);
 
                 if (elInput !== null)
                 {
                     return elInput;
                 }
-
-                break;
             }
 
-            var elForms = elElement.querySelectorAll("form");
-
-            if (elForms.length)
-            {
-                for (var i = 0; i < elForms.length; i++)
-                {
-                    elInput = findNamedField(elForms[i], fieldName);
-
-                    if (elInput !== null)
-                    {
-                        return elInput;
-                    }
-                }
-            }
-
-            if (!elElement.parentElement)
-            {
-                break;
-            }
-
-            elElement = elElement.parentElement;
+            break;
         }
 
-        return null;
+        if (!elElement.parentElement)
+        {
+            break;
+        }
+
+        elElement = elElement.parentElement;
     }
 
+    return null;
+}
+
+/**
+ * Initialize the passwordless login, going through the server to get the registered certificates for the user.
+ *
+ * @param   {Element}  that          The button which was clicked
+ * @param   {string}   callback_url  The URL we will use to post back to the server. Must include the anti-CSRF token.
+ *
+ * @returns {boolean}  Always FALSE to prevent BUTTON elements from reloading the page.
+ */
+function akeeba_passwordless_login(that, callback_url)
+{
     // Get the username
-    let elUsername = trawlParentElements(that, "username");
-    let elReturn   = trawlParentElements(that, "return");
+    let elUsername = akeeba_passwordless_lookInParentElementsForField(that, "input[name=username]");
+    let elReturn   = akeeba_passwordless_lookInParentElementsForField(that, "input[name=return]");
 
     if (elUsername === null)
     {
@@ -126,6 +148,13 @@ function akeeba_passwordless_login(that, callback_url)
 
 }
 
+/**
+ * Handles the browser response for the user interaction with the authenticator. Redirects to an internal page which
+ * handles the login server-side.
+ *
+ * @param {  Object}  publicKey     Public key request options, returned from the server
+ * @param   {String}  callback_url  The URL we will use to post back to the server. Must include the anti-CSRF token.
+ */
 function akeeba_passwordless_handle_login_challenge(publicKey, callback_url)
 {
     function arrayToBase64String(a)
@@ -174,7 +203,7 @@ function akeeba_passwordless_handle_login_challenge(publicKey, callback_url)
 }
 
 /**
- * A simple error handler
+ * A simple error handler.
  *
  * @param   {String}  message
  */
@@ -183,4 +212,43 @@ function akeeba_passwordless_handle_login_error(message)
     alert(message);
 
     console.log(message);
+}
+
+/**
+ * Moves the passwordless login button next to the existing Login button in the login module, if possible. This is not a
+ * guaranteed success! We will *try* to find a button that looks like the login action button. If the developer of the
+ * module or the site integrator doing template overrides didn't bother including some useful information to help us
+ * identify it we're probably going to fail hard.
+ *
+ * @param   {Element}  elPasswordlessLoginButton  The login button to move.
+ * @param   {Array}    possibleSelectors          The CSS selectors to use for moving the button.
+ */
+
+function akeeba_passwordless_login_move_button(elPasswordlessLoginButton, possibleSelectors)
+{
+    if ((elPasswordlessLoginButton === null) || (elPasswordlessLoginButton === undefined))
+    {
+        return;
+    }
+
+    var elLoginBtn = null;
+
+    for (var i = 0; i < possibleSelectors.length; i++)
+    {
+        var selector = possibleSelectors[i];
+
+        elLoginBtn = akeeba_passwordless_lookInParentElementsForField(elPasswordlessLoginButton, selector);
+
+        if (elLoginBtn !== null)
+        {
+            break;
+        }
+    }
+
+    if (elLoginBtn === null)
+    {
+        return;
+    }
+
+    elLoginBtn.parentElement.appendChild(elPasswordlessLoginButton);
 }

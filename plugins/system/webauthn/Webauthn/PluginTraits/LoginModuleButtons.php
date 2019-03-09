@@ -34,11 +34,25 @@ trait LoginModuleButtons
 	protected $interceptLogin = true;
 
 	/**
+	 * Should I relocate the passwordless login button next to the Login button in the login module?
+	 *
+	 * @var   bool
+	 */
+	protected $relocateButton = true;
+
+	/**
+	 * CSS selectors for the relocate feature
+	 *
+	 * @var   array
+	 */
+	protected $relocateSelectors = [];
+
+	/**
 	 * Do I need to I inject buttons? Automatically detected (i.e. disabled if I'm already logged in).
 	 *
 	 * @var   bool
 	 */
-	private $needButtonInjection = null;
+	protected $needButtonInjection = null;
 
 	/**
 	 * Set up the login module button injection feature.
@@ -65,16 +79,17 @@ trait LoginModuleButtons
 			return;
 		}
 
-		$loginModulesParameter = $isAdminPage ? 'backendloginmodules' : 'loginmodules';
-		$defaultModules        = $isAdminPage ? 'mod_login' : 'mod_login';
-		$loginModules          = $this->params->get($loginModulesParameter);
-		$loginModules          = trim($loginModules);
-		$loginModules          = empty($loginModules) ? $defaultModules : $loginModules;
-		$loginModules          = explode(',', $loginModules);
-		$this->loginModules    = array_map('trim', $loginModules);
-
 		// Load the plugin options into properties
-		$this->interceptLogin = $this->params->get('interceptlogin', 1);
+		$loginModulesParameter   = $isAdminPage ? 'backendloginmodules' : 'loginmodules';
+		$defaultModules          = $isAdminPage ? 'mod_login' : 'mod_login';
+		$loginModules            = $this->params->get($loginModulesParameter);
+		$loginModules            = trim($loginModules);
+		$loginModules            = empty($loginModules) ? $defaultModules : $loginModules;
+		$loginModules            = explode(',', $loginModules);
+		$this->loginModules      = array_map('trim', $loginModules);
+		$this->interceptLogin    = $this->params->get('interceptlogin', 1);
+		$this->relocateButton    = $this->params->get('relocate', 1);
+		$this->relocateSelectors = explode("\n", str_replace(',', "\n", $this->params->get('relocate_selectors', '')));
 	}
 
 	/**
@@ -145,6 +160,17 @@ trait LoginModuleButtons
 
 		// Append the passwordless login buttons content to the login module
 		Joomla::log('system', "Injecting Webauthn passwordless login buttons to {$module->module} module.");
-		$module->content .= Integration::getLoginButtonHTML();
+
+		$options = [
+			'relocate' => $this->relocateButton,
+			'selectors' => $this->relocateSelectors,
+		];
+
+		if (empty($this->relocateSelectors))
+		{
+			unset($options['selectors']);
+		}
+
+		$module->content .= Integration::getLoginButtonHTML($options);
 	}
 }
