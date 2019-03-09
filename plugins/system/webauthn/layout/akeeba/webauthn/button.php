@@ -16,27 +16,57 @@ use Joomla\CMS\Uri\Uri;
  *
  * Displays the Webauthn login button which is injected in login modules
  *
- * Generic data
+ * ---------------------------------------------------------------------------------------------------------------------
+ * Data passed from Joomla
+ * ---------------------------------------------------------------------------------------------------------------------
  *
  * @var   FileLayout $this         The Joomla layout renderer
  * @var   array      $displayData  The data in array format. DO NOT USE.
  *
- * Layout specific data
+ * ---------------------------------------------------------------------------------------------------------------------
+ * Layout specific data (they are set up in the MANDATORY CODE section)
+ * ---------------------------------------------------------------------------------------------------------------------
  *
  * @var   string     $class        The button class
  * @var   string     $image        An image file relative path (passed to JHtml::image)
  * @var   string     $icon         An icon class to be used instead of the image (if provided)
- */
-
-/**
- * Note about the use of short echo tags.
  *
- * Starting with PHP 5.4.0, short echo tags are always recognized and parsed regardless of the short_open_tag setting
- * in your php.ini. Since we only support *much* newer versions of PHP we can use this construct instead of regular
- * echos to keep the code easier to read.
+ * ---------------------------------------------------------------------------------------------------------------------
+ * Additional information for customisation of the button.
+ * ---------------------------------------------------------------------------------------------------------------------
+ *
+ * When doing template overrides please DO NOT remove any code between the BEGIN - MANDATORY CODE  and
+ * END - MANDATORY CODE  comments below.
+ *
+ * We recommend that you use <?= something ?> instead of <?php echo $something ?>. This is called "short echo tags" and
+ * is more readable. Under PHP 7, required for this software to work, short echo tags are *always* considered valid PHP
+ * syntax, regardless of the short_open_tag setting in your PHP configuration. This has been true since PHP 5.4.0.
+ *
+ * You can do a template override of this file by copying this file into your template's html/layouts/akeeba/webauthn
+ * folder (you may have to create that folder first).
+ *
+ * You can have separate template overrides for the front- and the backend of your site. In fact, your overrides are
+ * per template, so you can possibly have different buttons for each template. You can only have ONE template override
+ * per template. If your login modules have radically different needs for their buttons set "Frontend Login Modules'
+ * Names" and / or "Backend Login Modules' Names" to "none" and do template overrides for the modules. Please read the
+ * documentation for information on injecting the Passwordless Login buttons and / or necessary Javascript there.
+ *
+ * If you change the element from a <button> to something else, e.g. <a>, you may have to do a template override for the
+ * login.js Javascript file as well. This file is always loaded automatically by the
+ * Akeeba\Passwordless\Webauthn\PluginTraits\LoginModuleButtons PHP class which you cannot override. You can do that by
+ * copying /media/plg_system_webauthn/js/dist/login.css to your template's js/plg_system_webauthn/dist folder.
+ *
+ * If you want to change the look and feel of the button you need to do a template override of the CSS file button.css.
+ * This file is always loaded automatically by the Akeeba\Passwordless\Webauthn\PluginTraits\LoginModuleButtons PHP
+ * class which you cannot override. You can do that by copying /media/plg_system_webauthn/css/button.css to your
+ * template's css/plg_system_webauthn folder (note the lack of a final css folder!).
+ *
+ * If you need to change the label of the button do not do a template override. Do a language override for the language
+ * key PLG_SYSTEM_WEBAUTHN_LOGIN_LABEL (button label) and PLG_SYSTEM_WEBAUTHN_LOGIN_DESC (button tooltip) instead. You
+ * can do that in Joomla's Language page.
  */
 
-// Extract the data. Do not remove until the unset() line.
+// BEGIN - MANDATORY CODE
 extract(array_merge([
 	'class' => 'akeeba-passwordless-login-button',
 	'image' => 'plg_system_webauthn/webauthn-black.png',
@@ -45,7 +75,7 @@ extract(array_merge([
 
 $uri = new Uri(Uri::base() . 'index.php');
 $uri->setVar(Joomla::getToken(), '1');
-
+// END - MANDATORY CODE
 ?>
 <button class="<?= $class ?> hasTooltip"
         onclick="return akeeba_passwordless_login(this, '<?= $uri->toString() ?>')"
