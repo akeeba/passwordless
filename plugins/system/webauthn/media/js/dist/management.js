@@ -169,9 +169,8 @@ function akeeba_passwordless_edit_label(that, store_id) {
         if (result !== true && result !== "true") {
           akeeba_passwordless_handle_creation_error(Joomla.JText._('PLG_SYSTEM_WEBAUTHN_ERR_LABEL_NOT_SAVED'));
           return;
-        }
+        } //alert(Joomla.JText._('PLG_SYSTEM_WEBAUTHN_MSG_SAVED_LABEL'));
 
-        alert(Joomla.JText._('PLG_SYSTEM_WEBAUTHN_MSG_SAVED_LABEL'));
       }).fail(function (data) {
         akeeba_passwordless_handle_creation_error(Joomla.JText._('PLG_SYSTEM_WEBAUTHN_ERR_LABEL_NOT_SAVED') + ' -- ' + data.status + ' ' + data.statusText);
       });
@@ -242,8 +241,7 @@ function akeeba_passwordless_delete(that, store_id) {
       return;
     }
 
-    elTR.parentElement.removeChild(elTR);
-    alert(Joomla.JText._("PLG_SYSTEM_WEBAUTHN_MSG_DELETED"));
+    elTR.parentElement.removeChild(elTR); //alert(Joomla.JText._("PLG_SYSTEM_WEBAUTHN_MSG_DELETED"));
   }).fail(function (data) {
     elEdit.disabled = false;
     elDelete.disabled = false;

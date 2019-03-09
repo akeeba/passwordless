@@ -75,7 +75,7 @@ trait LoginModuleButtons
 		}
 
 		$loginModulesParameter = $isAdminPage ? 'backendloginmodules' : 'loginmodules';
-		$defaultModules        = $isAdminPage ? 'none' : 'mod_login';
+		$defaultModules        = $isAdminPage ? 'mod_login' : 'mod_login';
 		$loginModules          = $this->params->get($loginModulesParameter);
 		$loginModules          = trim($loginModules);
 		$loginModules          = empty($loginModules) ? $defaultModules : $loginModules;
@@ -84,8 +84,6 @@ trait LoginModuleButtons
 
 		// Load the plugin options into properties
 		$this->interceptLogin = $this->params->get('interceptlogin', 1);
-		$this->useCustomCSS   = $this->params->get('customcss', true);
-		$this->iconClass      = $this->params->get('icon_class', '');
 	}
 
 	/**

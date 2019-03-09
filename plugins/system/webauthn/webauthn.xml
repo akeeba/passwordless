@@ -41,24 +41,32 @@
         <fields name="params">
             <fieldset name="basic">
                 <field
-                        name="customcss"
+                        name="loginmodules"
+                        type="text"
+                        label="PLG_SYSTEM_WEBAUTHN_CONFIG_LOGINMODULES_LABEL"
+                        description="PLG_SYSTEM_WEBAUTHN_CONFIG_LOGINMODULES_DESC"
+                        default="mod_login"
+                />
+
+                <field
+                        name="backendloginmodules"
+                        type="text"
+                        label="PLG_SYSTEM_WEBAUTHN_CONFIG_BACKENDLOGINMODULES_LABEL"
+                        description="PLG_SYSTEM_WEBAUTHN_CONFIG_BACKENDLOGINMODULES_DESC"
+                        default="mod_login"
+                />
+
+                <field
+                        name="interceptlogin"
                         type="radio"
-                        label="PLG_SYSTEM_WEBAUTHN_FIELD_CUSTOMCSS_LABEL"
-                        description="PLG_SYSTEM_WEBAUTHN_FIELD_CUSTOMCSS_DESC"
+                        label="PLG_SYSTEM_WEBAUTHN_CONFIG_INTERCEPTLOGIN_LABEL"
+                        description="PLG_SYSTEM_WEBAUTHN_CONFIG_INTERCEPTLOGIN_DESC"
                         default="1"
                         class="btn-group btn-group-yesno"
                 >
                     <option value="1">JYES</option>
                     <option value="0">JNO</option>
                 </field>
-
-                <field
-                        name="icon_class"
-                        type="text"
-                        label="PLG_SYSTEM_WEBAUTHN_FIELD_ICONCLASS_LABEL"
-                        description="PLG_SYSTEM_WEBAUTHN_FIELD_ICONCLASS_DESC"
-                        default=""
-                />
             </fieldset>
         </fields>
     </config>

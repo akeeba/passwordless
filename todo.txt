@@ -10,7 +10,6 @@ Inject login button in the com_user frontend page
 
 Options
     Allowed / disallowed groups (NOT forced groups, not all browsers and especially not all MOBILE browsers support Webauthn yet!)
-    Show in frontend, backend, both
     Button display preferences
 
 Documentation wiki
