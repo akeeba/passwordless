@@ -12,9 +12,11 @@ use Akeeba\Passwordless\Webauthn\PluginTraits\AjaxHandlerCreate;
 use Akeeba\Passwordless\Webauthn\PluginTraits\AjaxHandlerDelete;
 use Akeeba\Passwordless\Webauthn\PluginTraits\AjaxHandlerLogin;
 use Akeeba\Passwordless\Webauthn\PluginTraits\AjaxHandlerSaveLabel;
-use Akeeba\Passwordless\Webauthn\PluginTraits\LoginModuleButtons;
+use Akeeba\Passwordless\Webauthn\PluginTraits\ButtonsInModules;
+use Akeeba\Passwordless\Webauthn\PluginTraits\ButtonsInUserPage;
 use Akeeba\Passwordless\Webauthn\PluginTraits\UserDeletion;
 use Akeeba\Passwordless\Webauthn\PluginTraits\UserProfileFields;
+use Joomla\CMS\Form\Form;
 use Joomla\CMS\Plugin\CMSPlugin;
 
 // Protect from unauthorized access
@@ -48,10 +50,9 @@ class plgSystemWebauthn extends CMSPlugin
 	// Handle user profile deletion
 	use UserDeletion;
 
-	// Login modules, add Webauthn buttons
-	use LoginModuleButtons {
-		setup as setupLoginModuleButtons;
-	}
+	// Add Webauthn buttons
+	use ButtonsInModules;
+	use ButtonsInUserPage;
 
 	/**
 	 * Constructor. Loads the language files as well.
@@ -76,5 +77,6 @@ class plgSystemWebauthn extends CMSPlugin
 
 		// Setup login module interception
 		$this->setupLoginModuleButtons();
+		$this->setupUserLoginPageButtons();
 	}
 }

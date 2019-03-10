@@ -17,7 +17,7 @@ defined('_JEXEC') or die();
 /**
  * Inserts Webauthn buttons into login modules
  */
-trait LoginModuleButtons
+trait ButtonsInModules
 {
 	/**
 	 * The names of the login modules to intercept. Default: mod_login
@@ -25,13 +25,6 @@ trait LoginModuleButtons
 	 * @var   array
 	 */
 	protected $loginModules = array('mod_login');
-
-	/**
-	 * Should I intercept the login page of com_users and add passwordless login buttons there? User configurable.
-	 *
-	 * @var   bool
-	 */
-	protected $interceptLogin = true;
 
 	/**
 	 * Should I relocate the passwordless login button next to the Login button in the login module?
@@ -59,7 +52,7 @@ trait LoginModuleButtons
 	 *
 	 * @return  void
 	 */
-	protected function setup(): void
+	protected function setupLoginModuleButtons(): void
 	{
 		// Don't try to set up this feature if we are alraedy logged in
 		if (!$this->isButtonInjectionNecessary())
@@ -87,7 +80,6 @@ trait LoginModuleButtons
 		$loginModules            = empty($loginModules) ? $defaultModules : $loginModules;
 		$loginModules            = explode(',', $loginModules);
 		$this->loginModules      = array_map('trim', $loginModules);
-		$this->interceptLogin    = $this->params->get('interceptlogin', 1);
 		$this->relocateButton    = $this->params->get('relocate', 1);
 		$this->relocateSelectors = explode("\n", str_replace(',', "\n", $this->params->get('relocate_selectors', '')));
 	}
