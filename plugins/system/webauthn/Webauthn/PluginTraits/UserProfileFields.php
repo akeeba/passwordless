@@ -49,13 +49,6 @@ trait UserProfileFields
 			return true;
 		}
 
-		$layout = Joomla::getApplication()->input->getCmd('layout', 'default');
-
-		if (!Joomla::isAdminPage() && ($layout == 'edit'))
-		{
-			return true;
-		}
-
 		// Get the user ID
 		$id = null;
 
