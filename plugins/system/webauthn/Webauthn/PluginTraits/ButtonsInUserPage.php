@@ -44,7 +44,13 @@ trait ButtonsInUserPage
 		$this->interceptLogin    = $this->params->get('interceptlogin', 1);
 	}
 
-	public function onAfterDispatch()
+	/**
+	 * Called after a component has finished running, right after Joomla has set the component output to the buffer.
+	 * Used to inject our login button in the front-end login page rendered by com_users.
+	 *
+	 * @return  void
+	 */
+	public function onAfterDispatch(): void
 	{
 		// Are we enabled?
 		if (!$this->interceptLogin)
