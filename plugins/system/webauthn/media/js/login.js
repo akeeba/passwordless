@@ -143,9 +143,9 @@ function akeeba_passwordless_login(that, callback_url)
         })
         .fail(function (error) {
             akeeba_passwordless_handle_login_error(error.status + " " + error.statusText);
-        })
+        });
 
-
+    return false;
 }
 
 /**
