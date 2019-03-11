@@ -67,7 +67,7 @@ abstract class Integration
 		]);
 
 		// Load the JavaScript
-		HTMLHelper::_('script', 'plg_system_webauthn/login.js', [
+		HTMLHelper::_('script', 'plg_system_webauthn/dist/login.js', [
 			'relative'  => true,
 			'framework' => true,
 		]);
