@@ -7,8 +7,8 @@
 
 <extension version="3.8.0" type="plugin" group="system" method="upgrade">
     <name>PLG_SYSTEM_WEBAUTHN</name>
-    <version>revF7C7753</version>
-    <creationDate>2019-03-11</creationDate>
+    <version>revD796561</version>
+    <creationDate>2019-03-13</creationDate>
 
     <author>Akeeba Ltd</author>
     <authorEmail>no-reply@akeebabackup.com</authorEmail>
@@ -29,7 +29,9 @@
     </files>
 
     <media folder="media" destination="plg_system_webauthn">
+        <folder>css</folder>
         <folder>images</folder>
+        <folder>js</folder>
     </media>
 
     <languages folder="language">
