@@ -98,7 +98,12 @@ trait AjaxHandlerChallenge
 
 			try
 			{
-				$descriptor = new PublicKeyCredentialDescriptor(PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY, base64_decode($credential['credentialId']));
+				$descriptor = new PublicKeyCredentialDescriptor(PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY, base64_decode($credential['credentialId']), [
+					PublicKeyCredentialDescriptor::AUTHENTICATOR_TRANSPORT_USB,
+					PublicKeyCredentialDescriptor::AUTHENTICATOR_TRANSPORT_NFC,
+					PublicKeyCredentialDescriptor::AUTHENTICATOR_TRANSPORT_BLE,
+					PublicKeyCredentialDescriptor::AUTHENTICATOR_TRANSPORT_INTERNAL,
+				]);
 			}
 			catch (Exception $e)
 			{
