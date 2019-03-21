@@ -11,7 +11,6 @@ use Akeeba\Passwordless\Webauthn\Helper\Joomla;
 use Exception;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\User\User;
-use function MongoDB\BSON\fromJSON;
 use RuntimeException;
 use Throwable;
 use Webauthn\AttestedCredentialData;
