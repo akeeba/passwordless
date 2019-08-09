@@ -3,7 +3,7 @@ SET QUOTED_IDENTIFIER ON;
 CREATE TABLE [#__webauthn_credentials]
 (
   [id]         [NVARCHAR](1000) NOT NULL,
-  [user_id]    [BIGINT]         NOT NULL DEFAULT 0,
+  [user_id]    [NVARCHAR](190)  NOT NULL,
   [label]      [NVARCHAR](190)  NOT NULL,
   [credential] [NVARCHAR](max)  NOT NULL,
   [counter]    [BIGINT]         NOT NULL DEFAULT 0,
