@@ -386,7 +386,7 @@ class CredentialRepository implements PublicKeyCredentialSourceRepository
 			$aes = new JoomlaAes($key, 256);
 		}
 
-		return $aes->encryptString($credential);
+		return trim($aes->encryptString($credential));
 	}
 
 	/**
@@ -422,7 +422,7 @@ class CredentialRepository implements PublicKeyCredentialSourceRepository
 			$aes = new JoomlaAes($key, 256);
 		}
 
-		return $aes->decryptString($credential);
+		return trim($aes->decryptString($credential));
 	}
 
 	/**
