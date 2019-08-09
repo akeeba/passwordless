@@ -169,7 +169,10 @@ function akeeba_passwordless_handle_login_challenge(publicKey, callback_url)
         return;
     }
 
-    publicKey.challenge        = Uint8Array.from(window.atob(publicKey.challenge), c => c.charCodeAt(0));
+    var fixedChallenge = publicKey.challenge.replace(/-/g, '+').replace(/_/g, '/');
+    console.log(fixedChallenge);
+
+    publicKey.challenge        = Uint8Array.from(window.atob(fixedChallenge), c => c.charCodeAt(0));
     publicKey.allowCredentials = publicKey.allowCredentials.map(function (data) {
         return {
             ...data,

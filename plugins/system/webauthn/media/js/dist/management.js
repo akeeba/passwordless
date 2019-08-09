@@ -48,10 +48,11 @@ function akeeba_passwordless_create_credentials(store_id, interface_selector) {
 
   function arrayToBase64String(a) {
     return btoa(String.fromCharCode.apply(String, _toConsumableArray(a)));
-  } // Convert the public key infomration to a format usable by the browser's credentials managemer
+  } // Convert the public key information to a format usable by the browser's credentials managemer
 
 
-  publicKey.challenge = Uint8Array.from(window.atob(publicKey.challenge), function (c) {
+  var fixedChallenge = publicKey.challenge.replace(/-/g, '+').replace(/_/g, '/');
+  publicKey.challenge = Uint8Array.from(window.atob(fixedChallenge), function (c) {
     return c.charCodeAt(0);
   });
   publicKey.user.id = Uint8Array.from(window.atob(publicKey.user.id), function (c) {
