@@ -14,9 +14,10 @@
     "vendor-dir": "plugins/system/webauthn/vendor"
   },
   "require": {
-    "php": "^7.1",
+    "php": "^7.2",
     "ext-json": "*",
-    "web-auth/webauthn-lib": "^1.0.0",
+    "ramsey/uuid": "^3.8.0",
+    "web-auth/webauthn-lib": "^2.0.0",
     "zendframework/zend-diactoros": "2.1.1"
   }
 }
