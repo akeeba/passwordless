@@ -12,9 +12,11 @@ use Akeeba\Passwordless\Webauthn\Helper\Joomla;
 use Exception;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\UserHelper;
+use Throwable;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
-use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialRequestOptions;
+use Webauthn\PublicKeyCredentialSource;
+use Webauthn\PublicKeyCredentialUserEntity;
 
 // Protect from unauthorized access
 defined('_JEXEC') or die();
@@ -37,13 +39,16 @@ trait AjaxHandlerChallenge
 	 */
 	public function onAjaxWebauthnChallenge()
 	{
+		// Load the language files
+		$this->loadLanguage();
+
 		// Initialize objects
 		$input      = Joomla::getApplication()->input;
 		$repository = new CredentialRepository();
 
 		// Retrieve data from the request
 		$username  = $input->getUsername('username', '');
-		$returnUrl   = base64_encode(Joomla::getSessionVar('returnUrl', Uri::current(), 'plg_system_webauthn'));
+		$returnUrl = base64_encode(Joomla::getSessionVar('returnUrl', Uri::current(), 'plg_system_webauthn'));
 		$returnUrl = $input->getBase64('returnUrl', $returnUrl);
 		$returnUrl = base64_decode($returnUrl);
 
@@ -80,38 +85,37 @@ trait AjaxHandlerChallenge
 		// Load the saved credentials into an array of PublicKeyCredentialDescriptor objects
 		try
 		{
-			$credentials = $repository->getAll($user_id);
+			$userEntity  = new PublicKeyCredentialUserEntity('', $repository->getHandleFromUserId($user_id), '');
+			$credentials = $repository->findAllForUserEntity($userEntity);
 		}
 		catch (Exception $e)
 		{
 			return json_encode(false);
 		}
 
+		// No stored credentials?
+		if (empty($credentials))
+		{
+			return json_encode(false);
+		}
+
+		$registeredPublicKeyCredentialDescriptors = [];
+
+		/** @var PublicKeyCredentialSource $record */
 		foreach ($credentials as $record)
 		{
-			$credential = json_decode($record['credential'], true);
-
-			if (!is_array($credential) || empty($credential) || !isset($credential['credentialPublicKey']))
-			{
-				continue;
-			}
-
 			try
 			{
-				$descriptor = new PublicKeyCredentialDescriptor(PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY, base64_decode($credential['credentialId']), [
-					PublicKeyCredentialDescriptor::AUTHENTICATOR_TRANSPORT_USB,
-					PublicKeyCredentialDescriptor::AUTHENTICATOR_TRANSPORT_NFC,
-					PublicKeyCredentialDescriptor::AUTHENTICATOR_TRANSPORT_BLE,
-					PublicKeyCredentialDescriptor::AUTHENTICATOR_TRANSPORT_INTERNAL,
-				]);
+				$registeredPublicKeyCredentialDescriptors[] = $record->getPublicKeyCredentialDescriptor();
 			}
-			catch (Exception $e)
+			catch (Throwable $e)
 			{
 				continue;
 			}
-
-			$registeredPublicKeyCredentialDescriptors[] = $descriptor;
 		}
+
+		// Extensions
+		$extensions = new AuthenticationExtensionsClientInputs();
 
 		// Public Key Credential Request Options
 		$publicKeyCredentialRequestOptions = new PublicKeyCredentialRequestOptions(
@@ -120,7 +124,7 @@ trait AjaxHandlerChallenge
 			Uri::getInstance()->toString(['host']),
 			$registeredPublicKeyCredentialDescriptors,
 			PublicKeyCredentialRequestOptions::USER_VERIFICATION_REQUIREMENT_PREFERRED,
-			new AuthenticationExtensionsClientInputs()
+			$extensions
 		);
 
 		// Save in session. This is used during the verification stage to prevent replay attacks.

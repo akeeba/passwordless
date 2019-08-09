@@ -21,6 +21,15 @@ defined('_JEXEC') or die();
  */
 trait AjaxHandlerSaveLabel
 {
+	/**
+	 * Handle the callback to rename an authenticator
+	 *
+	 * @return  bool
+	 *
+	 * @throws  Exception
+	 *
+	 * @since   1.0.0
+	 */
 	public function onAjaxWebauthnSavelabel(): bool
 	{
 		// Initialize objects

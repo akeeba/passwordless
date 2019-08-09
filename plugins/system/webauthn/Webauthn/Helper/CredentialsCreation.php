@@ -12,17 +12,26 @@ use CBOR\Decoder;
 use CBOR\OtherObject\OtherObjectManager;
 use CBOR\Tag\TagObjectManager;
 use Cose\Algorithm\Manager;
+use Cose\Algorithm\Signature\ECDSA;
+use Cose\Algorithm\Signature\EdDSA;
+use Cose\Algorithm\Signature\RSA;
+use Cose\Algorithms;
 use Exception;
+use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Crypt\Crypt;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\User;
 use RuntimeException;
+use Webauthn\AttestationStatement\AndroidKeyAttestationStatementSupport;
 use Webauthn\AttestationStatement\AttestationObjectLoader;
 use Webauthn\AttestationStatement\AttestationStatementSupportManager;
 use Webauthn\AttestationStatement\FidoU2FAttestationStatementSupport;
 use Webauthn\AttestationStatement\NoneAttestationStatementSupport;
 use Webauthn\AttestationStatement\PackedAttestationStatementSupport;
-use Webauthn\AttestedCredentialData;
+use Webauthn\AttestationStatement\TPMAttestationStatementSupport;
+use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\AuthenticationExtensions\ExtensionOutputCheckerHandler;
 use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\AuthenticatorAttestationResponseValidator;
@@ -32,12 +41,15 @@ use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialLoader;
 use Webauthn\PublicKeyCredentialParameters;
 use Webauthn\PublicKeyCredentialRpEntity;
+use Webauthn\PublicKeyCredentialSource;
 use Webauthn\PublicKeyCredentialUserEntity;
 use Webauthn\TokenBinding\TokenBindingNotSupportedHandler;
 use Zend\Diactoros\ServerRequestFactory;
 
 /**
  * Helper class to aid in credentials creation (link an authenticator to a user account)
+ *
+ * @since   1.0.0
  */
 abstract class CredentialsCreation
 {
@@ -45,18 +57,29 @@ abstract class CredentialsCreation
 	 * Create a public key for credentials creation. The result is a JSON string which can be used in Javascript code
 	 * with navigator.credentials.create().
 	 *
-	 * @param   User  $user The Joomla user to create the public key for
+	 * @param User $user The Joomla user to create the public key for
 	 *
 	 * @return  string
+	 *
+	 * @since   1.0.0
 	 */
 	public static function createPublicKey(User $user): string
 	{
+		try
+		{
+			$siteName = Joomla::getConfig()->get('sitename');
+		}
+		catch (Exception $e)
+		{
+			$siteName = 'Joomla! Site';
+		}
+
 		// Credentials repository
 		$repository = new CredentialRepository();
 
 		// Relaying Party -- Our site
 		$rpEntity = new PublicKeyCredentialRpEntity(
-			Joomla::getConfig()->get('sitename'),
+			$siteName,
 			Uri::getInstance()->toString(['host']),
 			self::getSiteIcon()
 		);
@@ -64,7 +87,7 @@ abstract class CredentialsCreation
 		// User Entity
 		$userEntity = new PublicKeyCredentialUserEntity(
 			$user->username,
-			$user->id,
+			$repository->getHandleFromUserId($user->id),
 			$user->name,
 			self::getAvatar($user, 64)
 		);
@@ -81,7 +104,7 @@ abstract class CredentialsCreation
 
 		// Public Key Credential Parameters
 		$publicKeyCredentialParametersList = [
-			new PublicKeyCredentialParameters('public-key', PublicKeyCredentialParameters::ALGORITHM_ES256),
+			new PublicKeyCredentialParameters('public-key', Algorithms::COSE_ALGORITHM_ES256),
 		];
 
 		// Timeout: 60 seconds (given in milliseconds)
@@ -89,24 +112,24 @@ abstract class CredentialsCreation
 
 		// Devices to exclude (already set up authenticators)
 		$excludedPublicKeyDescriptors = [];
-		$records = $repository->getAll($user->id);
+		$records                      = $repository->findAllForUserEntity($userEntity);
 
+		/** @var PublicKeyCredentialSource $record */
 		foreach ($records as $record)
 		{
-			$data = @json_decode($record['credential'], true);
-
-			if (is_null($data) || !is_array($data) || !isset($data['credentialPublicKey']))
-			{
-				continue;
-			}
-
-			$excludedPublicKeyDescriptors[] = new PublicKeyCredentialDescriptor(PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY, $data['credentialPublicKey']);
+			$excludedPublicKeyDescriptors[] = new PublicKeyCredentialDescriptor($record->getType(), $record->getCredentialPublicKey());
 		}
 
 		// Authenticator Selection Criteria (we used default values)
 		$authenticatorSelectionCriteria = new AuthenticatorSelectionCriteria();
 
-		// Extensions
+		// Extensions (not yet supported by the library)
+		$extensions = new AuthenticationExtensionsClientInputs();
+
+		// Attestation preference
+		$attestationPreference = PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_NONE;
+
+		// Public key credential creation options
 		$publicKeyCredentialCreationOptions = new PublicKeyCredentialCreationOptions(
 			$rpEntity,
 			$userEntity,
@@ -115,8 +138,8 @@ abstract class CredentialsCreation
 			$timeout,
 			$excludedPublicKeyDescriptors,
 			$authenticatorSelectionCriteria,
-			PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_NONE,
-			null
+			$attestationPreference,
+			$extensions
 		);
 
 		// Save data in the session
@@ -127,16 +150,18 @@ abstract class CredentialsCreation
 	}
 
 	/**
-	 * Validate the authentication data returned by the device and return the attested credential data on success.
+	 * Validate the authentication data returned by the device and return the public key credential source on success.
 	 *
 	 * An exception will be returned on error. Also, under very rare conditions, you may receive NULL instead of
-	 * attested credential data which means that something was off in the returned data from the browser.
+	 * a PublicKeyCredentialSource object which means that something was off in the returned data from the browser.
 	 *
-	 * @param   string  $data  The JSON-encoded data returned by the browser during the authentication flow
+	 * @param string $data The JSON-encoded data returned by the browser during the authentication flow
 	 *
-	 * @return  AttestedCredentialData|null
+	 * @return  PublicKeyCredentialSource|null
+	 *
+	 * @since   1.0.0
 	 */
-	public static function validateAuthenticationData(string $data): ?AttestedCredentialData
+	public static function validateAuthenticationData(string $data): ?PublicKeyCredentialSource
 	{
 		// Retrieve the PublicKeyCredentialCreationOptions object created earlier and perform sanity checks
 		$encodedOptions = Joomla::getSessionVar('publicKeyCredentialCreationOptions', null, 'plg_system_webauthn');
@@ -162,13 +187,32 @@ abstract class CredentialsCreation
 
 		// Retrieve the stored user ID and make sure it's the same one in the request.
 		$storedUserId = Joomla::getSessionVar('registration_user_id', 0, 'plg_system_webauthn');
-		$myUser       = Joomla::getUser();
-		$myUserId     = $myUser->id;
+
+		try
+		{
+			$myUser = Joomla::getUser();
+		}
+		catch (Exception $e)
+		{
+			$dummyUserId = 0;
+			$myUser      = Joomla::getUser($dummyUserId);
+		}
+
+		$myUserId = $myUser->id;
 
 		if (($myUser->guest) || ($myUserId != $storedUserId))
 		{
 			throw new RuntimeException(Joomla::_('PLG_SYSTEM_WEBAUTHN_ERR_CREATE_INVALID_USER'));
 		}
+
+		// Cose Algorithm Manager
+		$coseAlgorithmManager = new Manager();
+		$coseAlgorithmManager->add(new ECDSA\ES256());
+		$coseAlgorithmManager->add(new ECDSA\ES512());
+		$coseAlgorithmManager->add(new EdDSA\EdDSA());
+		$coseAlgorithmManager->add(new RSA\RS1());
+		$coseAlgorithmManager->add(new RSA\RS256());
+		$coseAlgorithmManager->add(new RSA\RS512());
 
 		// Create a CBOR Decoder object
 		$otherObjectManager = new OtherObjectManager();
@@ -179,10 +223,12 @@ abstract class CredentialsCreation
 		$tokenBindingHandler = new TokenBindingNotSupportedHandler();
 
 		// Attestation Statement Support Manager
-		$coseAlgorithmManager               = new Manager();
 		$attestationStatementSupportManager = new AttestationStatementSupportManager();
 		$attestationStatementSupportManager->add(new NoneAttestationStatementSupport());
 		$attestationStatementSupportManager->add(new FidoU2FAttestationStatementSupport($decoder));
+		//$attestationStatementSupportManager->add(new AndroidSafetyNetAttestationStatementSupport(HttpFactory::getHttp(), 'GOOGLE_SAFETYNET_API_KEY', new RequestFactory()));
+		$attestationStatementSupportManager->add(new AndroidKeyAttestationStatementSupport($decoder));
+		$attestationStatementSupportManager->add(new TPMAttestationStatementSupport());
 		$attestationStatementSupportManager->add(new PackedAttestationStatementSupport($decoder, $coseAlgorithmManager));
 
 		// Attestation Object Loader
@@ -223,24 +269,24 @@ abstract class CredentialsCreation
 		// Check the response against the request
 		$authenticatorAttestationResponseValidator->check($response, $publicKeyCredentialCreationOptions, $request);
 
-		// Everything is OK here. You can get the PublicKeyCredentialDescriptor.
-		$publicKeyCredentialDescriptor = $publicKeyCredential->getPublicKeyCredentialDescriptor();
+		/**
+		 * Everything is OK here. You can get the Public Key Credential Source. This object should be persisted using
+		 * the Public Key Credential Source repository.
+		 */
+		$publicKeyCredentialSource = PublicKeyCredentialSource::createFromPublicKeyCredential(
+			$publicKeyCredential,
+			$publicKeyCredentialCreationOptions->getUser()->getId()
+		);
 
-		// Normally this condition should be true. Just make sure you received the credential data
-		$attestedCredentialData = null;
-
-		if ($response->getAttestationObject()->getAuthData()->hasAttestedCredentialData())
-		{
-			$attestedCredentialData = $response->getAttestationObject()->getAuthData()->getAttestedCredentialData();
-		}
-
-		return $attestedCredentialData;
+		return $publicKeyCredentialSource;
 	}
 
 	/**
 	 * Try to find the site's favicon in the site's root, images, media, templates or current template directory.
 	 *
 	 * @return  string|null
+	 *
+	 * @since   1.0.0
 	 */
 	protected static function getSiteIcon(): ?string
 	{
@@ -262,7 +308,7 @@ abstract class CredentialsCreation
 				'/images/',
 				'/media/',
 				'/templates/',
-				'/templates/' . Joomla::getApplication()->getTemplate(),
+				'/templates/' . Factory::getApplication()->getTemplate(),
 			];
 		}
 		catch (Exception $e)
@@ -297,14 +343,16 @@ abstract class CredentialsCreation
 	/**
 	 * Get the user's avatar (through Gravatar)
 	 *
-	 * @param   User  $user  The Joomla user object
-	 * @param   int   $size  The dimensions of the image to fetch (default: 64 pixels)
+	 * @param User $user The Joomla user object
+	 * @param int  $size The dimensions of the image to fetch (default: 64 pixels)
 	 *
 	 * @return  string  The URL to the user's avatar
+	 *
+	 * @since   1.0.0
 	 */
 	public static function getAvatar(User $user, int $size = 64)
 	{
-		$scheme = Uri::getInstance()->getScheme();
+		$scheme    = Uri::getInstance()->getScheme();
 		$subdomain = ($scheme == 'https') ? 'secure' : 'www';
 
 		return sprintf('%s://%s.gravatar.com/avatar/%s.jpg?s=%u&d=mm', $scheme, $subdomain, md5($user->email), $size);

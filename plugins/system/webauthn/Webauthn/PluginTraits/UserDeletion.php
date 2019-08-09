@@ -28,6 +28,8 @@ trait UserDeletion
 	 * @return  bool
 	 *
 	 * @throws  Exception
+	 *
+	 * @since   1.0.0
 	 */
 	public function onUserAfterDelete(array $user, bool $success, ?string $msg): bool
 	{

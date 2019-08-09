@@ -14,6 +14,7 @@ use Exception;
 use Joomla\CMS\Language\Text;
 use RuntimeException;
 use Webauthn\AttestedCredentialData;
+use Webauthn\PublicKeyCredentialSource;
 
 // Protect from unauthorized access
 defined('_JEXEC') or die();
@@ -25,8 +26,20 @@ defined('_JEXEC') or die();
  */
 trait AjaxHandlerCreate
 {
-	public function onAjaxWebauthnCreate()
+	/**
+	 * Handle the callback to add a new WebAuthn authenticator
+	 *
+	 * @return  string
+	 *
+	 * @throws  Exception
+	 *
+	 * @since   1.0.0
+	 */
+	public function onAjaxWebauthnCreate(): string
 	{
+		// Load the language files
+		$this->loadLanguage();
+
 		/**
 		 * Fundamental sanity check: this callback is only allowed after a Public Key has been created server-side and
 		 * the user it was created for matches the current user.
@@ -61,19 +74,19 @@ trait AjaxHandlerCreate
 			// Retrieve the data sent by the device
 			$data = $input->get('data', '', 'raw');
 
-			$attestedCredentialData = CredentialsCreation::validateAuthenticationData($data);
+			$publicKeyCredentialSource = CredentialsCreation::validateAuthenticationData($data);
 
-			if (!is_object($attestedCredentialData) || !($attestedCredentialData instanceof AttestedCredentialData))
+			if (!is_object($publicKeyCredentialSource) || !($publicKeyCredentialSource instanceof PublicKeyCredentialSource))
 			{
 				throw new RuntimeException(Text::_('PLG_SYSTEM_WEBAUTHN_ERR_CREATE_NO_ATTESTED_DATA'));
 			}
 
-			$credentialRepository->set($attestedCredentialData);
+			$credentialRepository->saveCredentialSource($publicKeyCredentialSource);
 		}
 		catch (Exception $e)
 		{
 			$error                  = $e->getMessage();
-			$attestedCredentialData = null;
+			$publicKeyCredentialSource = null;
 		}
 
 		// Unset the session variables used for registering authenticators (security precaution).

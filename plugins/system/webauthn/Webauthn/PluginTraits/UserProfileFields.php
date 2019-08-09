@@ -44,7 +44,7 @@ trait UserProfileFields
 
 		$name = $form->getName();
 
-		if (!in_array($name, array('com_admin.profile', 'com_users.user', 'com_users.profile', 'com_users.registration')))
+		if (!in_array($name, ['com_admin.profile', 'com_users.user', 'com_users.profile', 'com_users.registration']))
 		{
 			return true;
 		}

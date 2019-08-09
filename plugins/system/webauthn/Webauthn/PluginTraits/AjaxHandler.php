@@ -7,9 +7,10 @@
 
 namespace Akeeba\Passwordless\Webauthn\PluginTraits;
 
-use Akeeba\Passwordless\Webauthn\Helper\Joomla;
 use Akeeba\Passwordless\Webauthn\Exception\AjaxNonCmsAppException;
+use Akeeba\Passwordless\Webauthn\Helper\Joomla;
 use Exception;
+use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Uri\Uri;
 use RuntimeException;
@@ -94,15 +95,21 @@ trait AjaxHandler
 	 * @return  void
 	 *
 	 * @throws  Exception
+	 *
+	 * @since   1.0.0
 	 */
 	public function onAjaxWebauthn(): void
 	{
+		// Load the language files
+		$this->loadLanguage();
+
+		/** @var CMSApplication $app */
 		$app   = Joomla::getApplication();
 		$input = $app->input;
 
 		// Get the return URL from the session
 		$returnURL = Joomla::getSessionVar('returnUrl', Uri::base(), 'plg_system_webauthn');
-		$result = null;
+		$result    = null;
 
 		try
 		{
@@ -132,7 +139,7 @@ trait AjaxHandler
 			$eventName = 'onAjaxWebauthn' . ucfirst($akaction);
 
 			$results = Joomla::runPlugins($eventName, [], $app);
-			$result = null;
+			$result  = null;
 
 			foreach ($results as $r)
 			{
