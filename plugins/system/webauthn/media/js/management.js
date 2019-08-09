@@ -256,6 +256,9 @@ function akeeba_passwordless_delete(that, store_id)
         .done(function (result) {
             if ((result !== true) && (result !== "true"))
             {
+                elEdit.disabled     = false;
+                elDelete.disabled   = false;
+
                 akeeba_passwordless_handle_creation_error(Joomla.JText._("PLG_SYSTEM_WEBAUTHN_ERR_NOT_DELETED"));
 
                 return;

@@ -41,6 +41,7 @@ class JFormFieldWebauthn extends FormField
 		Text::script('PLG_SYSTEM_WEBAUTHN_MANAGE_BTN_CANCEL_LABEL', true);
 		Text::script('PLG_SYSTEM_WEBAUTHN_MSG_SAVED_LABEL', true);
 		Text::script('PLG_SYSTEM_WEBAUTHN_ERR_LABEL_NOT_SAVED', true);
+		Text::script('PLG_SYSTEM_WEBAUTHN_ERR_NOT_DELETED', true);
 
 		$credentialRepository = new \Akeeba\Passwordless\Webauthn\CredentialRepository();
 
