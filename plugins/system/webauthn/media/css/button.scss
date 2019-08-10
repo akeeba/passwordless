@@ -160,3 +160,15 @@ button[class*=akeeba-passwordless-login-button] {
     margin-left: 5px;
   }
 }
+
+// Backend login page
+body.com_login div.login button[class*=akeeba-passwordless-login-button] {
+  // The login form has an 18px margin. By using negative top & positive bottom margin we make our button appear as
+  // part of the login form without losing the form's visual separation
+  margin-top: -18px;
+  margin-bottom: 18px;
+  // Backend login buttons are set to be full-width
+  width: 100%;
+  // This makes our button as high as Joomla's login button
+  padding: 0.8em 0;
+}
