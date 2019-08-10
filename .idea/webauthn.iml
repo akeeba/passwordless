@@ -5,10 +5,14 @@
       <sourceFolder url="file://$MODULE_DIR$/plugins/system/webauthn/Webauthn" isTestSource="false" packagePrefix="Akeeba\Passwordless\Webauthn" />
       <excludeFolder url="file://$MODULE_DIR$/plugins/system/webauthn/vendor/beberlei/assert" />
       <excludeFolder url="file://$MODULE_DIR$/plugins/system/webauthn/vendor/composer" />
+      <excludeFolder url="file://$MODULE_DIR$/plugins/system/webauthn/vendor/fgrosse/phpasn1" />
+      <excludeFolder url="file://$MODULE_DIR$/plugins/system/webauthn/vendor/paragonie/random_compat" />
       <excludeFolder url="file://$MODULE_DIR$/plugins/system/webauthn/vendor/psr/http-factory" />
       <excludeFolder url="file://$MODULE_DIR$/plugins/system/webauthn/vendor/psr/http-message" />
+      <excludeFolder url="file://$MODULE_DIR$/plugins/system/webauthn/vendor/ramsey/uuid" />
       <excludeFolder url="file://$MODULE_DIR$/plugins/system/webauthn/vendor/spomky-labs/base64url" />
       <excludeFolder url="file://$MODULE_DIR$/plugins/system/webauthn/vendor/spomky-labs/cbor-php" />
+      <excludeFolder url="file://$MODULE_DIR$/plugins/system/webauthn/vendor/symfony/polyfill-ctype" />
       <excludeFolder url="file://$MODULE_DIR$/plugins/system/webauthn/vendor/thecodingmachine/safe" />
       <excludeFolder url="file://$MODULE_DIR$/plugins/system/webauthn/vendor/web-auth/cose-lib" />
       <excludeFolder url="file://$MODULE_DIR$/plugins/system/webauthn/vendor/web-auth/webauthn-lib" />
