@@ -4,8 +4,32 @@
  * @license   GNU General Public License version 3, or later
  */
 
-// TODO Write the akeeba_passwordless_login() function
-// See https://github.com/web-auth/webauthn-framework/blob/v1.0/doc/webauthn/PublicKeyCredentialRequest.md
+function akeeba_passwordless_arrayToBase64String(a)
+{
+    return btoa(String.fromCharCode.apply(String, a));
+}
+
+function akeeba_passwordless_object_merge()
+{
+    var ret = {};
+
+    for (var i = 0; i < arguments.length; i++)
+    {
+        var source = arguments[i] != null ? arguments[i] : {};
+
+        for (var prop in source)
+        {
+            if (!source.hasOwnProperty(prop))
+            {
+                continue;
+            }
+
+            ret[prop] = source[prop];
+        }
+    }
+
+    return ret;
+}
 
 /**
  * Finds the first field matching a selector inside a form
@@ -17,7 +41,7 @@
  */
 function akeeba_passwordless_findField(elForm, fieldSelector)
 {
-    let elInputs = elForm.querySelectorAll(fieldSelector);
+    var elInputs = elForm.querySelectorAll(fieldSelector);
 
     if (!elInputs.length)
     {
@@ -99,8 +123,8 @@ function akeeba_passwordless_lookInParentElementsForField(innerElement, fieldSel
 function akeeba_passwordless_login(that, callback_url)
 {
     // Get the username
-    let elUsername = akeeba_passwordless_lookInParentElementsForField(that, "input[name=username]");
-    let elReturn   = akeeba_passwordless_lookInParentElementsForField(that, "input[name=return]");
+    var elUsername = akeeba_passwordless_lookInParentElementsForField(that, "input[name=username]");
+    var elReturn   = akeeba_passwordless_lookInParentElementsForField(that, "input[name=return]");
 
     if (elUsername === null)
     {
@@ -109,8 +133,8 @@ function akeeba_passwordless_login(that, callback_url)
         return false;
     }
 
-    let username  = elUsername.value;
-    let returnUrl = elReturn ? elReturn.value : null;
+    var username  = elUsername.value;
+    var returnUrl = elReturn ? elReturn.value : null;
 
     // No username? We cannot proceed. We need a username to find the acceptable public keys :(
     if (username === "")
@@ -121,7 +145,7 @@ function akeeba_passwordless_login(that, callback_url)
     }
 
     // Get the Public Key Credential Request Options (challenge and acceptable public keys)
-    let postBackData = {
+    var postBackData = {
         "option":    "com_ajax",
         "group":     "system",
         "plugin":    "webauthn",
@@ -157,48 +181,48 @@ function akeeba_passwordless_login(that, callback_url)
  */
 function akeeba_passwordless_handle_login_challenge(publicKey, callback_url)
 {
-    function arrayToBase64String(a)
-    {
-        return btoa(String.fromCharCode(...a));
-    }
-
     if (!publicKey.challenge)
     {
-        akeeba_passwordless_handle_login_error(Joomla.JText._('PLG_SYSTEM_WEBAUTHN_ERR_INVALID_USERNAME'));
+        akeeba_passwordless_handle_login_error(Joomla.JText._("PLG_SYSTEM_WEBAUTHN_ERR_INVALID_USERNAME"));
 
         return;
     }
 
-    var fixedChallenge = publicKey.challenge.replace(/-/g, '+').replace(/_/g, '/');
-    console.log(fixedChallenge);
+    var fixedChallenge = publicKey.challenge.replace(/-/g, "+").replace(/_/g, "/");
 
-    publicKey.challenge        = Uint8Array.from(window.atob(fixedChallenge), c => c.charCodeAt(0));
+    publicKey.challenge        = Uint8Array.from(window.atob(fixedChallenge), function (c) {
+        return c.charCodeAt(0);
+    });
     publicKey.allowCredentials = publicKey.allowCredentials.map(function (data) {
-        return {
-            ...data,
-            "id": Uint8Array.from(atob(data.id), c => c.charCodeAt(0))
-        };
+        return akeeba_passwordless_object_merge(data, {
+            "id": Uint8Array.from(atob(data.id), function (c) {
+                return c.charCodeAt(0);
+            })
+        });
     });
 
-    navigator.credentials.get({publicKey})
-        .then(data => {
-            let publicKeyCredential = {
+    navigator.credentials.get({
+        publicKey: publicKey
+    })
+        .then(function (data) {
+            var publicKeyCredential = {
                 id:       data.id,
                 type:     data.type,
-                rawId:    arrayToBase64String(new Uint8Array(data.rawId)),
+                rawId:    akeeba_passwordless_arrayToBase64String(new Uint8Array(data.rawId)),
                 response: {
-                    authenticatorData: arrayToBase64String(new Uint8Array(data.response.authenticatorData)),
-                    clientDataJSON:    arrayToBase64String(new Uint8Array(data.response.clientDataJSON)),
-                    signature:         arrayToBase64String(new Uint8Array(data.response.signature)),
-                    userHandle:        data.response.userHandle ? arrayToBase64String(
+                    authenticatorData: akeeba_passwordless_arrayToBase64String(new Uint8Array(data.response.authenticatorData)),
+                    clientDataJSON:    akeeba_passwordless_arrayToBase64String(new Uint8Array(data.response.clientDataJSON)),
+                    signature:         akeeba_passwordless_arrayToBase64String(new Uint8Array(data.response.signature)),
+                    userHandle:        data.response.userHandle ? akeeba_passwordless_arrayToBase64String(
                         new Uint8Array(data.response.userHandle)) : null
                 }
             };
 
-            window.location = callback_url + '&option=com_ajax&group=system&plugin=webauthn&format=raw&akaction=login&encoding=redirect&data=' +
+            window.location =
+                callback_url + "&option=com_ajax&group=system&plugin=webauthn&format=raw&akaction=login&encoding=redirect&data=" +
                 btoa(JSON.stringify(publicKeyCredential));
 
-        }, error => {
+        }, function (error) {
             // Example: timeout, interaction refused...
             console.log(error);
             akeeba_passwordless_handle_login_error(error);

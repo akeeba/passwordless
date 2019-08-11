@@ -4,6 +4,33 @@
  * @license   GNU General Public License version 3, or later
  */
 
+function akeeba_passwordless_arrayToBase64String(a)
+{
+    return btoa(String.fromCharCode.apply(String, a));
+}
+
+function akeeba_passwordless_object_merge()
+{
+    var ret = {};
+
+    for (var i = 0; i < arguments.length; i++)
+    {
+        var source = arguments[i] != null ? arguments[i] : {};
+
+        for (var prop in source)
+        {
+            if (!source.hasOwnProperty(prop))
+            {
+                continue;
+            }
+
+            ret[prop] = source[prop];
+        }
+    }
+
+    return ret;
+}
+
 /**
  * Ask the user to link an authenticator using the provided public key (created server-side). Posts the credentials to
  * the URL defined in post_url using AJAX. That URL must re-render the management interface. These contents will replace
@@ -15,59 +42,63 @@
 function akeeba_passwordless_create_credentials(store_id, interface_selector)
 {
     // Make sure the browser supports Webauthn
-    if (!('credentials' in navigator)) {
-        alert(Joomla.JText._('PLG_SYSTEM_WEBAUTHN_ERR_NO_BROWSER_SUPPORT'))
+    if (!("credentials" in navigator))
+    {
+        alert(Joomla.JText._("PLG_SYSTEM_WEBAUTHN_ERR_NO_BROWSER_SUPPORT"));
 
         console.log("This browser does not support Webauthn");
         return;
     }
 
     // Extract the configuration from the store
-    let elStore = document.getElementById(store_id);
+    var elStore = document.getElementById(store_id);
 
     if (!elStore)
     {
         return;
     }
 
-    let publicKey = JSON.parse(atob(elStore.dataset.public_key));
-    let post_url  = atob(elStore.dataset.postback_url);
-
-    // Utility function to convert array data to base64 strings
-    function arrayToBase64String(a)
-    {
-        return btoa(String.fromCharCode(...a));
-    }
+    var publicKey = JSON.parse(atob(elStore.dataset.public_key));
+    var post_url  = atob(elStore.dataset.postback_url);
 
     // Convert the public key information to a format usable by the browser's credentials managemer
-    var fixedChallenge = publicKey.challenge.replace(/-/g, '+').replace(/_/g, '/');
-    publicKey.challenge = Uint8Array.from(window.atob(fixedChallenge), c => c.charCodeAt(0));
-    publicKey.user.id   = Uint8Array.from(window.atob(publicKey.user.id), c => c.charCodeAt(0));
+    var fixedChallenge  = publicKey.challenge.replace(/-/g, "+").replace(/_/g, "/");
+    publicKey.challenge = Uint8Array.from(window.atob(fixedChallenge), function (c) {
+        return c.charCodeAt(0);
+    });
+    publicKey.user.id   = Uint8Array.from(window.atob(publicKey.user.id), function (c) {
+        return c.charCodeAt(0);
+    });
 
     if (publicKey.excludeCredentials)
     {
         publicKey.excludeCredentials = publicKey.excludeCredentials.map(function (data) {
-            return {
-                ...data,
-                "id": Uint8Array.from(window.atob(data.id), c => c.charCodeAt(0))
-            };
+            return akeeba_passwordless_object_merge(data, {
+                "id": Uint8Array.from(window.atob(data.id), function (c) {
+                    return c.charCodeAt(0);
+                })
+            });
         });
     }
 
     // Ask the browser to prompt the user for their authenticator
-    navigator.credentials.create({publicKey})
+    navigator.credentials.create({
+        publicKey: publicKey
+    })
         .then(function (data) {
-            let publicKeyCredential = {
+            var publicKeyCredential = {
                 id:       data.id,
                 type:     data.type,
-                rawId:    arrayToBase64String(new Uint8Array(data.rawId)),
+                rawId:    akeeba_passwordless_arrayToBase64String(new Uint8Array(data.rawId)),
                 response: {
-                    clientDataJSON:    arrayToBase64String(new Uint8Array(data.response.clientDataJSON)),
-                    attestationObject: arrayToBase64String(new Uint8Array(data.response.attestationObject))
+                    clientDataJSON:    akeeba_passwordless_arrayToBase64String(
+                        new Uint8Array(data.response.clientDataJSON)),
+                    attestationObject: akeeba_passwordless_arrayToBase64String(
+                        new Uint8Array(data.response.attestationObject))
                 }
             };
 
-            let postBackData = {
+            var postBackData = {
                 "option":   "com_ajax",
                 "group":    "system",
                 "plugin":   "webauthn",
@@ -79,19 +110,19 @@ function akeeba_passwordless_create_credentials(store_id, interface_selector)
 
             window.jQuery.post(post_url, postBackData)
                 .done(function (responseHTML) {
-                    let elements = document.querySelectorAll(interface_selector);
+                    var elements = document.querySelectorAll(interface_selector);
 
                     if (!elements)
                     {
                         return;
                     }
 
-                    let elContainer = elements[0];
+                    var elContainer = elements[0];
 
                     elContainer.outerHTML = responseHTML;
                 })
                 .fail(function (data) {
-                    akeeba_passwordless_handle_creation_error(data.status + ' ' + data.statusText);
+                    akeeba_passwordless_handle_creation_error(data.status + " " + data.statusText);
                 });
 
 
@@ -122,57 +153,58 @@ function akeeba_passwordless_handle_creation_error(message)
 function akeeba_passwordless_edit_label(that, store_id)
 {
     // Extract the configuration from the store
-    let elStore = document.getElementById(store_id);
+    var elStore = document.getElementById(store_id);
 
     if (!elStore)
     {
         return;
     }
 
-    let post_url = atob(elStore.dataset.postback_url);
+    var post_url = atob(elStore.dataset.postback_url);
 
     // Find the UI elements
-    let elTR         = that.parentElement.parentElement;
-    let credentialId = elTR.dataset.credential_id;
-    let elTDs        = elTR.querySelectorAll("td");
-    let elLabelTD    = elTDs[0];
-    let elButtonsTD  = elTDs[1];
-    let elButtons    = elButtonsTD.querySelectorAll("button");
-    let elEdit       = elButtons[0];
-    let elDelete     = elButtons[1];
+    var elTR         = that.parentElement.parentElement;
+    var credentialId = elTR.dataset.credential_id;
+    var elTDs        = elTR.querySelectorAll("td");
+    var elLabelTD    = elTDs[0];
+    var elButtonsTD  = elTDs[1];
+    var elButtons    = elButtonsTD.querySelectorAll("button");
+    var elEdit       = elButtons[0];
+    var elDelete     = elButtons[1];
 
     // Show the editor
-    let oldLabel = elLabelTD.innerText;
+    var oldLabel = elLabelTD.innerText;
 
-    let elInput          = document.createElement("input");
+    var elInput          = document.createElement("input");
     elInput.type         = "text";
     elInput.name         = "label";
     elInput.defaultValue = oldLabel;
 
-    let elSave       = document.createElement("button");
+    var elSave       = document.createElement("button");
     elSave.className = "akpwl-btn--green--small";
     elSave.innerText = Joomla.JText._("PLG_SYSTEM_WEBAUTHN_MANAGE_BTN_SAVE_LABEL");
     elSave.addEventListener("click", function (e) {
-        let elNewLabel = elInput.value;
+        var elNewLabel = elInput.value;
 
-        if (elNewLabel !== '')
+        if (elNewLabel !== "")
         {
-            let postBackData = {
-                "option": "com_ajax",
-                "group": "system",
-                "plugin": "webauthn",
-                "format": "json",
-                "encoding": "json",
-                "akaction": "savelabel",
+            var postBackData = {
+                "option":        "com_ajax",
+                "group":         "system",
+                "plugin":        "webauthn",
+                "format":        "json",
+                "encoding":      "json",
+                "akaction":      "savelabel",
                 "credential_id": credentialId,
-                "new_label": elNewLabel
+                "new_label":     elNewLabel
             };
 
             window.jQuery.post(post_url, postBackData)
                 .done(function (result) {
                     if ((result !== true) && (result !== "true"))
                     {
-                        akeeba_passwordless_handle_creation_error(Joomla.JText._('PLG_SYSTEM_WEBAUTHN_ERR_LABEL_NOT_SAVED'));
+                        akeeba_passwordless_handle_creation_error(
+                            Joomla.JText._("PLG_SYSTEM_WEBAUTHN_ERR_LABEL_NOT_SAVED"));
 
                         return;
                     }
@@ -180,7 +212,8 @@ function akeeba_passwordless_edit_label(that, store_id)
                     //alert(Joomla.JText._('PLG_SYSTEM_WEBAUTHN_MSG_SAVED_LABEL'));
                 })
                 .fail(function (data) {
-                    akeeba_passwordless_handle_creation_error(Joomla.JText._('PLG_SYSTEM_WEBAUTHN_ERR_LABEL_NOT_SAVED') + ' -- ' + data.status + ' ' + data.statusText);
+                    akeeba_passwordless_handle_creation_error(Joomla.JText._(
+                        "PLG_SYSTEM_WEBAUTHN_ERR_LABEL_NOT_SAVED") + " -- " + data.status + " " + data.statusText);
                 });
         }
 
@@ -191,7 +224,7 @@ function akeeba_passwordless_edit_label(that, store_id)
         return false;
     }, false);
 
-    let elCancel       = document.createElement("button");
+    var elCancel       = document.createElement("button");
     elCancel.className = "akpwl-btn--red--small";
     elCancel.innerText = Joomla.JText._("PLG_SYSTEM_WEBAUTHN_MANAGE_BTN_CANCEL_LABEL");
     elCancel.addEventListener("click", function (e) {
@@ -221,35 +254,35 @@ function akeeba_passwordless_edit_label(that, store_id)
 function akeeba_passwordless_delete(that, store_id)
 {
     // Extract the configuration from the store
-    let elStore = document.getElementById(store_id);
+    var elStore = document.getElementById(store_id);
 
     if (!elStore)
     {
         return;
     }
 
-    let post_url = atob(elStore.dataset.postback_url);
+    var post_url = atob(elStore.dataset.postback_url);
 
     // Find the UI elements
-    let elTR         = that.parentElement.parentElement;
-    let credentialId = elTR.dataset.credential_id;
-    let elTDs        = elTR.querySelectorAll("td");
-    let elButtonsTD  = elTDs[1];
-    let elButtons    = elButtonsTD.querySelectorAll("button");
-    let elEdit       = elButtons[0];
-    let elDelete     = elButtons[1];
+    var elTR         = that.parentElement.parentElement;
+    var credentialId = elTR.dataset.credential_id;
+    var elTDs        = elTR.querySelectorAll("td");
+    var elButtonsTD  = elTDs[1];
+    var elButtons    = elButtonsTD.querySelectorAll("button");
+    var elEdit       = elButtons[0];
+    var elDelete     = elButtons[1];
 
-    elEdit.disabled     = true;
-    elDelete.disabled   = true;
+    elEdit.disabled   = true;
+    elDelete.disabled = true;
 
     // Delete the record
-    let postBackData = {
-        "option": "com_ajax",
-        "group": "system",
-        "plugin": "webauthn",
-        "format": "json",
-        "encoding": "json",
-        "akaction": "delete",
+    var postBackData = {
+        "option":        "com_ajax",
+        "group":         "system",
+        "plugin":        "webauthn",
+        "format":        "json",
+        "encoding":      "json",
+        "akaction":      "delete",
         "credential_id": credentialId,
     };
 
@@ -257,8 +290,8 @@ function akeeba_passwordless_delete(that, store_id)
         .done(function (result) {
             if ((result !== true) && (result !== "true"))
             {
-                elEdit.disabled     = false;
-                elDelete.disabled   = false;
+                elEdit.disabled   = false;
+                elDelete.disabled = false;
 
                 akeeba_passwordless_handle_creation_error(Joomla.JText._("PLG_SYSTEM_WEBAUTHN_ERR_NOT_DELETED"));
 
@@ -270,10 +303,11 @@ function akeeba_passwordless_delete(that, store_id)
             //alert(Joomla.JText._("PLG_SYSTEM_WEBAUTHN_MSG_DELETED"));
         })
         .fail(function (data) {
-            elEdit.disabled     = false;
-            elDelete.disabled   = false;
+            elEdit.disabled   = false;
+            elDelete.disabled = false;
 
-            akeeba_passwordless_handle_creation_error(Joomla.JText._("PLG_SYSTEM_WEBAUTHN_ERR_NOT_DELETED") + " -- " + data.status + " " + data.statusText);
+            akeeba_passwordless_handle_creation_error(
+                Joomla.JText._("PLG_SYSTEM_WEBAUTHN_ERR_NOT_DELETED") + " -- " + data.status + " " + data.statusText);
         });
 
     return false;

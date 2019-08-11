@@ -31,7 +31,7 @@ class JFormFieldWebauthn extends FormField
 			return Joomla::_('PLG_SYSTEM_WEBAUTHN_ERR_NOUSER');
 		}
 
-		HTMLHelper::_('script', 'plg_system_webauthn/dist/management.js', [
+		HTMLHelper::_('script', 'plg_system_webauthn/management.js', [
 			'relative'  => true,
 			'framework' => true,
 		]);
