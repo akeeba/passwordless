@@ -66,8 +66,11 @@ class plgSystemWebauthn extends CMSPlugin
 	{
 		parent::__construct($subject, $config);
 
-		// Load the language files
-		$this->loadLanguage();
+		/**
+		 * Note that we cannot load the language at this stage. The application has not been initialized, language
+		 * loading won't work in Joomla 4 (even though it works fine in J3). We'll have to load the language
+		 * onAfterInitialize instead.
+		 */
 
 		// Register a debug log file writer
 		Joomla::addLogger('system');
@@ -78,5 +81,26 @@ class plgSystemWebauthn extends CMSPlugin
 		// Setup login module interception
 		$this->setupLoginModuleButtons();
 		$this->setupUserLoginPageButtons();
+	}
+
+	/**
+	 * My alternative for loadLanguage makes sure that half-translated languages won't result in untranslated strings.
+	 *
+	 * @param   string  $extension
+	 * @param   string  $basePath
+	 *
+	 * @return bool|void
+	 */
+	public function loadLanguage($extension = '', $basePath = JPATH_ADMINISTRATOR)
+	{
+		if (empty($extension))
+		{
+			$extension = 'Plg_' . $this->_type . '_' . $this->_name;
+		}
+
+		// Load the language files
+		$lang      = \JFactory::getLanguage();
+		$lang->load($extension, $basePath, 'en-GB', true, true);
+		$lang->load($extension, $basePath, null, true, true);
 	}
 }

@@ -82,7 +82,6 @@ trait UserProfileFields
 		// Add the fields to the form.
 		Joomla::log('system', 'Injecting Akeeba Passwordless Login fields in user profile edit page');
 		Form::addFormPath(dirname(__FILE__) . '/../../fields');
-		$this->loadLanguage();
 		$form->loadFile('webauthn', false);
 
 		return true;

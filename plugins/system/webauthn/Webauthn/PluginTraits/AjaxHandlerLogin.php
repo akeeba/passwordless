@@ -57,9 +57,6 @@ trait AjaxHandlerLogin
 	 */
 	public function onAjaxWebauthnLogin(): void
 	{
-		// Load the language files
-		$this->loadLanguage();
-
 		$returnUrl = Joomla::getSessionVar('returnUrl', Uri::base(), 'plg_system_webauthn');
 		$userId    = Joomla::getSessionVar('userId', 0, 'plg_system_webauthn');
 

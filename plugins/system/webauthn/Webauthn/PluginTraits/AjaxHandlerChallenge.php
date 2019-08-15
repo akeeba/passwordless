@@ -39,9 +39,6 @@ trait AjaxHandlerChallenge
 	 */
 	public function onAjaxWebauthnChallenge()
 	{
-		// Load the language files
-		$this->loadLanguage();
-
 		// Initialize objects
 		$input      = Joomla::getApplication()->input;
 		$repository = new CredentialRepository();

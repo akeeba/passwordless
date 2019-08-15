@@ -31,9 +31,6 @@ trait AjaxHandlerDelete
 	 */
 	public function onAjaxWebauthnDelete(): bool
 	{
-		// Load the language files
-		$this->loadLanguage();
-
 		// Initialize objects
 		$input      = Joomla::getApplication()->input;
 		$repository = new CredentialRepository();
