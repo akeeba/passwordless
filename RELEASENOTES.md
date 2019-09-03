@@ -4,10 +4,15 @@ For more information and documentation for administrators, users and developers 
  
 ## Joomla and PHP Compatibility
 
-Akeeba Social Login is compatible with Joomla! 3.8 and 3.9.It's also compatible with PHP 7.1, 7.2 and 7.3.
+Akeeba Passwordless Login is compatible with:
 
-We strongly recommend using the latest published Joomla! version and PHP 7.2 _for optimal security of your site_.
+* Joomla! 3.9
+* PHP 7.2 and 7.3
+
+We strongly recommend using the latest published versions of Joomla! 3.9 and PHP 7.3.
+
+Preliminary support for Joomla! 4.0 (tested with Joomla! 4.0 Alpha 10) is provided. However, Joomla! 4 is currently not considered a stable, supported platform. If something broke please report it and eventually it will be fixed.
 
 ## Changelog
 
-(TODO)
+🎉 First public release
