@@ -24,7 +24,7 @@ Please consult [the Requirements documentation page](https://github.com/akeeba/p
 
 # Support
 
-Please consult [the Support Policy page](https://github.com/akeeba/passwordless/wiki/Support-Policy). Any GitHub issues not adhering to the policy and unsolicited support requests sent through any medium will receive no reply at all.
+Please consult [the Support Policy page](https://github.com/akeeba/passwordless/wiki/Support-Policy). 
  
 # For developers
 
@@ -50,6 +50,6 @@ All commands are to be run from the `build` directory of this repository.
 
 Create a dev release installation package
 
-		phing git
+	phing git
 		
 The installable ZIP file is written in the `release` directory inside the repository's root.
