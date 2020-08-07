@@ -150,6 +150,8 @@ trait ButtonsInModules
 			return;
 		}
 
+		$this->loadLanguage();
+
 		// Append the passwordless login buttons content to the login module
 		Joomla::log('system', "Injecting Webauthn passwordless login buttons to {$module->module} module.");
 
