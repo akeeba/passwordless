@@ -29,7 +29,7 @@ trait AjaxHandlerDelete
 	 *
 	 * @since   1.0.0
 	 */
-	public function onAjaxWebauthnDelete(): bool
+	public function onAjaxPasswordlessDelete(): bool
 	{
 		// Initialize objects
 		$input      = Joomla::getApplication()->input;

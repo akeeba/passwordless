@@ -56,7 +56,7 @@ trait AjaxHandlerLogin
 	 *
 	 * @since   1.0.0
 	 */
-	public function onAjaxWebauthnLogin(): void
+	public function onAjaxPasswordlessLogin(): void
 	{
 		$returnUrl = Joomla::getSessionVar('returnUrl', Uri::base(), 'plg_system_passwordless');
 		$userId    = Joomla::getSessionVar('userId', 0, 'plg_system_passwordless');

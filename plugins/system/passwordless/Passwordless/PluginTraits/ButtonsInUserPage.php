@@ -10,8 +10,8 @@ namespace Akeeba\Passwordless\PluginTraits;
 // Protect from unauthorized access
 defined('_JEXEC') or die();
 
-use Akeeba\Passwordless\Integration;
-use Akeeba\Passwordless\Joomla;
+use Akeeba\Passwordless\Helper\Integration;
+use Akeeba\Passwordless\Helper\Joomla;
 use Exception;
 
 /**

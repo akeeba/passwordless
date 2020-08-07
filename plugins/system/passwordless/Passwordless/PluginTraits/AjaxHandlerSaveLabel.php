@@ -30,7 +30,7 @@ trait AjaxHandlerSaveLabel
 	 *
 	 * @since   1.0.0
 	 */
-	public function onAjaxWebauthnSavelabel(): bool
+	public function onAjaxPasswordlessSavelabel(): bool
 	{
 		// Initialize objects
 		$input      = Joomla::getApplication()->input;

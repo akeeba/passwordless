@@ -72,11 +72,11 @@ trait AjaxHandler
 		}
 
 		/**
-		 * Why do we go through onAjaxWebauthn instead of importing the code directly in here?
+		 * Why do we go through onAjaxPasswordless instead of importing the code directly in here?
 		 *
 		 * AJAX responses are called through com_ajax. In the frontend the com_ajax component itself is handling the
 		 * request, without going through our special onAfterInitialize handler. As a result, it calls the
-		 * onAjaxWebauthn plugin event directly.
+		 * onAjaxPasswordless plugin event directly.
 		 *
 		 * In the backend, however, com_ajax is not accessible before we log in. This doesn't help us any since we need
 		 * it when we are not logged in, to perform the passwordless login. Therefore our special onAfterInitialize
@@ -86,7 +86,7 @@ trait AjaxHandler
 		 * not do that, instead going through the plugin event with a negligible performance impact in the order of a
 		 * millisecond or less. This is orders of magnitude less than the roundtrip time of the AJAX request.
 		 */
-		Joomla::runPlugins('onAjaxWebauthn', []);
+		Joomla::runPlugins('onAjaxPasswordless', []);
 	}
 
 	/**
@@ -101,7 +101,7 @@ trait AjaxHandler
 	 *
 	 * @since   1.0.0
 	 */
-	public function onAjaxWebauthn(): void
+	public function onAjaxPasswordless(): void
 	{
 		/** @var CMSApplication $app */
 		$app   = Joomla::getApplication();
@@ -135,8 +135,8 @@ trait AjaxHandler
 				throw new RuntimeException(Joomla::_('PLG_SYSTEM_PASSWORDLESS_ERR_AJAX_INVALIDACTION'));
 			}
 
-			// Call the plugin event onAjaxWebauthnSomething where Something is the akaction param.
-			$eventName = 'onAjaxWebauthn' . ucfirst($akaction);
+			// Call the plugin event onAjaxPasswordlessSomething where Something is the akaction param.
+			$eventName = 'onAjaxPasswordless' . ucfirst($akaction);
 
 			$results = Joomla::runPlugins($eventName, [], $app);
 			$result  = null;

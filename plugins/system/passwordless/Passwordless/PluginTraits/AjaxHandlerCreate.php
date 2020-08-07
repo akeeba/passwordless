@@ -35,7 +35,7 @@ trait AjaxHandlerCreate
 	 *
 	 * @since   1.0.0
 	 */
-	public function onAjaxWebauthnCreate(): string
+	public function onAjaxPasswordlessCreate(): string
 	{
 		/**
 		 * Fundamental sanity check: this callback is only allowed after a Public Key has been created server-side and

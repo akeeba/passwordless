@@ -37,7 +37,7 @@ trait AjaxHandlerChallenge
 	 *
 	 * @throws   Exception
 	 */
-	public function onAjaxWebauthnChallenge()
+	public function onAjaxPasswordlessChallenge()
 	{
 		// Initialize objects
 		$input = Joomla::getApplication()->input;
