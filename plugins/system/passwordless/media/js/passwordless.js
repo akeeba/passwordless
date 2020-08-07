@@ -14,7 +14,7 @@ window.akeeba.Passwordless = window.akeeba.Passwordless || {};
  * This is the EcmaScript 6+ source of the client-side implementation. It is meant to be transpiled to ES5.1 (plain old
  * JavaScript) with Babel. The actual file being loaded can be found in dist/passwordless.js.
  */
-((Joomla, Passwordless, document) =>
+((Joomla, Passwordless, document, window) =>
 {
     "use strict";
 
@@ -147,6 +147,8 @@ window.akeeba.Passwordless = window.akeeba.Passwordless || {};
     const reportErrorToUser = (message) =>
     {
         Joomla.renderMessages({error: [message]});
+
+        window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
     };
 
     /**
@@ -244,7 +246,7 @@ window.akeeba.Passwordless = window.akeeba.Passwordless || {};
         // Make sure the browser supports Webauthn
         if (!("credentials" in navigator))
         {
-            Joomla.renderMessages({error: [Joomla.JText._("PLG_SYSTEM_PASSWORDLESS_ERR_NO_BROWSER_SUPPORT")]});
+            reportErrorToUser(Joomla.JText._("PLG_SYSTEM_PASSWORDLESS_ERR_NO_BROWSER_SUPPORT"));
 
             return;
         }
@@ -667,7 +669,7 @@ window.akeeba.Passwordless = window.akeeba.Passwordless || {};
 
         if (elUsername === null)
         {
-            Joomla.renderMessages({error: [Joomla.JText._("PLG_SYSTEM_PASSWORDLESS_ERR_CANNOT_FIND_USERNAME")]});
+            reportErrorToUser(Joomla.JText._("PLG_SYSTEM_PASSWORDLESS_ERR_CANNOT_FIND_USERNAME"));
 
             return false;
         }
@@ -678,7 +680,7 @@ window.akeeba.Passwordless = window.akeeba.Passwordless || {};
         // No username? We cannot proceed. We need a username to find the acceptable public keys :(
         if (username === "")
         {
-            Joomla.renderMessages({error: [Joomla.JText._("PLG_SYSTEM_PASSWORDLESS_ERR_EMPTY_USERNAME")]});
+            reportErrorToUser(Joomla.JText._("PLG_SYSTEM_PASSWORDLESS_ERR_EMPTY_USERNAME"));
 
             return false;
         }
@@ -783,4 +785,4 @@ window.akeeba.Passwordless = window.akeeba.Passwordless || {};
     Passwordless.initManagement();
     Passwordless.initLogin();
 
-})(Joomla, window.akeeba.Passwordless, document);
+})(Joomla, window.akeeba.Passwordless, document, window);
