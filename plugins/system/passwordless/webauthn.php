@@ -1,7 +1,7 @@
 <?php
-/**
+/*
  * @package   AkeebaPasswordlessLogin
- * @copyright Copyright (c)2018-2019 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2018-2020 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -16,7 +16,6 @@ use Akeeba\Passwordless\PluginTraits\ButtonsInModules;
 use Akeeba\Passwordless\PluginTraits\ButtonsInUserPage;
 use Akeeba\Passwordless\PluginTraits\UserDeletion;
 use Akeeba\Passwordless\PluginTraits\UserProfileFields;
-use Joomla\CMS\Form\Form;
 use Joomla\CMS\Plugin\CMSPlugin;
 
 // Protect from unauthorized access
@@ -58,7 +57,7 @@ class plgSystemPasswordless extends CMSPlugin
 	 * Constructor. Loads the language files as well.
 	 *
 	 * @param   object  &$subject  The object to observe
-	 * @param   array   $config    An optional associative array of configuration settings.
+	 * @param   array    $config   An optional associative array of configuration settings.
 	 *                             Recognized key values include 'name', 'group', 'params', 'language'
 	 *                             (this list is not meant to be comprehensive).
 	 */
@@ -99,7 +98,7 @@ class plgSystemPasswordless extends CMSPlugin
 		}
 
 		// Load the language files
-		$lang      = \JFactory::getLanguage();
+		$lang = \JFactory::getLanguage();
 		$lang->load($extension, $basePath, 'en-GB', true, true);
 		$lang->load($extension, $basePath, null, true, true);
 	}
