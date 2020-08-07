@@ -1,10 +1,5 @@
 <component name="libraryTable">
   <library name="Generated files" type="javaScript">
-    <properties>
-      <sourceFilesUrls>
-        <item url="file://$PROJECT_DIR$/plugins/system/webauthn/media/js/management.min.js" />
-      </sourceFilesUrls>
-    </properties>
     <CLASSES>
       <root url="file://$PROJECT_DIR$/plugins/system/passwordless/media/js/management.min.js" />
     </CLASSES>
