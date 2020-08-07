@@ -49,6 +49,17 @@ HTMLHelper::_('stylesheet', 'plg_system_passwordless/backend.css', [
 	'relative' => true,
 ]);
 
+// Ensure the GMP Extension is loaded in PHP - as this is required by third party library
+$hasGMP    = function_exists('gmp_intval') !== false;
+$hasBcMath = function_exists('bccomp') !== false;
+
+if (!$hasBcMath && !$hasBcMath)
+{
+	$error     = Joomla::_('PLG_SYSTEM_PASSWORDLESS_ERR_WEBAUTHN_REQUIRES_GMP_OR_BCMATCH');
+	$allow_add = false;
+}
+
+
 /**
  * Why not push these configuration variables directly to JavaScript?
  *
@@ -63,58 +74,61 @@ $postbackURL = base64_encode(rtrim(Uri::base(), '/') . '/index.php?' . Joomla::g
 ?>
 <div class="akpwl" id="akpwl-management-interface">
     <span id="<?= $randomId ?>"
-          data-public_key="<?= $publicKey ?>"
-          data-postback_url="<?= $postbackURL ?>"
-    ></span>
+		  data-public_key="<?= $publicKey ?>"
+		  data-postback_url="<?= $postbackURL ?>"
+	></span>
 
 	<?php if (is_string($error) && !empty($error)): ?>
-        <div class="akpwn-block--error">
+		<div class="akpwn-block--error">
 			<?= htmlentities($error) ?>
-        </div>
+		</div>
 	<?php endif; ?>
 
-    <table class="akpwl-table--striped">
-        <thead>
-        <tr>
-            <th><?= Joomla::_('PLG_SYSTEM_PASSWORDLESS_MANAGE_FIELD_KEYLABEL_LABEL') ?></th>
-            <th><?= Joomla::_('PLG_SYSTEM_PASSWORDLESS_MANAGE_HEADER_ACTIONS_LABEL') ?></th>
-        </tr>
-        </thead>
-        <tbody>
+	<table class="akpwl-table--striped">
+		<thead>
+		<tr>
+			<th><?= Joomla::_('PLG_SYSTEM_PASSWORDLESS_MANAGE_FIELD_KEYLABEL_LABEL') ?></th>
+			<th><?= Joomla::_('PLG_SYSTEM_PASSWORDLESS_MANAGE_HEADER_ACTIONS_LABEL') ?></th>
+		</tr>
+		</thead>
+		<tbody>
 		<?php foreach ($credentials as $method): ?>
-            <tr data-credential_id="<?= $method['id'] ?>">
-                <td><?= htmlentities($method['label']) ?></td>
-                <td>
-                    <button onclick="return akeeba_passwordless_edit_label(this, '<?= $randomId ?>');"
-                       class="akpwl-btn--teal">
-                        <span class="icon-edit icon-white"></span>
+			<tr data-credential_id="<?= $method['id'] ?>">
+				<td><?= htmlentities($method['label']) ?></td>
+				<td>
+					<button data-random-id="<?php echo $randomId; ?>"
+							class="plg_system_passwordless-manage-edit akpwl-btn--teal">
+						<span class="icon-edit icon-white" aria-hidden="true"></span>
 						<?= Joomla::_('PLG_SYSTEM_PASSWORDLESS_MANAGE_BTN_EDIT_LABEL') ?>
-                    </button>
-                    <button onclick="return akeeba_passwordless_delete(this, '<?= $randomId ?>');"
-                       class="akpwl-btn--red">
-                        <span class="icon-minus-sign icon-white"></span>
+					</button>
+					<button data-random-id="<?php echo $randomId; ?>"
+							class="plg_system_passwordless-manage-delete akpwl-btn--red">
+						<span class="icon-minus-sign icon-white" aria-hidden="true"></span>
 						<?= Joomla::_('PLG_SYSTEM_PASSWORDLESS_MANAGE_BTN_DELETE_LABEL') ?>
-                    </button>
-                </td>
-            </tr>
+					</button>
+				</td>
+			</tr>
 		<?php endforeach; ?>
 		<?php if (empty($credentials)): ?>
-            <tr>
-                <td colspan="2">
+			<tr>
+				<td colspan="2">
 					<?= Joomla::_('PLG_SYSTEM_PASSWORDLESS_MANAGE_HEADER_NOMETHODS_LABEL') ?>
-                </td>
-            </tr>
+				</td>
+			</tr>
 		<?php endif; ?>
-        </tbody>
-    </table>
+		</tbody>
+	</table>
 
 	<?php if ($allow_add): ?>
-        <p class="akpwl-manage-add-container">
-            <a onclick="akeeba_passwordless_create_credentials('<?= $randomId ?>', '#akpwl-management-interface');"
-               class="akpwl-btn--green--block">
-                <span class="icon-plus icon-white"></span>
-				<?= Joomla::_('PLG_SYSTEM_PASSWORDLESS_MANAGE_BTN_ADD_LABEL') ?>
-            </a>
-        </p>
+		<p class="akpwl-manage-add-container">
+			<button
+					type="button"
+					id="plg_system_passwordless-manage-add"
+					class="akpwl-btn--green--block"
+					data-random-id="<?php echo $randomId; ?>">
+				<span class="icon-plus icon-white" aria-hidden="true"></span>
+				<?php echo Joomla::_('PLG_SYSTEM_PASSWORDLESS_MANAGE_BTN_ADD_LABEL') ?>
+			</button>
+		</p>
 	<?php endif; ?>
 </div>

@@ -95,7 +95,7 @@ if ($relocate)
 	$js = <<< JS
 
 window.jQuery(document).ready(function(){
-	akeeba_passwordless_login_move_button(document.getElementById('{$randomId}'), [{$jsSelectors}]); 
+	akeeba.Passwordless.moveButton(document.getElementById('{$randomId}'), [{$jsSelectors}]); 
 });
 
 JS;
@@ -103,10 +103,10 @@ JS;
 }
 // END - MANDATORY CODE
 ?>
-<button class="<?= $class ?> hasTooltip"
-        onclick="return akeeba_passwordless_login(this, '<?= $uri->toString() ?>')"
+<button class="<?= $class ?> plg_system_passwordless_login_button hasTooltip"
         title="<?= Joomla::_('PLG_SYSTEM_PASSWORDLESS_LOGIN_DESC') ?>"
 		id="<?= $randomId ?>"
+		data-passwordless-url="<?= $uri->toString() ?>"
 >
 	<?php if (!empty($icon)): ?>
         <span class="<?= $icon ?>"></span>

@@ -44,7 +44,7 @@ abstract class Integration
 
 		$options = array_merge([
 			'class' => 'akeeba-passwordless-login-button',
-			'image' => 'plg_system_passwordless/passwordless-black.png',
+			'image' => 'plg_system_passwordless/webauthn-black.png',
 			'icon'  => '',
 		], $options);
 
@@ -69,9 +69,11 @@ abstract class Integration
 		]);
 
 		// Load the JavaScript
-		HTMLHelper::_('script', 'plg_system_passwordless/login.js', [
+		HTMLHelper::_('script', 'plg_system_passwordless/dist/passwordless.js', [
 			'relative'  => true,
 			'framework' => true,
+		], [
+			'defer' => true
 		]);
 
 		// Load language strings client-side

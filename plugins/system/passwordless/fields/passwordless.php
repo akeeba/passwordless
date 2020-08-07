@@ -40,9 +40,11 @@ class JFormFieldPasswordless extends FormField
 
 		$credentialRepository = new \Akeeba\Passwordless\CredentialRepository();
 
-		HTMLHelper::_('script', 'plg_system_passwordless/management.js', [
+		HTMLHelper::_('script', 'plg_system_passwordless/dist/passwordless.js', [
 			'relative'  => true,
 			'framework' => false,
+		], [
+			'defer' => true
 		]);
 
 		return Joomla::renderLayout('akeeba.passwordless.manage', [

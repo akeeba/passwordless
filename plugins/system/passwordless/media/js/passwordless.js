@@ -8,6 +8,12 @@ window.Joomla              = window.Joomla || {};
 window.akeeba              = window.akeeba || {};
 window.akeeba.Passwordless = window.akeeba.Passwordless || {};
 
+/**
+ * Akeeba Passwordless Login client-side implementation
+ *
+ * This is the EcmaScript 6+ source of the client-side implementation. It is meant to be transpiled to ES5.1 (plain old
+ * JavaScript) with Babel. The actual file being loaded can be found in dist/passwordless.js.
+ */
 ((Joomla, Passwordless, document) =>
 {
     "use strict";
@@ -79,44 +85,55 @@ window.akeeba.Passwordless = window.akeeba.Passwordless || {};
     /**
      * Find a form field described by the CSS selector fieldSelector.
      * The field must be inside a <form> element which is either the
-     * outerElement itself or enclosed by outerElement.
+     * innerElement itself or enclosed by innerElement.
      *
-     * @param   {Element}  outerElement   The element which is either our form or contains our form.
+     * @param   {Element}  innerElement   The element which is either our form or contains our form.
      * @param   {String}   fieldSelector  The CSS selector to locate the field
      *
      * @returns {null|Element}  NULL when no element is found
      */
-    const lookForField = (outerElement, fieldSelector) =>
+    const lookForField = (innerElement, fieldSelector) =>
     {
-        let elInput = null;
+        let elElement = innerElement.parentElement;
+        let elInput   = null;
 
-        if (!outerElement)
+        while (true)
         {
-            return elInput;
-        }
-
-        const elElement = outerElement.parentElement;
-
-        if (elElement.nodeName === "FORM")
-        {
-            elInput = findField(elElement, fieldSelector);
-
-            return elInput;
-        }
-
-        const elForms = elElement.querySelectorAll("form");
-
-        if (elForms.length)
-        {
-            for (let i = 0; i < elForms.length; i += 1)
+            if (!elElement)
             {
-                elInput = findField(elForms[i], fieldSelector);
+                return null;
+            }
+
+            if (elElement.nodeName === "FORM")
+            {
+                elInput = lookForField(elElement, fieldSelector);
 
                 if (elInput !== null)
                 {
                     return elInput;
                 }
+
+                break;
             }
+
+            const elForms = elElement.querySelectorAll("form");
+
+            if (elForms.length)
+            {
+                for (let i = 0; i < elForms.length; i++)
+                {
+                    elInput = findField(elForms[i], fieldSelector);
+
+                    if (elInput !== null)
+                    {
+                        return elInput;
+                    }
+                }
+
+                break;
+            }
+
+            elElement = elElement.parentElement;
         }
 
         return null;
@@ -127,17 +144,7 @@ window.akeeba.Passwordless = window.akeeba.Passwordless || {};
      *
      * @param   {String}  message
      */
-    const handleLoginError = (message) =>
-    {
-        Joomla.renderMessages({error: [message]});
-    };
-
-    /**
-     * A simple error handler
-     *
-     * @param   {String}  message
-     */
-    const handleCreationError = (message) =>
+    const reportErrorToUser = (message) =>
     {
         Joomla.renderMessages({error: [message]});
     };
@@ -174,7 +181,7 @@ window.akeeba.Passwordless = window.akeeba.Passwordless || {};
 
         if (!publicKey.challenge)
         {
-            handleLoginError(Joomla.JText._("PLG_SYSTEM_WEBAUTHN_ERR_INVALID_USERNAME"));
+            reportErrorToUser(Joomla.JText._("PLG_SYSTEM_PASSWORDLESS_ERR_INVALID_USERNAME"));
 
             return;
         }
@@ -217,7 +224,7 @@ window.akeeba.Passwordless = window.akeeba.Passwordless || {};
                  .catch((error) =>
                  {
                      // Example: timeout, interaction refused...
-                     handleLoginError(error);
+                     reportErrorToUser(error);
                  });
     };
 
@@ -237,7 +244,7 @@ window.akeeba.Passwordless = window.akeeba.Passwordless || {};
         // Make sure the browser supports Webauthn
         if (!("credentials" in navigator))
         {
-            Joomla.renderMessages({error: [Joomla.JText._("PLG_SYSTEM_WEBAUTHN_ERR_NO_BROWSER_SUPPORT")]});
+            Joomla.renderMessages({error: [Joomla.JText._("PLG_SYSTEM_PASSWORDLESS_ERR_NO_BROWSER_SUPPORT")]});
 
             return;
         }
@@ -335,7 +342,7 @@ window.akeeba.Passwordless = window.akeeba.Passwordless || {};
                          },
                          onError: (xhr) =>
                                   {
-                                      handleCreationError(`${xhr.status} ${xhr.statusText}`);
+                                      reportErrorToUser(`${xhr.status} ${xhr.statusText}`);
                                   },
                      });
                  })
@@ -343,7 +350,7 @@ window.akeeba.Passwordless = window.akeeba.Passwordless || {};
                  {
                      // An error occurred: timeout, request to provide the authenticator refused, hardware /
                      // software error...
-                     handleCreationError(error);
+                     reportErrorToUser(error);
                  });
     };
 
@@ -387,7 +394,7 @@ window.akeeba.Passwordless = window.akeeba.Passwordless || {};
 
         const elSave     = document.createElement("button");
         elSave.className = "btn btn-success btn-sm";
-        elSave.innerText = Joomla.JText._("PLG_SYSTEM_WEBAUTHN_MANAGE_BTN_SAVE_LABEL");
+        elSave.innerText = Joomla.JText._("PLG_SYSTEM_PASSWORDLESS_MANAGE_BTN_SAVE_LABEL");
         elSave.addEventListener("click", () =>
         {
             const elNewLabel = elInput.value;
@@ -424,15 +431,15 @@ window.akeeba.Passwordless = window.akeeba.Passwordless || {};
 
                         if (result !== true)
                         {
-                            handleCreationError(
-                                Joomla.JText._("PLG_SYSTEM_WEBAUTHN_ERR_LABEL_NOT_SAVED"),
+                            reportErrorToUser(
+                                Joomla.JText._("PLG_SYSTEM_PASSWORDLESS_ERR_LABEL_NOT_SAVED"),
                             );
                         }
                     },
                     onError: (xhr) =>
                              {
-                                 handleCreationError(
-                                     `${Joomla.JText._("PLG_SYSTEM_WEBAUTHN_ERR_LABEL_NOT_SAVED")
+                                 reportErrorToUser(
+                                     `${Joomla.JText._("PLG_SYSTEM_PASSWORDLESS_ERR_LABEL_NOT_SAVED")
                                      } -- ${xhr.status} ${xhr.statusText}`,
                                  );
                              },
@@ -448,7 +455,7 @@ window.akeeba.Passwordless = window.akeeba.Passwordless || {};
 
         const elCancel     = document.createElement("button");
         elCancel.className = "btn btn-danger btn-sm";
-        elCancel.innerText = Joomla.JText._("PLG_SYSTEM_WEBAUTHN_MANAGE_BTN_CANCEL_LABEL");
+        elCancel.innerText = Joomla.JText._("PLG_SYSTEM_PASSWORDLESS_MANAGE_BTN_CANCEL_LABEL");
         elCancel.addEventListener("click", () =>
         {
             elLabelTD.innerText = oldLabel;
@@ -530,8 +537,8 @@ window.akeeba.Passwordless = window.akeeba.Passwordless || {};
 
                 if (result !== true)
                 {
-                    handleCreationError(
-                        Joomla.JText._("PLG_SYSTEM_WEBAUTHN_ERR_NOT_DELETED"),
+                    reportErrorToUser(
+                        Joomla.JText._("PLG_SYSTEM_PASSWORDLESS_ERR_NOT_DELETED"),
                     );
 
                     return;
@@ -543,8 +550,8 @@ window.akeeba.Passwordless = window.akeeba.Passwordless || {};
                      {
                          elEdit.disabled   = false;
                          elDelete.disabled = false;
-                         handleCreationError(
-                             `${Joomla.JText._("PLG_SYSTEM_WEBAUTHN_ERR_NOT_DELETED")
+                         reportErrorToUser(
+                             `${Joomla.JText._("PLG_SYSTEM_PASSWORDLESS_ERR_NOT_DELETED")
                              } -- ${xhr.status} ${xhr.statusText}`,
                          );
                      },
@@ -645,23 +652,22 @@ window.akeeba.Passwordless = window.akeeba.Passwordless || {};
      * Initialize the passwordless login, going through the server to get the registered certificates
      * for the user.
      *
-     * @param   {string}   formId       The login form's or login module's HTML ID
+     * @param   {Element}  that         The login button which was clicked
      * @param   {string}   callbackUrl  The URL we will use to post back to the server. Must include
      *   the anti-CSRF token.
      *
      * @returns {boolean}  Always FALSE to prevent BUTTON elements from reloading the page.
      */
     // eslint-disable-next-line no-unused-vars
-    Passwordless.login = (formId, callbackUrl) =>
+    Passwordless.login = (that, callbackUrl) =>
     {
         // Get the username
-        const elFormContainer = document.getElementById(formId);
-        const elUsername      = lookForField(elFormContainer, "input[name=username]");
-        const elReturn        = lookForField(elFormContainer, "input[name=return]");
+        const elUsername = lookForField(that, "input[name=username]");
+        const elReturn   = lookForField(that, "input[name=return]");
 
         if (elUsername === null)
         {
-            Joomla.renderMessages({error: [Joomla.JText._("PLG_SYSTEM_WEBAUTHN_ERR_CANNOT_FIND_USERNAME")]});
+            Joomla.renderMessages({error: [Joomla.JText._("PLG_SYSTEM_PASSWORDLESS_ERR_CANNOT_FIND_USERNAME")]});
 
             return false;
         }
@@ -672,21 +678,21 @@ window.akeeba.Passwordless = window.akeeba.Passwordless || {};
         // No username? We cannot proceed. We need a username to find the acceptable public keys :(
         if (username === "")
         {
-            Joomla.renderMessages({error: [Joomla.JText._("PLG_SYSTEM_WEBAUTHN_ERR_EMPTY_USERNAME")]});
+            Joomla.renderMessages({error: [Joomla.JText._("PLG_SYSTEM_PASSWORDLESS_ERR_EMPTY_USERNAME")]});
 
             return false;
         }
 
         // Get the Public Key Credential Request Options (challenge and acceptable public keys)
         const postBackData = {
-            option:   "com_ajax",
-            group:    "system",
-            plugin:   "passwordless",
-            format:   "raw",
-            akaction: "challenge",
-            encoding: "raw",
-            username,
-            returnUrl,
+            option:      "com_ajax",
+            group:       "system",
+            plugin:      "passwordless",
+            format:      "raw",
+            akaction:    "challenge",
+            encoding:    "raw",
+            "username":  username,
+            "returnUrl": returnUrl
         };
 
         Joomla.request({
@@ -713,7 +719,7 @@ window.akeeba.Passwordless = window.akeeba.Passwordless || {};
             },
             onError: (xhr) =>
                      {
-                         handleLoginError(`${xhr.status} ${xhr.statusText}`);
+                         reportErrorToUser(`${xhr.status} ${xhr.statusText}`);
                      },
         });
 
@@ -726,6 +732,7 @@ window.akeeba.Passwordless = window.akeeba.Passwordless || {};
     Passwordless.initManagement = () =>
     {
         const addButton = document.getElementById("plg_system_passwordless-manage-add");
+
         if (addButton)
         {
             addButton.addEventListener("click", Passwordless.addOnClick);
@@ -757,10 +764,14 @@ window.akeeba.Passwordless = window.akeeba.Passwordless || {};
         {
             loginButtons.forEach((button) =>
             {
-                button.addEventListener("click", ({currentTarget}) =>
+                button.addEventListener("click", (e) =>
                 {
-                    Joomla.plgSystemWebauthnLogin(
-                        currentTarget.getAttribute("data-passwordless-form"),
+                    e.preventDefault();
+
+                    const currentTarget = e.currentTarget;
+
+                    Passwordless.login(
+                        currentTarget,
                         currentTarget.getAttribute("data-passwordless-url")
                     );
                 });
