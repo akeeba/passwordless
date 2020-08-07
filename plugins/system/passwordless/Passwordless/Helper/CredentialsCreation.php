@@ -22,6 +22,7 @@ use Cose\Algorithms;
 use Exception;
 use Joomla\CMS\Crypt\Crypt;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\User;
 use RuntimeException;
@@ -223,7 +224,7 @@ abstract class CredentialsCreation
 
 		if (empty($encodedOptions))
 		{
-			throw new RuntimeException(Joomla::_('PLG_SYSTEM_PASSWORDLESS_ERR_CREATE_NO_PK'));
+			throw new RuntimeException(Text::_('PLG_SYSTEM_PASSWORDLESS_ERR_CREATE_NO_PK'));
 		}
 
 		try
@@ -237,7 +238,7 @@ abstract class CredentialsCreation
 
 		if (!is_object($publicKeyCredentialCreationOptions) || !($publicKeyCredentialCreationOptions instanceof PublicKeyCredentialCreationOptions))
 		{
-			throw new RuntimeException(Joomla::_('PLG_SYSTEM_PASSWORDLESS_ERR_CREATE_NO_PK'));
+			throw new RuntimeException(Text::_('PLG_SYSTEM_PASSWORDLESS_ERR_CREATE_NO_PK'));
 		}
 
 		// Retrieve the stored user ID and make sure it's the same one in the request.
@@ -257,7 +258,7 @@ abstract class CredentialsCreation
 
 		if (($myUser->guest) || ($myUserId != $storedUserId))
 		{
-			throw new RuntimeException(Joomla::_('PLG_SYSTEM_PASSWORDLESS_ERR_CREATE_INVALID_USER'));
+			throw new RuntimeException(Text::_('PLG_SYSTEM_PASSWORDLESS_ERR_CREATE_INVALID_USER'));
 		}
 
 		// Cose Algorithm Manager

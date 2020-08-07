@@ -7,8 +7,10 @@
 
 use Akeeba\Passwordless\Helper\Joomla;
 use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\Layout\FileLayout;
 use Joomla\CMS\Uri\Uri;
+use Joomla\CMS\User\UserHelper;
 
 /**
  * Passwordless Login button
@@ -84,7 +86,7 @@ extract(array_merge([
 $uri = new Uri(Uri::base() . 'index.php');
 $uri->setVar(Joomla::getToken(), '1');
 
-$randomId = 'akpwl-login-' . Joomla::generateRandom(12) . '-' . Joomla::generateRandom(8);
+$randomId = 'akpwl-login-' . UserHelper::genRandomPassword(12) . '-' . UserHelper::genRandomPassword(8);
 
 $jsSelectors = implode(", ", array_map(function ($selector) {
 	return '"' . addslashes($selector) . '"';
@@ -104,16 +106,16 @@ JS;
 // END - MANDATORY CODE
 ?>
 <button class="<?= $class ?> plg_system_passwordless_login_button hasTooltip"
-        title="<?= Joomla::_('PLG_SYSTEM_PASSWORDLESS_LOGIN_DESC') ?>"
+        title="<?= Text::_('PLG_SYSTEM_PASSWORDLESS_LOGIN_DESC') ?>"
 		id="<?= $randomId ?>"
 		data-passwordless-url="<?= $uri->toString() ?>"
 >
 	<?php if (!empty($icon)): ?>
         <span class="<?= $icon ?>"></span>
 	<?php elseif (!empty($image)): ?>
-		<?= HTMLHelper::_('image', $image, Joomla::_('PLG_SYSTEM_PASSWORDLESS_LOGIN_DESC'), [
+		<?= HTMLHelper::_('image', $image, Text::_('PLG_SYSTEM_PASSWORDLESS_LOGIN_DESC'), [
 			'class' => 'icon',
 		], true) ?>
 	<?php endif; ?>
-	<?= Joomla::_('PLG_SYSTEM_PASSWORDLESS_LOGIN_LABEL') ?>
+	<?= Text::_('PLG_SYSTEM_PASSWORDLESS_LOGIN_LABEL') ?>
 </button>

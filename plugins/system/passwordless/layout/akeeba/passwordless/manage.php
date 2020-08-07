@@ -8,9 +8,11 @@
 use Akeeba\Passwordless\Helper\CredentialsCreation;
 use Akeeba\Passwordless\Helper\Joomla;
 use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\Layout\FileLayout;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\User;
+use Joomla\CMS\User\UserHelper;
 
 /**
  * Passwordless Login management interface
@@ -55,7 +57,7 @@ $hasBcMath = function_exists('bccomp') !== false;
 
 if (!$hasBcMath && !$hasBcMath)
 {
-	$error     = Joomla::_('PLG_SYSTEM_PASSWORDLESS_ERR_WEBAUTHN_REQUIRES_GMP_OR_BCMATCH');
+	$error     = Text::_('PLG_SYSTEM_PASSWORDLESS_ERR_WEBAUTHN_REQUIRES_GMP_OR_BCMATCH');
 	$allow_add = false;
 }
 
@@ -68,7 +70,7 @@ if (!$hasBcMath && !$hasBcMath)
  * do not replace existing values. This causes any retries to fail. By using a data storage object we circumvent
  * that problem.
  */
-$randomId    = 'akpwl_' . Joomla::generateRandom(32);
+$randomId    = 'akpwl_' . UserHelper::genRandomPassword(32);
 $publicKey   = $allow_add ? base64_encode(CredentialsCreation::createPublicKey($user)) : '{}';
 $postbackURL = base64_encode(rtrim(Uri::base(), '/') . '/index.php?' . Joomla::getToken() . '=1');
 ?>
@@ -87,8 +89,8 @@ $postbackURL = base64_encode(rtrim(Uri::base(), '/') . '/index.php?' . Joomla::g
 	<table class="akpwl-table--striped">
 		<thead>
 		<tr>
-			<th><?= Joomla::_('PLG_SYSTEM_PASSWORDLESS_MANAGE_FIELD_KEYLABEL_LABEL') ?></th>
-			<th><?= Joomla::_('PLG_SYSTEM_PASSWORDLESS_MANAGE_HEADER_ACTIONS_LABEL') ?></th>
+			<th><?= Text::_('PLG_SYSTEM_PASSWORDLESS_MANAGE_FIELD_KEYLABEL_LABEL') ?></th>
+			<th><?= Text::_('PLG_SYSTEM_PASSWORDLESS_MANAGE_HEADER_ACTIONS_LABEL') ?></th>
 		</tr>
 		</thead>
 		<tbody>
@@ -99,12 +101,12 @@ $postbackURL = base64_encode(rtrim(Uri::base(), '/') . '/index.php?' . Joomla::g
 					<button data-random-id="<?php echo $randomId; ?>"
 							class="plg_system_passwordless-manage-edit akpwl-btn--teal">
 						<span class="icon-edit icon-white" aria-hidden="true"></span>
-						<?= Joomla::_('PLG_SYSTEM_PASSWORDLESS_MANAGE_BTN_EDIT_LABEL') ?>
+						<?= Text::_('PLG_SYSTEM_PASSWORDLESS_MANAGE_BTN_EDIT_LABEL') ?>
 					</button>
 					<button data-random-id="<?php echo $randomId; ?>"
 							class="plg_system_passwordless-manage-delete akpwl-btn--red">
 						<span class="icon-minus-sign icon-white" aria-hidden="true"></span>
-						<?= Joomla::_('PLG_SYSTEM_PASSWORDLESS_MANAGE_BTN_DELETE_LABEL') ?>
+						<?= Text::_('PLG_SYSTEM_PASSWORDLESS_MANAGE_BTN_DELETE_LABEL') ?>
 					</button>
 				</td>
 			</tr>
@@ -112,7 +114,7 @@ $postbackURL = base64_encode(rtrim(Uri::base(), '/') . '/index.php?' . Joomla::g
 		<?php if (empty($credentials)): ?>
 			<tr>
 				<td colspan="2">
-					<?= Joomla::_('PLG_SYSTEM_PASSWORDLESS_MANAGE_HEADER_NOMETHODS_LABEL') ?>
+					<?= Text::_('PLG_SYSTEM_PASSWORDLESS_MANAGE_HEADER_NOMETHODS_LABEL') ?>
 				</td>
 			</tr>
 		<?php endif; ?>
@@ -127,7 +129,7 @@ $postbackURL = base64_encode(rtrim(Uri::base(), '/') . '/index.php?' . Joomla::g
 					class="akpwl-btn--green--block"
 					data-random-id="<?php echo $randomId; ?>">
 				<span class="icon-plus icon-white" aria-hidden="true"></span>
-				<?php echo Joomla::_('PLG_SYSTEM_PASSWORDLESS_MANAGE_BTN_ADD_LABEL') ?>
+				<?php echo Text::_('PLG_SYSTEM_PASSWORDLESS_MANAGE_BTN_ADD_LABEL') ?>
 			</button>
 		</p>
 	<?php endif; ?>

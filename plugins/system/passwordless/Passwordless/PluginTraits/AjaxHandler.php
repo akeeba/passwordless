@@ -14,6 +14,7 @@ use Akeeba\Passwordless\Exception\AjaxNonCmsAppException;
 use Akeeba\Passwordless\Helper\Joomla;
 use Exception;
 use Joomla\CMS\Application\CMSApplication;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Uri\Uri;
 use RuntimeException;
@@ -126,13 +127,13 @@ trait AjaxHandler
 
 			if ($input->getInt($token, 0) != 1)
 			{
-				throw new RuntimeException(Joomla::_('JERROR_ALERTNOAUTHOR'));
+				throw new RuntimeException(Text::_('JERROR_ALERTNOAUTHOR'));
 			}
 
 			// Empty action? No bueno.
 			if (empty($akaction))
 			{
-				throw new RuntimeException(Joomla::_('PLG_SYSTEM_PASSWORDLESS_ERR_AJAX_INVALIDACTION'));
+				throw new RuntimeException(Text::_('PLG_SYSTEM_PASSWORDLESS_ERR_AJAX_INVALIDACTION'));
 			}
 
 			// Call the plugin event onAjaxPasswordlessSomething where Something is the akaction param.

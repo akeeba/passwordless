@@ -28,7 +28,7 @@ class JFormFieldPasswordless extends FormField
 
 		if (is_null($user_id))
 		{
-			return Joomla::_('PLG_SYSTEM_PASSWORDLESS_ERR_NOUSER');
+			return Text::_('PLG_SYSTEM_PASSWORDLESS_ERR_NOUSER');
 		}
 
 		Text::script('PLG_SYSTEM_PASSWORDLESS_ERR_NO_BROWSER_SUPPORT', true);

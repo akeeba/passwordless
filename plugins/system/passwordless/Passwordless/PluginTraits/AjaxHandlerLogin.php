@@ -20,8 +20,13 @@ use Cose\Algorithm\Signature\ECDSA;
 use Cose\Algorithm\Signature\EdDSA;
 use Cose\Algorithm\Signature\RSA;
 use Exception;
+use JLoader;
+use Joomla\CMS\Application\BaseApplication;
 use Joomla\CMS\Authentication\Authentication;
+use Joomla\CMS\Authentication\AuthenticationResponse;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
+use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Uri\Uri;
 use RuntimeException;
 use Webauthn\AttestationStatement\AndroidKeyAttestationStatementSupport;
@@ -64,30 +69,30 @@ trait AjaxHandlerLogin
 		try
 		{
 			// Validate the authenticator response and get the user handle
-			$userHandle = $this->getUserHandleFromResponse();
+			$userHandle           = $this->getUserHandleFromResponse();
 			$credentialRepository = new CredentialRepository();
 
 			if (is_null($userHandle))
 			{
-				throw new RuntimeException(Joomla::_('PLG_SYSTEM_PASSWORDLESS_ERR_CREATE_INVALID_LOGIN_REQUEST'));
+				throw new RuntimeException(Text::_('PLG_SYSTEM_PASSWORDLESS_ERR_CREATE_INVALID_LOGIN_REQUEST'));
 			}
 
 			// If a user ID is NOT present in the session we need to get it from the user handle
 			if (empty($userId))
 			{
-				$userId               = $credentialRepository->getUserIdFromHandle($userHandle);
+				$userId = $credentialRepository->getUserIdFromHandle($userHandle);
 			}
 
 			// No user ID: no username was provided and the resident credential refers to an unknown user handle. DIE!
 			if (empty($userId))
 			{
-				throw new RuntimeException(Joomla::_('PLG_SYSTEM_PASSWORDLESS_ERR_CREATE_INVALID_LOGIN_REQUEST'));
+				throw new RuntimeException(Text::_('PLG_SYSTEM_PASSWORDLESS_ERR_CREATE_INVALID_LOGIN_REQUEST'));
 			}
 
 			// Does the user handle match the user ID? This should never trigger by definition of the login check.
 			if ($userHandle != $credentialRepository->getHandleFromUserId($userId))
 			{
-				throw new RuntimeException(Joomla::_('PLG_SYSTEM_PASSWORDLESS_ERR_CREATE_INVALID_LOGIN_REQUEST'));
+				throw new RuntimeException(Text::_('PLG_SYSTEM_PASSWORDLESS_ERR_CREATE_INVALID_LOGIN_REQUEST'));
 			}
 
 			// Make sure the user exists
@@ -95,26 +100,26 @@ trait AjaxHandlerLogin
 
 			if ($user->id != $userId)
 			{
-				throw new RuntimeException(Joomla::_('PLG_SYSTEM_PASSWORDLESS_ERR_CREATE_INVALID_LOGIN_REQUEST'));
+				throw new RuntimeException(Text::_('PLG_SYSTEM_PASSWORDLESS_ERR_CREATE_INVALID_LOGIN_REQUEST'));
 			}
 
 			// Login the user
 			Joomla::log('system', "Logging in the user", Log::INFO);
-			Joomla::loginUser((int) $userId);
+			$this->loginUser((int) $userId);
 		}
 		catch (\Throwable $e)
 		{
 			Joomla::setSessionVar('publicKeyCredentialRequestOptions', null, 'plg_system_passwordless');
 			Joomla::setSessionVar('userHandle', null, 'plg_system_passwordless');
 
-			$response                = Joomla::getAuthenticationResponseObject();
+			$response                = $this->getAuthenticationResponseObject();
 			$response->status        = Authentication::STATUS_UNKNOWN;
 			$response->error_message = $e->getMessage();
 
 			Joomla::log('system', sprintf("Received login failure. Message: %s", $e->getMessage()), Log::ERROR);
 
 			// This also enqueues the login failure message for display after redirection. Look for JLog in that method.
-			Joomla::processLoginFailure($response, null, 'system');
+			$this->processLoginFailure($response, null, 'system');
 		}
 		finally
 		{
@@ -132,6 +137,175 @@ trait AjaxHandlerLogin
 			// Redirect back to the page we were before.
 			Joomla::getApplication()->redirect($returnUrl);
 		}
+	}
+
+	/**
+	 * Logs in a user to the site, bypassing the authentication plugins.
+	 *
+	 * @param   int              $userId  The user ID to log in
+	 * @param   BaseApplication  $app     The application we are running in. Skip to auto-detect (recommended).
+	 *
+	 * @throws  Exception
+	 *
+	 * @since   1.0.0
+	 */
+	private function loginUser(int $userId, BaseApplication $app = null): void
+	{
+		// Trick the class auto-loader into loading the necessary classes
+		JLoader::import('joomla.user.authentication');
+		JLoader::import('joomla.plugin.helper');
+		JLoader::import('joomla.user.helper');
+		class_exists('Joomla\\CMS\\Authentication\\Authentication', true);
+
+		// Fake a successful login message
+		if (!is_object($app))
+		{
+			$app = Joomla::getApplication();
+		}
+
+		$isAdmin = $app->isClient('administrator');
+		$user    = Joomla::getUser($userId);
+
+		// Does the user account have a pending activation?
+		if (!empty($user->activation))
+		{
+			throw new RuntimeException(Text::_('JGLOBAL_AUTH_ACCESS_DENIED'));
+		}
+
+		// Is the user account blocked?
+		if ($user->block)
+		{
+			throw new RuntimeException(Text::_('JGLOBAL_AUTH_ACCESS_DENIED'));
+		}
+
+		$statusSuccess = Authentication::STATUS_SUCCESS;
+
+		$response                = $this->getAuthenticationResponseObject();
+		$response->status        = $statusSuccess;
+		$response->username      = $user->username;
+		$response->fullname      = $user->name;
+		$response->error_message = '';
+		$response->language      = $user->getParam('language');
+		$response->type          = 'Passwordless';
+
+		if ($isAdmin)
+		{
+			$response->language = $user->getParam('admin_language');
+		}
+
+		/**
+		 * Set up the login options.
+		 *
+		 * The 'remember' element forces the use of the Remember Me feature when logging in with Webauthn, as the
+		 * users would expect.
+		 *
+		 * The 'action' element is actually required by plg_user_joomla. It is the core ACL action the logged in user
+		 * must be allowed for the login to succeed. Please note that front-end and back-end logins use a different
+		 * action. This allows us to provide the social login button on both front- and back-end and be sure that if a
+		 * used with no backend access tries to use it to log in Joomla! will just slap him with an error message about
+		 * insufficient privileges - the same thing that'd happen if you tried to use your front-end only username and
+		 * password in a back-end login form.
+		 */
+		$options = [
+			'remember' => true,
+			'action'   => 'core.login.site',
+		];
+
+		if (Joomla::isAdminPage())
+		{
+			$options['action'] = 'core.login.admin';
+		}
+
+		// Run the user plugins. They CAN block login by returning boolean false and setting $response->error_message.
+		PluginHelper::importPlugin('user');
+		$results = Joomla::runPlugins('onUserLogin', [(array) $response, $options], $app);
+
+		// If there is no boolean FALSE result from any plugin the login is successful.
+		if (in_array(false, $results, true) == false)
+		{
+			// Set the user in the session, letting Joomla! know that we are logged in.
+			Joomla::getSession()->set('user', $user);
+
+			// Trigger the onUserAfterLogin event
+			$options['user']         = $user;
+			$options['responseType'] = $response->type;
+
+			// The user is successfully logged in. Run the after login events
+			Joomla::runPlugins('onUserAfterLogin', [$options], $app);
+
+			return;
+		}
+
+		// If we are here the plugins marked a login failure. Trigger the onUserLoginFailure Event.
+		Joomla::runPlugins('onUserLoginFailure', [(array) $response], $app);
+
+		// Log the failure
+		Log::add($response->error_message, Log::WARNING, 'jerror');
+
+		// Throw an exception to let the caller know that the login failed
+		throw new RuntimeException($response->error_message);
+	}
+
+	/**
+	 * Returns a (blank) Joomla! authentication response
+	 *
+	 * @return  AuthenticationResponse
+	 *
+	 * @since   1.0.0
+	 */
+	private function getAuthenticationResponseObject(): AuthenticationResponse
+	{
+		// Force the class auto-loader to load the JAuthentication class
+		JLoader::import('joomla.user.authentication');
+		class_exists('Joomla\\CMS\\Authentication\\Authentication', true);
+
+		return new AuthenticationResponse();
+	}
+
+	/**
+	 * Have Joomla! process a login failure
+	 *
+	 * @param   AuthenticationResponse  $response    The Joomla! auth response object
+	 * @param   BaseApplication         $app         The application we are running in. Skip to auto-detect
+	 *                                               (recommended).
+	 * @param   string                  $logContext  Logging context (plugin name). Default: system.
+	 *
+	 * @return  bool
+	 *
+	 * @throws  Exception
+	 *
+	 * @since   1.0.0
+	 */
+	private function processLoginFailure(AuthenticationResponse $response, BaseApplication $app = null, string $logContext = 'system')
+	{
+		// Import the user plugin group.
+		PluginHelper::importPlugin('user');
+
+		if (!is_object($app))
+		{
+			$app = Joomla::getApplication();
+		}
+
+		// Trigger onUserLoginFailure Event.
+		Joomla::log($logContext, "Calling onUserLoginFailure plugin event");
+		Joomla::runPlugins('onUserLoginFailure', [(array) $response], $app);
+
+		// If status is success, any error will have been raised by the user plugin
+		$expectedStatus = Authentication::STATUS_SUCCESS;
+
+		if ($response->status !== $expectedStatus)
+		{
+			Joomla::log($logContext, "The login failure has been logged in Joomla's error log");
+
+			// Everything logged in the 'jerror' category ends up being enqueued in the application message queue.
+			Log::add($response->error_message, Log::WARNING, 'jerror');
+		}
+		else
+		{
+			Joomla::log($logContext, "The login failure was caused by a third party user plugin but it did not return any further information. Good luck figuring this one out...", Log::WARNING);
+		}
+
+		return false;
 	}
 
 	/**
@@ -155,7 +329,7 @@ trait AjaxHandlerLogin
 
 		if (empty($data))
 		{
-			throw new RuntimeException(Joomla::_('PLG_SYSTEM_PASSWORDLESS_ERR_CREATE_INVALID_LOGIN_REQUEST'));
+			throw new RuntimeException(Text::_('PLG_SYSTEM_PASSWORDLESS_ERR_CREATE_INVALID_LOGIN_REQUEST'));
 		}
 
 		$publicKeyCredentialRequestOptions = $this->getPKCredentialRequestOptions();
@@ -283,7 +457,7 @@ trait AjaxHandlerLogin
 
 		if (empty($encodedOptions))
 		{
-			throw new RuntimeException(Joomla::_('PLG_SYSTEM_PASSWORDLESS_ERR_CREATE_INVALID_LOGIN_REQUEST'));
+			throw new RuntimeException(Text::_('PLG_SYSTEM_PASSWORDLESS_ERR_CREATE_INVALID_LOGIN_REQUEST'));
 		}
 
 		try
@@ -292,16 +466,15 @@ trait AjaxHandlerLogin
 		}
 		catch (Exception $e)
 		{
-			throw new RuntimeException(Joomla::_('PLG_SYSTEM_PASSWORDLESS_ERR_CREATE_INVALID_LOGIN_REQUEST'));
+			throw new RuntimeException(Text::_('PLG_SYSTEM_PASSWORDLESS_ERR_CREATE_INVALID_LOGIN_REQUEST'));
 		}
 
 		if (!is_object($publicKeyCredentialCreationOptions) ||
 			!($publicKeyCredentialCreationOptions instanceof PublicKeyCredentialRequestOptions))
 		{
-			throw new RuntimeException(Joomla::_('PLG_SYSTEM_PASSWORDLESS_ERR_CREATE_INVALID_LOGIN_REQUEST'));
+			throw new RuntimeException(Text::_('PLG_SYSTEM_PASSWORDLESS_ERR_CREATE_INVALID_LOGIN_REQUEST'));
 		}
 
 		return $publicKeyCredentialCreationOptions;
 	}
-
 }
