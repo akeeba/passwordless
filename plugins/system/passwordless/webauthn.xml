@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ @package   AkeebaPasswordlessLogin
+  ~ @copyright Copyright (c)2018-2019 Nicholas K. Dionysopoulos / Akeeba Ltd
+  ~ @license   GNU General Public License version 3, or later
+  -->
+
+<extension version="3.9.0" type="plugin" group="system" method="upgrade">
+    <name>PLG_SYSTEM_PASSWORDLESS</name>
+    <version>revD796561</version>
+    <creationDate>2019-03-13</creationDate>
+
+    <author>Akeeba Ltd</author>
+    <authorEmail>no-reply@akeeba.com</authorEmail>
+    <authorUrl>https://www.akeeba.com</authorUrl>
+
+    <copyright>Copyright (c)2016-2019 Akeeba Ltd</copyright>
+    <license>GNU GPL v3 or later</license>
+
+    <description>PLG_SYSTEM_PASSWORDLESS_DESCRIPTION</description>
+
+    <files>
+        <filename plugin="passwordless">passwordless.php</filename>
+        <folder>fields</folder>
+        <folder>layout</folder>
+        <folder>sql</folder>
+        <folder>vendor</folder>
+        <folder>Passwordless</folder>
+    </files>
+
+    <media folder="media" destination="plg_system_passwordless">
+        <folder>css</folder>
+        <folder>images</folder>
+        <folder>js</folder>
+    </media>
+
+    <languages folder="language">
+        <language tag="en-GB">en-GB/en-GB.plg_system_passwordless.ini</language>
+        <language tag="en-GB">en-GB/en-GB.plg_system_passwordless.sys.ini</language>
+    </languages>
+
+    <config>
+        <fields name="params">
+            <fieldset name="basic">
+                <field
+                        name="loginmodules"
+                        type="text"
+                        label="PLG_SYSTEM_PASSWORDLESS_CONFIG_LOGINMODULES_LABEL"
+                        description="PLG_SYSTEM_PASSWORDLESS_CONFIG_LOGINMODULES_DESC"
+                        default="mod_login"
+                />
+
+                <field
+                        name="backendloginmodules"
+                        type="text"
+                        label="PLG_SYSTEM_PASSWORDLESS_CONFIG_BACKENDLOGINMODULES_LABEL"
+                        description="PLG_SYSTEM_PASSWORDLESS_CONFIG_BACKENDLOGINMODULES_DESC"
+                        default="mod_login"
+                />
+
+                <field
+                        name="relocate"
+                        type="list"
+                        label="PLG_SYSTEM_PASSWORDLESS_CONFIG_RELOCATE_LABEL"
+                        description="PLG_SYSTEM_PASSWORDLESS_CONFIG_RELOCATE_DESC"
+                        default="1"
+                >
+                    <option value="1">PLG_SYSTEM_PASSWORDLESS_CONFIG_RELOCATE_OPT_NEXTTOLOGIN</option>
+                    <option value="0">PLG_SYSTEM_PASSWORDLESS_CONFIG_RELOCATE_OPT_ENDOFMODULE</option>
+                </field>
+
+                <field
+                        name="interceptlogin"
+                        type="radio"
+                        label="PLG_SYSTEM_PASSWORDLESS_CONFIG_INTERCEPTLOGIN_LABEL"
+                        description="PLG_SYSTEM_PASSWORDLESS_CONFIG_INTERCEPTLOGIN_DESC"
+                        default="1"
+                        class="btn-group btn-group-yesno"
+                >
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+            </fieldset>
+            <fieldset name="passwordless_expert">
+                <field
+                        name="relocate_selectors"
+                        type="textarea"
+                        label="PLG_SYSTEM_PASSWORDLESS_CONFIG_RELOCATESELECTORS_LABEL"
+                        description="PLG_SYSTEM_PASSWORDLESS_CONFIG_RELOCATESELECTORS_DESC"
+                        default='#form-login-submit > button, button[type=submit], [type=submit], [id*="submit"]'
+                        class="input-xlarge"
+                        cols="50"
+                        rows="10"
+                />
+
+            </fieldset>
+        </fields>
+    </config>
+
+    <!-- Handle the database installation and updates -->
+    <install>
+        <sql>
+            <file driver="mysql" charset="utf8">sql/mysql/install.sql</file>
+            <file driver="postgresql" charset="utf8">sql/postgresql/install.sql</file>
+        </sql>
+    </install>
+    <uninstall>
+        <sql>
+            <file driver="mysql" charset="utf8">sql/mysql/uninstall.sql</file>
+            <file driver="postgresql" charset="utf8">sql/postgresql/uninstall.sql</file>
+        </sql>
+    </uninstall>
+    <update>
+        <schemas>
+            <schemapath type="mysql">sql/mysql/updates</schemapath>
+            <schemapath type="postgresql">sql/postgresql/updates</schemapath>
+        </schemas>
+    </update>
+
+</extension>

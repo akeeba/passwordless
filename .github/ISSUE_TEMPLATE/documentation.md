@@ -19,7 +19,7 @@ Please state the concern leading you to request a documentation change.
 
 Paste the passage you have an issue with.
 
-### New documention passage
+### New documentation passage
 
 Write the new documentation passage.
 

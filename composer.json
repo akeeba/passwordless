@@ -6,12 +6,12 @@
   "authors": [
     {
       "name": "Nicholas K. Dionysopoulos",
-      "homepage": "https://www.AkeebaBackup.com",
+      "homepage": "https://www.akeeba.com",
       "role": "Lead Developer"
     }
   ],
   "config": {
-    "vendor-dir": "plugins/system/webauthn/vendor"
+    "vendor-dir": "plugins/system/passwordless/vendor"
   },
   "require": {
     "php": "^7.2",

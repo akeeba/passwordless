@@ -22,7 +22,7 @@ class Pkg_PasswordlessInstallerScript
 	 *
 	 * @var   string
 	 */
-	protected $minimumJoomlaVersion = '3.8.0';
+	protected $minimumJoomlaVersion = '3.9.0';
 
 	/**
 	 * The maximum Joomla! version this extension can be installed on
@@ -39,7 +39,7 @@ class Pkg_PasswordlessInstallerScript
 	 */
 	protected $extensionsToEnable = array(
 		// System plugins
-		array('plugin', 'webauthn', 1, 'system'),
+		array('plugin', 'passwordless', 1, 'system'),
 	);
 
 	/**

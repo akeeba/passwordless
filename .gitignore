@@ -36,7 +36,7 @@
 /plugins/*/*/language/en-GB
 
 # Dependencies
-/plugins/system/webauthn/vendor
+/plugins/system/passwordless/vendor
 
 # Node.js modules (used to install Babel)
 /node_modules

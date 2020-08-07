@@ -6,7 +6,7 @@
       </sourceFilesUrls>
     </properties>
     <CLASSES>
-      <root url="file://$PROJECT_DIR$/plugins/system/webauthn/media/js/management.min.js" />
+      <root url="file://$PROJECT_DIR$/plugins/system/passwordless/media/js/management.min.js" />
     </CLASSES>
     <SOURCES />
   </library>

@@ -2,24 +2,15 @@
 <project name="AkeebaPasswordlessLogin" description="Akeeba Passwordless Login" default="git" >
 	<import file="${phing.dir}/../../buildfiles/phing/common.xml" />
 
-	<!-- Fileset for building the package ZIP -->
-	<fileset dir="${dirs.release}" id="package">
-		<include name="com_*.zip" />
-		<include name="mod_*.zip" />
-		<include name="plg_*.zip" />
-		<include name="lib_*.zip" />
-		<include name="pkg_*.xml" />
-		<include name="*.txt" />
-		<include name="script.*.php" />
-	</fileset>
-
 	<!--
 	====================================================================================================
 	Build customization
 	====================================================================================================
 	-->
-	<target name="package-com" description="Builds the component">
-		<echo>This is a plugins only project. No components are built.</echo>
+	<target name="package-pkg" description="Installation package" depends="new-release, setup-properties, package-plugins">
+
+		<!-- Dependencies are enough -->
+
 	</target>
 
 	<!--
