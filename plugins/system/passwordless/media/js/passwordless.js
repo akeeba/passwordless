@@ -14,7 +14,7 @@ window.akeeba.Passwordless = window.akeeba.Passwordless || {};
  * This is the EcmaScript 6+ source of the client-side implementation. It is meant to be transpiled to ES5.1 (plain old
  * JavaScript) with Babel. The actual file being loaded can be found in dist/passwordless.js.
  */
-((Joomla, Passwordless, document, window) =>
+((Joomla, Passwordless, document) =>
 {
     "use strict";
 
@@ -152,6 +152,43 @@ window.akeeba.Passwordless = window.akeeba.Passwordless || {};
     };
 
     /**
+     * Fixes a base64-encoded URL to a format that can be decoded by ECMAScript
+     *
+     * @param   {String} input
+     *
+     * @returns {string}
+     */
+    const base64url2base64 = (input) =>
+    {
+        let output = input
+            .replace(/-/g, "+")
+            .replace(/_/g, "/");
+
+        const pad  = output.length % 4;
+
+        if (pad)
+        {
+            if (pad === 1)
+            {
+                throw new Error(
+                    "InvalidLengthError: Input base64url string is the wrong length to determine padding");
+            }
+            output += new Array(5 - pad).join("=");
+        }
+
+        return output;
+    };
+
+    /**
+     * Convert a byte array to a base64-encoded string
+     *
+     * @param   {Array}  a
+     *
+     * @returns {string}
+     */
+    const arrayToBase64String = (a) => btoa(String.fromCharCode(...a));
+
+    /**
      * Handles the browser response for the user interaction with the authenticator. Redirects to an
      * internal page which handles the login server-side.
      *
@@ -161,26 +198,6 @@ window.akeeba.Passwordless = window.akeeba.Passwordless || {};
      */
     const handleLoginChallenge = (publicKey, callbackUrl) =>
     {
-        const arrayToBase64String = (a) => btoa(String.fromCharCode(...a));
-
-        const base64url2base64 = (input) =>
-        {
-            let output = input
-                .replace(/-/g, "+")
-                .replace(/_/g, "/");
-            const pad  = output.length % 4;
-            if (pad)
-            {
-                if (pad === 1)
-                {
-                    throw new Error(
-                        "InvalidLengthError: Input base64url string is the wrong length to determine padding");
-                }
-                output += new Array(5 - pad).join("=");
-            }
-            return output;
-        };
-
         if (!publicKey.challenge)
         {
             reportErrorToUser(Joomla.JText._("PLG_SYSTEM_PASSWORDLESS_ERR_INVALID_USERNAME"));
@@ -261,26 +278,6 @@ window.akeeba.Passwordless = window.akeeba.Passwordless || {};
 
         const publicKey = JSON.parse(atob(elStore.dataset.public_key));
         const postURL   = atob(elStore.dataset.postback_url);
-
-        const arrayToBase64String = (a) => btoa(String.fromCharCode(...a));
-
-        const base64url2base64 = (input) =>
-        {
-            let output = input
-                .replace(/-/g, "+")
-                .replace(/_/g, "/");
-            const pad  = output.length % 4;
-            if (pad)
-            {
-                if (pad === 1)
-                {
-                    throw new Error(
-                        "InvalidLengthError: Input base64url string is the wrong length to determine padding");
-                }
-                output += new Array(5 - pad).join("=");
-            }
-            return output;
-        };
 
         // Convert the public key information to a format usable by the browser's credentials manager
         publicKey.challenge = Uint8Array.from(
@@ -762,6 +759,7 @@ window.akeeba.Passwordless = window.akeeba.Passwordless || {};
     Passwordless.initLogin = () =>
     {
         const loginButtons = [].slice.call(document.querySelectorAll(".plg_system_passwordless_login_button"));
+
         if (loginButtons.length)
         {
             loginButtons.forEach((button) =>
@@ -785,4 +783,4 @@ window.akeeba.Passwordless = window.akeeba.Passwordless || {};
     Passwordless.initManagement();
     Passwordless.initLogin();
 
-})(Joomla, window.akeeba.Passwordless, document, window);
+})(Joomla, window.akeeba.Passwordless, document);
