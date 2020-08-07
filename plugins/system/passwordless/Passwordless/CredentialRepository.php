@@ -360,6 +360,81 @@ class CredentialRepository implements PublicKeyCredentialSourceRepository
 	}
 
 	/**
+	 * Get the user ID from the user handle
+	 *
+	 * This is a VERY inefficient method. Since the user handle is an HMAC-SHA-256 of the user ID we can't just go
+	 * directly from a handle back to an ID. We have to iterate all user IDs, calculate their handles and compare them
+	 * to the given handle.
+	 *
+	 * To prevent a lengthy infinite loop in case of an invalid user handle we don't iterate the entire 2+ billion valid
+	 * 32-bit integer range. We load the user IDs of active users (not blocked, not pending activation) and iterate
+	 * through them.
+	 *
+	 * To avoid memory outage on large sites with thousands of active user records we load up to 10000 users at a time.
+	 * Each block of 10,000 user IDs takes about 60-80 msec to iterate. On a site with 200,000 active users this method
+	 * will take less than 1.5 seconds. This is slow but not impractical, even on crowded shared hosts with a quarter of
+	 * the performance of my test subject (a mid-range, shared hosting server).
+	 *
+	 * @param   string|null  $userHandle
+	 *
+	 * @return int|null
+	 */
+	public function getUserIdFromHandle(?string $userHandle): ?int
+	{
+		if (empty($userHandle))
+		{
+			return null;
+		}
+
+		$db    = Joomla::getDbo();
+		$query = $db->getQuery(true)
+			->select([$db->qn('id')])
+			->from($db->qn('#__users'))
+			->where($db->qn('block') . ' = 0')
+			->where(
+				'(' .
+				$db->qn('activation') . ' IS NULL OR ' .
+				$db->qn('activation') . ' = 0 OR ' .
+				$db->qn('activation') . ' = ' . $db->q('') .
+				')'
+			);
+
+		$key   = $this->getEncryptionKey();
+		$start = 0;
+		$limit = 10000;
+
+		while (true)
+		{
+			try
+			{
+				$ids = $db->setQuery($query, $start, $limit)->loadColumn();
+			}
+			catch (Exception $e)
+			{
+				return null;
+			}
+
+			if (empty($ids))
+			{
+				return null;
+			}
+
+			foreach ($ids as $userId)
+			{
+				$data       = sprintf('%010u', $userId);
+				$thisHandle = hash_hmac('sha256', $data, $key, false);
+
+				if ($thisHandle == $userHandle)
+				{
+					return $userId;
+				}
+			}
+
+			$start += $limit;
+		}
+	}
+
+	/**
 	 * Encrypt the credential source before saving it to the database
 	 *
 	 * @param string $credential The unencrypted, JSON-encoded credential source

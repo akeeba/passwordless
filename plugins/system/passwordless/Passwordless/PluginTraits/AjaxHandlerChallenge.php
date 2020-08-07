@@ -40,8 +40,7 @@ trait AjaxHandlerChallenge
 	public function onAjaxWebauthnChallenge()
 	{
 		// Initialize objects
-		$input      = Joomla::getApplication()->input;
-		$repository = new CredentialRepository();
+		$input = Joomla::getApplication()->input;
 
 		// Retrieve data from the request
 		$username  = $input->getUsername('username', '');
@@ -58,58 +57,17 @@ trait AjaxHandlerChallenge
 
 		Joomla::setSessionVar('returnUrl', $returnUrl, 'plg_system_passwordless');
 
-		// Do I have a username?
-		if (empty($username))
-		{
-			return json_encode(false);
-		}
-
-		// Is the username valid?
+		// Get the user_id from the username, if a username was specified at all
 		try
 		{
-			$user_id = UserHelper::getUserId($username);
+			$user_id = empty($username) ? 0 : UserHelper::getUserId($username);
 		}
 		catch (Exception $e)
 		{
 			$user_id = 0;
 		}
 
-		if ($user_id <= 0)
-		{
-			return json_encode(false);
-		}
-
-		// Load the saved credentials into an array of PublicKeyCredentialDescriptor objects
-		try
-		{
-			$userEntity  = new PublicKeyCredentialUserEntity('', $repository->getHandleFromUserId($user_id), '');
-			$credentials = $repository->findAllForUserEntity($userEntity);
-		}
-		catch (Exception $e)
-		{
-			return json_encode(false);
-		}
-
-		// No stored credentials?
-		if (empty($credentials))
-		{
-			return json_encode(false);
-		}
-
-		$registeredPublicKeyCredentialDescriptors = [];
-
-		/** @var PublicKeyCredentialSource $record */
-		foreach ($credentials as $record)
-		{
-			try
-			{
-				$registeredPublicKeyCredentialDescriptors[] = $record->getPublicKeyCredentialDescriptor();
-			}
-			catch (Throwable $e)
-			{
-				continue;
-			}
-		}
+		$registeredPublicKeyCredentialDescriptors = $this->getRegisteredPublicKeyCredentialDescriptors($user_id);
 
 		// Extensions
 		$extensions = new AuthenticationExtensionsClientInputs();
@@ -126,10 +84,59 @@ trait AjaxHandlerChallenge
 
 		// Save in session. This is used during the verification stage to prevent replay attacks.
 		Joomla::setSessionVar('publicKeyCredentialRequestOptions', base64_encode(serialize($publicKeyCredentialRequestOptions)), 'plg_system_passwordless');
-		Joomla::setSessionVar('userHandle', $repository->getHandleFromUserId($user_id), 'plg_system_passwordless');
-		Joomla::setSessionVar('userId', $user_id, 'plg_system_passwordless');
 
 		// Return the JSON encoded data to the caller
 		return json_encode($publicKeyCredentialRequestOptions, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+	}
+
+	/**
+	 * @param   int  $user_id
+	 *
+	 * @return array
+	 */
+	private function getRegisteredPublicKeyCredentialDescriptors(int $user_id): array
+	{
+		$registeredPublicKeyCredentialDescriptors = [];
+
+		if (empty($user_id))
+		{
+			return $registeredPublicKeyCredentialDescriptors;
+		}
+
+		// Load the saved credentials into an array of PublicKeyCredentialDescriptor objects
+		try
+		{
+			$repository  = new CredentialRepository();
+			$userEntity  = new PublicKeyCredentialUserEntity('', $repository->getHandleFromUserId($user_id), '');
+			$credentials = $repository->findAllForUserEntity($userEntity);
+		}
+		catch (Exception $e)
+		{
+			return $registeredPublicKeyCredentialDescriptors;
+		}
+
+		// No stored credentials?
+		if (empty($credentials))
+		{
+			return $registeredPublicKeyCredentialDescriptors;
+		}
+
+		/** @var PublicKeyCredentialSource $record */
+		foreach ($credentials as $record)
+		{
+			try
+			{
+				$registeredPublicKeyCredentialDescriptors[] = $record->getPublicKeyCredentialDescriptor();
+			}
+			catch (Throwable $e)
+			{
+				continue;
+			}
+		}
+
+		Joomla::setSessionVar('userHandle', $repository->getHandleFromUserId($user_id), 'plg_system_passwordless');
+		Joomla::setSessionVar('userId', $user_id, 'plg_system_passwordless');
+
+		return $registeredPublicKeyCredentialDescriptors;
 	}
 }

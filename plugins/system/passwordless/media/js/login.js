@@ -1,6 +1,6 @@
-/**
+/*
  * @package   AkeebaPasswordlessLogin
- * @copyright Copyright (c)2018-2019 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2018-2020 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -136,14 +136,6 @@ function akeeba_passwordless_login(that, callback_url)
     var username  = elUsername.value;
     var returnUrl = elReturn ? elReturn.value : null;
 
-    // No username? We cannot proceed. We need a username to find the acceptable public keys :(
-    if (username === "")
-    {
-        alert(Joomla.JText._("PLG_SYSTEM_PASSWORDLESS_ERR_EMPTY_USERNAME"));
-
-        return false;
-    }
-
     // Get the Public Key Credential Request Options (challenge and acceptable public keys)
     var postBackData = {
         "option":    "com_ajax",
@@ -153,7 +145,7 @@ function akeeba_passwordless_login(that, callback_url)
         "akaction":  "challenge",
         "encoding":  "raw",
         "username":  username,
-        "returnUrl": returnUrl,
+        "returnUrl": returnUrl
     };
 
     window.jQuery.ajax({
@@ -162,12 +154,14 @@ function akeeba_passwordless_login(that, callback_url)
         data:     postBackData,
         dataType: "json"
     })
-        .done(function (jsonData) {
-            akeeba_passwordless_handle_login_challenge(jsonData, callback_url);
-        })
-        .fail(function (error) {
-            akeeba_passwordless_handle_login_error(error.status + " " + error.statusText);
-        });
+          .done(function (jsonData)
+          {
+              akeeba_passwordless_handle_login_challenge(jsonData, callback_url);
+          })
+          .fail(function (error)
+          {
+              akeeba_passwordless_handle_login_error(error.status + " " + error.statusText);
+          });
 
     return false;
 }
@@ -190,43 +184,55 @@ function akeeba_passwordless_handle_login_challenge(publicKey, callback_url)
 
     var fixedChallenge = publicKey.challenge.replace(/-/g, "+").replace(/_/g, "/");
 
-    publicKey.challenge        = Uint8Array.from(window.atob(fixedChallenge), function (c) {
+    publicKey.challenge = Uint8Array.from(window.atob(fixedChallenge), function (c)
+    {
         return c.charCodeAt(0);
     });
-    publicKey.allowCredentials = publicKey.allowCredentials.map(function (data) {
-        return akeeba_passwordless_object_merge(data, {
-            "id": Uint8Array.from(atob(data.id), function (c) {
-                return c.charCodeAt(0);
-            })
+
+    if (typeof publicKey.allowCredentials != "undefined")
+    {
+        publicKey.allowCredentials = publicKey.allowCredentials.map(function (data)
+        {
+            return akeeba_passwordless_object_merge(data, {
+                "id": Uint8Array.from(atob(data.id), function (c)
+                {
+                    return c.charCodeAt(0);
+                })
+            });
         });
-    });
+    }
 
     navigator.credentials.get({
         publicKey: publicKey
     })
-        .then(function (data) {
-            var publicKeyCredential = {
-                id:       data.id,
-                type:     data.type,
-                rawId:    akeeba_passwordless_arrayToBase64String(new Uint8Array(data.rawId)),
-                response: {
-                    authenticatorData: akeeba_passwordless_arrayToBase64String(new Uint8Array(data.response.authenticatorData)),
-                    clientDataJSON:    akeeba_passwordless_arrayToBase64String(new Uint8Array(data.response.clientDataJSON)),
-                    signature:         akeeba_passwordless_arrayToBase64String(new Uint8Array(data.response.signature)),
-                    userHandle:        data.response.userHandle ? akeeba_passwordless_arrayToBase64String(
-                        new Uint8Array(data.response.userHandle)) : null
-                }
-            };
+             .then(function (data)
+             {
+                 var publicKeyCredential = {
+                     id:       data.id,
+                     type:     data.type,
+                     rawId:    akeeba_passwordless_arrayToBase64String(new Uint8Array(data.rawId)),
+                     response: {
+                         authenticatorData: akeeba_passwordless_arrayToBase64String(
+                             new Uint8Array(data.response.authenticatorData)),
+                         clientDataJSON:    akeeba_passwordless_arrayToBase64String(
+                             new Uint8Array(data.response.clientDataJSON)),
+                         signature:         akeeba_passwordless_arrayToBase64String(
+                             new Uint8Array(data.response.signature)),
+                         userHandle:        data.response.userHandle ? akeeba_passwordless_arrayToBase64String(
+                             new Uint8Array(data.response.userHandle)) : null
+                     }
+                 };
 
-            window.location =
-                callback_url + "&option=com_ajax&group=system&plugin=passwordless&format=raw&akaction=login&encoding=redirect&data=" +
-                btoa(JSON.stringify(publicKeyCredential));
+                 window.location =
+                     callback_url + "&option=com_ajax&group=system&plugin=passwordless&format=raw&akaction=login&encoding=redirect&data=" +
+                     btoa(JSON.stringify(publicKeyCredential));
 
-        }, function (error) {
-            // Example: timeout, interaction refused...
-            console.log(error);
-            akeeba_passwordless_handle_login_error(error);
-        });
+             }, function (error)
+             {
+                 // Example: timeout, interaction refused...
+                 console.log(error);
+                 akeeba_passwordless_handle_login_error(error);
+             });
 }
 
 /**

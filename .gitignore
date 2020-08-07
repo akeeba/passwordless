@@ -31,10 +31,6 @@
 # Built packages
 /release
 
-# Internal language symlinks
-/modules/*/*/language/en-GB
-/plugins/*/*/language/en-GB
-
 # Dependencies
 /plugins/system/passwordless/vendor
 

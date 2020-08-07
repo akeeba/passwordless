@@ -54,17 +54,46 @@ use Zend\Diactoros\ServerRequestFactory;
  */
 abstract class CredentialsCreation
 {
+	public const AUTHENTICATOR_U2F = 1;
+
+	public const AUTHENTICATOR_FIDO2 = 2;
+
+	public const AUTHENTICATOR_TPM = 3;
+
 	/**
 	 * Create a public key for credentials creation. The result is a JSON string which can be used in Javascript code
 	 * with navigator.credentials.create().
 	 *
-	 * @param User $user The Joomla user to create the public key for
+	 * There are three authenticator types for which a Public Key can be created with this method:
+	 *
+	 * * **U2F** (`AUTHENTICATOR_U2F`). This is the legacy and most compatible method. It instructs the browser to use
+	 *   CTAP1 and is compatible with both FIDO1 and FIDO2 keys. The downside is that the resulting key is not stored
+	 *   on the authenticator (it is NOT resident), therefore you MUST provide your username to log in with WebAuthn.
+	 *   This is the default if nothing else is specified.
+	 * * **FIDO2** (`AUTHENTICATOR_FIDO2`). This is the newer and recommended method, as long as the user has a
+	 *   compatible authenticator. It uses CTAP2 which is currently only available for FIDO2 keys. It requests that the
+	 *   resulting key is resident, i.e. stored with the authenticator. This means that you DO NOT need to provide your
+	 *   username when logging in with WebAuthn. The downside is that security keys have a finite storage (typically
+	 *   around 20 or so credentials) and resetting them resets not just the stored credentials but ALSO their U2F
+	 *   support...
+	 * * **TPM** (`AUTHENTICATOR_TPM`). This is a specialization of the FIDO2 type. It requests that CTAP2 is used to
+	 *   create a resident key and that the only acceptable authenticator type is platform-specific. Practically, this
+	 *   will only work with Touch ID / Face ID (iOS / iPadOS / macOS), fingerprint login (Android) and Windows Hello
+	 *   (Windows) but only with the very few browsers which actually support platform-specific authenticators – your
+	 *   best bet is Google Chrome.
+	 *
+	 * Unfortunately, feature detection is not possible at the client side before making the request to link an
+	 * authenticator. Therefore you need to call this method with all three authenticator options and let the user
+	 * decide which one to use based on the available platform and hardware at hand.
+	 *
+	 * @param   User  $user               The Joomla user to create the public key for
+	 * @param   int   $authenticatorType  The authenticator type you'd like to create a public key for (see above).
 	 *
 	 * @return  string
 	 *
 	 * @since   1.0.0
 	 */
-	public static function createPublicKey(User $user): string
+	public static function createPublicKey(User $user, int $authenticatorType = self::AUTHENTICATOR_U2F): string
 	{
 		try
 		{
@@ -105,8 +134,26 @@ abstract class CredentialsCreation
 
 		// Public Key Credential Parameters
 		$publicKeyCredentialParametersList = [
+			// Prefer ECDSA (keys based on Elliptic Curve Cryptography with NIST P-521, P-384 or P-256)
+			new PublicKeyCredentialParameters('public-key', Algorithms::COSE_ALGORITHM_ES512),
+			new PublicKeyCredentialParameters('public-key', Algorithms::COSE_ALGORITHM_ES384),
 			new PublicKeyCredentialParameters('public-key', Algorithms::COSE_ALGORITHM_ES256),
+			// Fall back to RSASSA-PSS when ECC is not available. Minimal storage for resident keys available for these.
+			new PublicKeyCredentialParameters('public-key', Algorithms::COSE_ALGORITHM_PS512),
+			new PublicKeyCredentialParameters('public-key', Algorithms::COSE_ALGORITHM_PS384),
+			new PublicKeyCredentialParameters('public-key', Algorithms::COSE_ALGORITHM_PS256),
+			// Shared secret w/ HKDF and SHA-512
+			new PublicKeyCredentialParameters('public-key', Algorithms::COSE_ALGORITHM_DIRECT_HKDF_SHA_512),
+			new PublicKeyCredentialParameters('public-key', Algorithms::COSE_ALGORITHM_DIRECT_HKDF_SHA_256),
+			// Shared secret w/ AES-MAC 256-bit key
+			new PublicKeyCredentialParameters('public-key', Algorithms::COSE_ALGORITHM_DIRECT_HKDF_AES_256),
 		];
+
+		// If libsodium is enabled prefer Edwards-curve Digital Signature Algorithm (EdDSA)
+		if (function_exists('sodium_crypto_sign_seed_keypair'))
+		{
+			array_unshift($publicKeyCredentialParametersList, new PublicKeyCredentialParameters('public-key', Algorithms::COSE_ALGORITHM_EdDSA));
+		}
 
 		// Timeout: 60 seconds (given in milliseconds)
 		$timeout = 60000;
@@ -121,8 +168,15 @@ abstract class CredentialsCreation
 			$excludedPublicKeyDescriptors[] = new PublicKeyCredentialDescriptor($record->getType(), $record->getCredentialPublicKey());
 		}
 
+		$requireResidentKey      = $authenticatorType == self::AUTHENTICATOR_U2F ? false : true;
+		$authenticatorAttachment = $authenticatorType == self::AUTHENTICATOR_TPM ? AuthenticatorSelectionCriteria::AUTHENTICATOR_ATTACHMENT_PLATFORM : AuthenticatorSelectionCriteria::AUTHENTICATOR_ATTACHMENT_NO_PREFERENCE;
+
 		// Authenticator Selection Criteria (we used default values)
-		$authenticatorSelectionCriteria = new AuthenticatorSelectionCriteria();
+		$authenticatorSelectionCriteria = new AuthenticatorSelectionCriteria(
+			$authenticatorAttachment,
+			$requireResidentKey,
+			AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_PREFERRED
+		);
 
 		// Extensions (not yet supported by the library)
 		$extensions = new AuthenticationExtensionsClientInputs();
@@ -156,7 +210,7 @@ abstract class CredentialsCreation
 	 * An exception will be returned on error. Also, under very rare conditions, you may receive NULL instead of
 	 * a PublicKeyCredentialSource object which means that something was off in the returned data from the browser.
 	 *
-	 * @param string $data The JSON-encoded data returned by the browser during the authentication flow
+	 * @param   string  $data  The JSON-encoded data returned by the browser during the authentication flow
 	 *
 	 * @return  PublicKeyCredentialSource|null
 	 *
@@ -283,6 +337,24 @@ abstract class CredentialsCreation
 	}
 
 	/**
+	 * Get the user's avatar (through Gravatar)
+	 *
+	 * @param   User  $user  The Joomla user object
+	 * @param   int   $size  The dimensions of the image to fetch (default: 64 pixels)
+	 *
+	 * @return  string  The URL to the user's avatar
+	 *
+	 * @since   1.0.0
+	 */
+	public static function getAvatar(User $user, int $size = 64)
+	{
+		$scheme    = Uri::getInstance()->getScheme();
+		$subdomain = ($scheme == 'https') ? 'secure' : 'www';
+
+		return sprintf('%s://%s.gravatar.com/avatar/%s.jpg?s=%u&d=mm', $scheme, $subdomain, md5($user->email), $size);
+	}
+
+	/**
 	 * Try to find the site's favicon in the site's root, images, media, templates or current template directory.
 	 *
 	 * @return  string|null
@@ -339,23 +411,5 @@ abstract class CredentialsCreation
 		}
 
 		return rtrim(Uri::base(), '/') . '/' . ltrim($relFile, '/');
-	}
-
-	/**
-	 * Get the user's avatar (through Gravatar)
-	 *
-	 * @param User $user The Joomla user object
-	 * @param int  $size The dimensions of the image to fetch (default: 64 pixels)
-	 *
-	 * @return  string  The URL to the user's avatar
-	 *
-	 * @since   1.0.0
-	 */
-	public static function getAvatar(User $user, int $size = 64)
-	{
-		$scheme    = Uri::getInstance()->getScheme();
-		$subdomain = ($scheme == 'https') ? 'secure' : 'www';
-
-		return sprintf('%s://%s.gravatar.com/avatar/%s.jpg?s=%u&d=mm', $scheme, $subdomain, md5($user->email), $size);
 	}
 }
