@@ -2,12 +2,10 @@
   <library name="Generated files" type="javaScript">
     <properties>
       <sourceFilesUrls>
-        <item url="file://$PROJECT_DIR$/plugins/system/passwordless/media/js/dist/passwordless.es6.js" />
         <item url="file://$PROJECT_DIR$/plugins/system/passwordless/media/js/dist/passwordless.js" />
       </sourceFilesUrls>
     </properties>
     <CLASSES>
-      <root url="file://$PROJECT_DIR$/plugins/system/passwordless/media/js/dist/passwordless.es6.js" />
       <root url="file://$PROJECT_DIR$/plugins/system/passwordless/media/js/dist/passwordless.js" />
     </CLASSES>
     <SOURCES />

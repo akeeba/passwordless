@@ -1,7 +1,7 @@
 {
 	"name": "akeeba-passwordless",
 	"scripts": {
-		"build": "babel plugins/system/passwordless/media/js"
+		"build": "babel plugins/system/passwordless/media/js/passwordless.js --out-dir plugins/system/passwordless/media/js/dist --source-maps"
 	},
 	"devDependencies": {
 		"@babel/cli": "^7.10.5",
