@@ -18,6 +18,6 @@
     "ext-json": "*",
     "ramsey/uuid": "^3.8.0",
     "web-auth/webauthn-lib": "^2.0.0",
-    "zendframework/zend-diactoros": "2.1.1"
+    "laminas/laminas-diactoros": "^2.3"
   }
 }
