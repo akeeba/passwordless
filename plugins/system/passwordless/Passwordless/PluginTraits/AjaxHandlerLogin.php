@@ -224,7 +224,7 @@ trait AjaxHandlerLogin
 		if (in_array(false, $results, true) == false)
 		{
 			// Set the user in the session, letting Joomla! know that we are logged in.
-			Joomla::getSession()->set('user', $user);
+			Joomla::setSessionVar('user', $user);
 
 			// Trigger the onUserAfterLogin event
 			$options['user']         = $user;
