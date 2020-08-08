@@ -14,7 +14,6 @@ use DateTimeZone;
 use Exception;
 use JDatabaseDriver;
 use JEventDispatcher;
-use Joomla\CMS\Application\BaseApplication;
 use Joomla\CMS\Application\CliApplication;
 use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Date\Date;
@@ -211,9 +210,9 @@ abstract class Joomla
 	/**
 	 * Execute a plugin event and return the results
 	 *
-	 * @param   string            $event  The plugin event to trigger.
-	 * @param   array             $data   The data to pass to the event handlers.
-	 * @param   ?BaseApplication  $app    The application to run plugins against,
+	 * @param   string           $event   The plugin event to trigger.
+	 * @param   array            $data    The data to pass to the event handlers.
+	 * @param   ?CMSApplication  $app     The application to run plugins against,
 	 *                                    default the currently loaded application.
 	 *
 	 * @return  array  The plugin responses
@@ -223,7 +222,7 @@ abstract class Joomla
 	 *
 	 * @since   1.0.0
 	 */
-	public static function runPlugins(string $event, array $data, ?BaseApplication $app = null): array
+	public static function runPlugins(string $event, array $data, $app = null): array
 	{
 		if (!is_object($app))
 		{
@@ -280,7 +279,12 @@ abstract class Joomla
 			return Factory::getUser($id);
 		}
 
-		return Factory::getContainer()->get(Joomla\CMS\User\UserFactoryInterface::class)->loadUserById($id);
+		if (is_null($id))
+		{
+			return Factory::getApplication()->getIdentity();
+		}
+
+		return Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($id);
 	}
 
 	/**

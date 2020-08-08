@@ -56,7 +56,7 @@ abstract class Integration
 	 *
 	 * @return  void
 	 */
-	protected static function addLoginCSSAndJavascript(): void
+	public static function addLoginCSSAndJavascript(): void
 	{
 		if (self::$injectedCSSandJS)
 		{

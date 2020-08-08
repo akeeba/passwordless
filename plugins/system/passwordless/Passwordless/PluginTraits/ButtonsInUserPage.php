@@ -51,7 +51,7 @@ trait ButtonsInUserPage
 	public function onAfterDispatch(): void
 	{
 		// Are we enabled?
-		if (!$this->interceptLogin)
+		if (!$this->interceptLogin || $this->useJ4Injection())
 		{
 			return;
 		}

@@ -41,9 +41,9 @@ use Joomla\CMS\User\UserHelper;
  * When doing template overrides please DO NOT remove any code between the BEGIN - MANDATORY CODE  and
  * END - MANDATORY CODE  comments below.
  *
- * We recommend that you use <?= something ?> instead of <?php echo $something ?>. This is called "short echo tags" and
- * is more readable. Under PHP 7, required for this software to work, short echo tags are *always* considered valid PHP
- * syntax, regardless of the short_open_tag setting in your PHP configuration. This has been true since PHP 5.4.0.
+ * Starting with PHP 5.4.0, short echo tags are always recognized and parsed regardless of the short_open_tag setting
+ * in your php.ini. Since we only support *much* newer versions of PHP we can use this construct instead of regular
+ * echos to keep the code easier to read.
  *
  * You can do a template override of this file by copying this file into your template's html/layouts/akeeba/passwordless
  * folder (you may have to create that folder first).

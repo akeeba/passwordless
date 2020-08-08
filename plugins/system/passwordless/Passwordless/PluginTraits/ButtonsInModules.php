@@ -13,6 +13,8 @@ defined('_JEXEC') or die();
 use Akeeba\Passwordless\Helper\Integration;
 use Akeeba\Passwordless\Helper\Joomla;
 use Exception;
+use Joomla\CMS\Uri\Uri;
+use Joomla\CMS\User\UserHelper;
 
 /**
  * Inserts Webauthn buttons into login modules
@@ -24,7 +26,7 @@ trait ButtonsInModules
 	 *
 	 * @var   array
 	 */
-	protected $loginModules = array('mod_login');
+	protected $loginModules = ['mod_login'];
 
 	/**
 	 * Should I relocate the passwordless login button next to the Login button in the login module?
@@ -46,6 +48,113 @@ trait ButtonsInModules
 	 * @var   bool
 	 */
 	protected $needButtonInjection = null;
+
+	/**
+	 * Intercepts module rendering, appending the Webauthn button to the configured login module.
+	 *
+	 * @param   object  $module   The module being rendered
+	 * @param   object  $attribs  The module rendering attributes
+	 *
+	 * @throws  Exception
+	 */
+	public function onRenderModule(&$module, &$attribs): void
+	{
+		if (!$this->isButtonInjectionNecessary() || $this->useJ4Injection())
+		{
+			return;
+		}
+
+		// We need this convoluted check because the JDocument is not initialized on plugin object construction or even
+		// during onAfterInitialize. This is the only safe way to determine the document type.
+		static $docType = null;
+
+		if (is_null($docType))
+		{
+			try
+			{
+				$document = Joomla::getApplication()->getDocument();
+			}
+			catch (Exception $e)
+			{
+				$document = null;
+			}
+
+			$docType = (is_null($document)) ? 'error' : $document->getType();
+
+			if ($docType != 'html')
+			{
+				$this->needButtonInjection = false;
+
+				return;
+			}
+		}
+
+		// If it's not a module I need to intercept bail out
+		if (!in_array($module->module, $this->loginModules))
+		{
+			return;
+		}
+
+		$this->loadLanguage();
+
+		// Append the passwordless login buttons content to the login module
+		Joomla::log('system', "Injecting Webauthn passwordless login buttons to {$module->module} module.");
+
+		$options = [
+			'relocate'  => $this->relocateButton,
+			'selectors' => $this->relocateSelectors,
+		];
+
+		if (empty($this->relocateSelectors))
+		{
+			unset($options['selectors']);
+		}
+
+		$module->content .= Integration::getLoginButtonHTML($options);
+	}
+
+	/**
+	 * Creates additional login buttons
+	 *
+	 * @param   string  $form  The HTML ID of the form we are enclosed in
+	 *
+	 * @return  array
+	 *
+	 * @throws  Exception
+	 *
+	 * @see     AuthenticationHelper::getLoginButtons()
+	 *
+	 * @since   3.1.0
+	 */
+	public function onUserLoginButtons(string $form): array
+	{
+		if (!$this->useJ4Injection())
+		{
+			return [];
+		}
+
+		// Append the social login buttons content
+		Joomla::log('system', "Injecting buttons using the Joomla 4 way.");
+
+		Integration::addLoginCSSAndJavascript();
+
+		$randomId = 'akpwl-login-' . UserHelper::genRandomPassword(12) . '-' . UserHelper::genRandomPassword(8);
+		$uri      = new Uri(Uri::base() . 'index.php');
+
+		$uri->setVar(Joomla::getToken(), '1');
+
+		return [
+			[
+				'label'                 => 'PLG_SYSTEM_PASSWORDLESS_LOGIN_LABEL',
+				'tooltip'               => 'PLG_SYSTEM_PASSWORDLESS_LOGIN_DESC',
+				'id'                    => $randomId,
+				'data-passwordless-url' => $uri->toString(),
+				'data-webauthn-form'    => $form,
+				'image'                 => 'plg_system_passwordless/webauthn-black.png',
+				'class'                 => 'plg_system_passwordless_login_button',
+			],
+		];
+	}
 
 	/**
 	 * Set up the login module button injection feature.
@@ -105,66 +214,15 @@ trait ButtonsInModules
 	}
 
 	/**
-	 * Intercepts module rendering, appending the Webauthn button to the configured login module.
+	 * Should I use the Joomla 4 button injection method?
 	 *
-	 * @param   object  $module   The module being rendered
-	 * @param   object  $attribs  The module rendering attributes
+	 * @return  bool
 	 *
-	 * @throws  Exception
+	 * @since   1.0.0
 	 */
-	public function onRenderModule(&$module, &$attribs): void
+	private function useJ4Injection(): bool
 	{
-		if (!$this->isButtonInjectionNecessary())
-		{
-			return;
-		}
-
-		// We need this convoluted check because the JDocument is not initialized on plugin object construction or even
-		// during onAfterInitialize. This is the only safe way to determine the document type.
-		static $docType = null;
-
-		if (is_null($docType))
-		{
-			try
-			{
-				$document = Joomla::getApplication()->getDocument();
-			}
-			catch (Exception $e)
-			{
-				$document = null;
-			}
-
-			$docType = (is_null($document)) ? 'error' : $document->getType();
-
-			if ($docType != 'html')
-			{
-				$this->needButtonInjection = false;
-
-				return;
-			}
-		}
-
-		// If it's not a module I need to intercept bail out
-		if (!in_array($module->module, $this->loginModules))
-		{
-			return;
-		}
-
-		$this->loadLanguage();
-
-		// Append the passwordless login buttons content to the login module
-		Joomla::log('system', "Injecting Webauthn passwordless login buttons to {$module->module} module.");
-
-		$options = [
-			'relocate' => $this->relocateButton,
-			'selectors' => $this->relocateSelectors,
-		];
-
-		if (empty($this->relocateSelectors))
-		{
-			unset($options['selectors']);
-		}
-
-		$module->content .= Integration::getLoginButtonHTML($options);
+		return version_compare(JVERSION, '3.999.999', 'ge');
 	}
+
 }
