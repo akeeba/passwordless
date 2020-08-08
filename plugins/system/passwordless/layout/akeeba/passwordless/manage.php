@@ -74,7 +74,7 @@ $randomId    = 'akpwl_' . UserHelper::genRandomPassword(32);
 $publicKey   = $allow_add ? base64_encode(CredentialsCreation::createPublicKey($user)) : '{}';
 $postbackURL = base64_encode(rtrim(Uri::base(), '/') . '/index.php?' . Joomla::getToken() . '=1');
 ?>
-<div class="akpwl" id="akpwl-management-interface">
+<div class="akpwl" id="plg_system_passwordless-management-interface">
     <span id="<?= $randomId ?>"
 		  data-public_key="<?= $publicKey ?>"
 		  data-postback_url="<?= $postbackURL ?>"
