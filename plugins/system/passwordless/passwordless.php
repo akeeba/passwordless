@@ -74,8 +74,11 @@ class plgSystemPasswordless extends CMSPlugin
 		// Register a debug log file writer
 		Joomla::addLogger('system');
 
-		// Load the Composer autoloader
-		require_once __DIR__ . '/vendor/autoload.php';
+		// Load the dependencies through Composer, but only on Joomla 3 (Joomla 4 ships them already)
+		if (version_compare(JVERSION, '3.999.999', 'lt'))
+		{
+			require_once __DIR__ . '/vendor/autoload.php';
+		}
 
 		// Setup login module interception
 		$this->setupLoginModuleButtons();
