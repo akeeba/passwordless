@@ -24,6 +24,7 @@ use JLoader;
 use Joomla\CMS\Application\BaseApplication;
 use Joomla\CMS\Authentication\Authentication;
 use Joomla\CMS\Authentication\AuthenticationResponse;
+use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\PluginHelper;
@@ -224,7 +225,7 @@ trait AjaxHandlerLogin
 		if (in_array(false, $results, true) == false)
 		{
 			// Set the user in the session, letting Joomla! know that we are logged in.
-			Joomla::setSessionVar('user', $user);
+			Factory::getApplication()->getSession()->set('user', $user);
 
 			// Trigger the onUserAfterLogin event
 			$options['user']         = $user;
