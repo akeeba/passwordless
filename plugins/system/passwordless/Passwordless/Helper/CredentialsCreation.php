@@ -25,6 +25,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\User;
+use Laminas\Diactoros\ServerRequestFactory;
 use RuntimeException;
 use Webauthn\AttestationStatement\AndroidKeyAttestationStatementSupport;
 use Webauthn\AttestationStatement\AttestationObjectLoader;
@@ -46,7 +47,6 @@ use Webauthn\PublicKeyCredentialRpEntity;
 use Webauthn\PublicKeyCredentialSource;
 use Webauthn\PublicKeyCredentialUserEntity;
 use Webauthn\TokenBinding\TokenBindingNotSupportedHandler;
-use Zend\Diactoros\ServerRequestFactory;
 
 /**
  * Helper class to aid in credentials creation (link an authenticator to a user account)

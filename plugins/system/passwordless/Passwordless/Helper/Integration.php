@@ -78,7 +78,6 @@ abstract class Integration
 
 		// Load language strings client-side
 		Text::script('PLG_SYSTEM_PASSWORDLESS_ERR_CANNOT_FIND_USERNAME');
-		Text::script('PLG_SYSTEM_PASSWORDLESS_ERR_EMPTY_USERNAME');
 		Text::script('PLG_SYSTEM_PASSWORDLESS_ERR_INVALID_USERNAME');
 
 		// Store the current URL as the default return URL after login (or failure)

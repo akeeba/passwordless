@@ -28,6 +28,16 @@ trait UserHandleCookie
 	 */
 	public function onAfterInitialiseCookie()
 	{
+		// Should I even remember the user handle?
+		$rememberUser = $this->params->get('rememberUser', 1) == 1;
+
+		if (!$rememberUser)
+		{
+			$this->resetUserHandleCookie();
+
+			return;
+		}
+
 		// Am I logged in?
 		$user = Joomla::getUser();
 

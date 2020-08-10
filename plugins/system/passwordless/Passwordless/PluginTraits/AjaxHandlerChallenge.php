@@ -44,6 +44,8 @@ trait AjaxHandlerChallenge
 		// Initialize objects
 		$input = Joomla::getApplication()->input;
 
+		$rememberUser = $this->params->get('rememberUser', 1) == 1;
+
 		// Retrieve data from the request
 		$username   = $input->getUsername('username', '');
 		$returnUrl  = base64_encode(Joomla::getSessionVar('returnUrl', Uri::current(), 'plg_system_passwordless'));
@@ -82,7 +84,7 @@ trait AjaxHandlerChallenge
 		}
 
 		// If there was no username set we can look into the user handle cookie for user information
-		if (empty($username) && empty($user_id))
+		if (empty($username) && empty($user_id) && $rememberUser)
 		{
 			[$cookieName,] = $this->getCookieOptions();
 			$userHandle = $this->getCookie($cookieName);
@@ -94,13 +96,21 @@ trait AjaxHandlerChallenge
 			}
 		}
 
-		if (empty($username) && empty($user_id))
+		if (!$rememberUser && empty($user_id))
 		{
 			return json_encode([
 				'error' => Text::_('PLG_SYSTEM_PASSWORDLESS_ERR_EMPTY_USERNAME')
 			], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 		}
-		elseif (!empty($username) && empty($user_id))
+
+		if ($rememberUser && empty($username) && empty($user_id))
+		{
+			return json_encode([
+				'error' => Text::_('PLG_SYSTEM_PASSWORDLESS_ERR_EMPTY_USERNAME_FIRST_TIME')
+			], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+		}
+
+		if (!empty($username) && empty($user_id))
 		{
 			return json_encode([
 				'error' => Text::_('PLG_SYSTEM_PASSWORDLESS_ERR_INVALID_USERNAME')
