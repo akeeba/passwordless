@@ -387,6 +387,28 @@ class CredentialRepository implements PublicKeyCredentialSourceRepository
 		}
 
 		$db    = Joomla::getDbo();
+
+		// Check that the userHandle does exist in the database
+		$query = $db->getQuery(true)
+			->select('COUNT(*)')
+			->from($db->qn('#__passwordless_credentials'))
+			->where($db->qn('user_id') . ' = ' . $db->q($userHandle));
+
+		try
+		{
+			$numRecords = $db->setQuery($query)->loadResult();
+		}
+		catch (Exception $e)
+		{
+			return null;
+		}
+
+		if (is_null($numRecords) || ($numRecords < 1))
+		{
+			return null;
+		}
+
+		// Prepare the query
 		$query = $db->getQuery(true)
 			->select([$db->qn('id')])
 			->from($db->qn('#__users'))

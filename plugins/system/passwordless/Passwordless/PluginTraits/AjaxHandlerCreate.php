@@ -101,6 +101,17 @@ trait AjaxHandlerCreate
 		{
 			$layoutParameters['error'] = $error;
 		}
+		else
+		{
+			/**
+			 * Remove the user handle cookie and session variable
+			 *
+			 * Creating a WebAuthn credential might have changed whether the currently logged in user has any WebAuthn
+			 * credentials. Deleting the cookie and the session variable we allow the next page load to reaffirm the
+			 * existence of WebAuthn credentials and set the userHandle cookie and session variable if necessary.
+			 */
+			$this->resetUserHandleCookie();
+		}
 
 		return Joomla::renderLayout('akeeba.passwordless.manage', $layoutParameters);
 	}

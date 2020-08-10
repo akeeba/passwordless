@@ -23,7 +23,6 @@
       <excludeFolder url="file://$MODULE_DIR$/plugins/system/passwordless/vendor/web-auth/cose-lib" />
       <excludeFolder url="file://$MODULE_DIR$/plugins/system/passwordless/vendor/web-auth/metadata-service" />
       <excludeFolder url="file://$MODULE_DIR$/plugins/system/passwordless/vendor/web-auth/webauthn-lib" />
-      <excludeFolder url="file://$MODULE_DIR$/plugins/system/passwordless/vendor/zendframework/zend-diactoros" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

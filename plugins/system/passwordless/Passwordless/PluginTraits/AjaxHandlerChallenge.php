@@ -13,9 +13,11 @@ defined('_JEXEC') or die();
 use Akeeba\Passwordless\CredentialRepository;
 use Akeeba\Passwordless\Helper\Joomla;
 use Exception;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\UserHelper;
 use Throwable;
+use Webauthn\AuthenticationExtensions\AuthenticationExtension;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\PublicKeyCredentialRequestOptions;
 use Webauthn\PublicKeyCredentialSource;
@@ -43,10 +45,21 @@ trait AjaxHandlerChallenge
 		$input = Joomla::getApplication()->input;
 
 		// Retrieve data from the request
-		$username  = $input->getUsername('username', '');
-		$returnUrl = base64_encode(Joomla::getSessionVar('returnUrl', Uri::current(), 'plg_system_passwordless'));
-		$returnUrl = $input->getBase64('returnUrl', $returnUrl);
-		$returnUrl = base64_decode($returnUrl);
+		$username   = $input->getUsername('username', '');
+		$returnUrl  = base64_encode(Joomla::getSessionVar('returnUrl', Uri::current(), 'plg_system_passwordless'));
+		$returnUrl  = $input->getBase64('returnUrl', $returnUrl);
+		$returnUrl  = base64_decode($returnUrl);
+
+		/**
+		 * For security reasons, if you type in a username we need to remove the user handle cookie.
+		 *
+		 * For all we know you are trying to log in as a different user. Unsetting the cookie will let us re-evaluate
+		 * whether we should store a different cookie when you reload the page.
+		 */
+		if (!empty($username))
+		{
+			$this->resetUserHandleCookie();
+		}
 
 		// For security reasons the post-login redirection URL must be internal to the site.
 		if (!Uri::isInternal($returnUrl))
@@ -55,6 +68,7 @@ trait AjaxHandlerChallenge
 			$returnUrl = Uri::base();
 		}
 
+		// Get the return URL
 		Joomla::setSessionVar('returnUrl', $returnUrl, 'plg_system_passwordless');
 
 		// Get the user_id from the username, if a username was specified at all
@@ -65,6 +79,32 @@ trait AjaxHandlerChallenge
 		catch (Exception $e)
 		{
 			$user_id = 0;
+		}
+
+		// If there was no username set we can look into the user handle cookie for user information
+		if (empty($username) && empty($user_id))
+		{
+			[$cookieName,] = $this->getCookieOptions();
+			$userHandle = $this->getCookie($cookieName);
+
+			if (!empty($userHandle))
+			{
+				$repository = new CredentialRepository();
+				$user_id    = $repository->getUserIdFromHandle($userHandle) ?? 0;
+			}
+		}
+
+		if (empty($username) && empty($user_id))
+		{
+			return json_encode([
+				'error' => Text::_('PLG_SYSTEM_PASSWORDLESS_ERR_EMPTY_USERNAME')
+			], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+		}
+		elseif (!empty($username) && empty($user_id))
+		{
+			return json_encode([
+				'error' => Text::_('PLG_SYSTEM_PASSWORDLESS_ERR_INVALID_USERNAME')
+			], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 		}
 
 		$registeredPublicKeyCredentialDescriptors = $this->getRegisteredPublicKeyCredentialDescriptors($user_id);
@@ -107,7 +147,8 @@ trait AjaxHandlerChallenge
 		try
 		{
 			$repository  = new CredentialRepository();
-			$userEntity  = new PublicKeyCredentialUserEntity('', $repository->getHandleFromUserId($user_id), '');
+			$userHandle  = $repository->getHandleFromUserId($user_id);
+			$userEntity  = new PublicKeyCredentialUserEntity('', $userHandle, '');
 			$credentials = $repository->findAllForUserEntity($userEntity);
 		}
 		catch (Exception $e)
@@ -134,7 +175,7 @@ trait AjaxHandlerChallenge
 			}
 		}
 
-		Joomla::setSessionVar('userHandle', $repository->getHandleFromUserId($user_id), 'plg_system_passwordless');
+		Joomla::setSessionVar('userHandle', $userHandle, 'plg_system_passwordless');
 		Joomla::setSessionVar('userId', $user_id, 'plg_system_passwordless');
 
 		return $registeredPublicKeyCredentialDescriptors;

@@ -15,6 +15,7 @@ use Akeeba\Passwordless\PluginTraits\AjaxHandlerSaveLabel;
 use Akeeba\Passwordless\PluginTraits\ButtonsInModules;
 use Akeeba\Passwordless\PluginTraits\ButtonsInUserPage;
 use Akeeba\Passwordless\PluginTraits\UserDeletion;
+use Akeeba\Passwordless\PluginTraits\UserHandleCookie;
 use Akeeba\Passwordless\PluginTraits\UserProfileFields;
 use Joomla\CMS\Plugin\CMSPlugin;
 
@@ -42,6 +43,9 @@ class plgSystemPasswordless extends CMSPlugin
 	use AjaxHandlerDelete;
 	use AjaxHandlerChallenge;
 	use AjaxHandlerLogin;
+
+	// Cookies for user handle (truly passwordless flow)
+	use UserHandleCookie;
 
 	// Custom user profile fields
 	use UserProfileFields;
@@ -83,6 +87,19 @@ class plgSystemPasswordless extends CMSPlugin
 		// Setup login module interception
 		$this->setupLoginModuleButtons();
 		$this->setupUserLoginPageButtons();
+	}
+
+	public function onAfterInitialise()
+	{
+		try
+		{
+			$this->onAfterInitialiseCookie();
+			$this->onAfterInitialiseAjax();
+		}
+		catch (Throwable $e)
+		{
+			return;
+		}
 	}
 
 	/**

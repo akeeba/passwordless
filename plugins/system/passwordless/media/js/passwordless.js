@@ -218,6 +218,8 @@ window.akeeba.Passwordless = window.akeeba.Passwordless || {};
             });
         }
 
+        console.log(publicKey);
+
         navigator.credentials.get({publicKey})
                  .then((data) =>
                  {
@@ -294,6 +296,8 @@ window.akeeba.Passwordless = window.akeeba.Passwordless || {};
                 return data;
             });
         }
+
+        console.log(publicKey);
 
         // Ask the browser to prompt the user for their authenticator
         navigator.credentials.create({publicKey})
@@ -674,14 +678,6 @@ window.akeeba.Passwordless = window.akeeba.Passwordless || {};
         const username  = elUsername.value;
         const returnUrl = elReturn ? elReturn.value : null;
 
-        // No username? We cannot proceed. We need a username to find the acceptable public keys :(
-        if (username === "")
-        {
-            reportErrorToUser(Joomla.JText._("PLG_SYSTEM_PASSWORDLESS_ERR_EMPTY_USERNAME"));
-
-            return false;
-        }
-
         // Get the Public Key Credential Request Options (challenge and acceptable public keys)
         const postBackData = {
             option:      "com_ajax",
@@ -712,6 +708,13 @@ window.akeeba.Passwordless = window.akeeba.Passwordless || {};
                      * In case of JSON decoding failure fall through; the error will be handled in the login
                      * challenge handler called below.
                      */
+                }
+
+                if (jsonData.error)
+                {
+                    reportErrorToUser(jsonData.error);
+
+                    return;
                 }
 
                 handleLoginChallenge(jsonData, callbackUrl);

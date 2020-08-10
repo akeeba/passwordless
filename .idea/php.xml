@@ -14,7 +14,6 @@
       <path value="$PROJECT_DIR$/plugins/system/passwordless/vendor/composer" />
       <path value="$PROJECT_DIR$/plugins/system/passwordless/vendor/psr/http-client" />
       <path value="$PROJECT_DIR$/plugins/system/passwordless/vendor/php-http/message-factory" />
-      <path value="$PROJECT_DIR$/plugins/system/passwordless/vendor/zendframework/zend-diactoros" />
       <path value="$PROJECT_DIR$/plugins/system/passwordless/vendor/web-auth/webauthn-lib" />
       <path value="$PROJECT_DIR$/plugins/system/passwordless/vendor/web-auth/cose-lib" />
       <path value="$PROJECT_DIR$/plugins/system/passwordless/vendor/symfony/polyfill-ctype" />

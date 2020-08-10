@@ -77,6 +77,16 @@ trait AjaxHandlerDelete
 			return false;
 		}
 
+		/**
+		 * Remove the user handle cookie and session variable
+		 *
+		 * Deleting a WebAuthn credential might have changed whether the currently logged in user has any WebAuthn
+		 * credentials. Deleting the cookie and the session variable we allow the next page load to reaffirm the
+		 * existence of WebAuthn credentials and set the userHandle cookie and session variable if necessary.
+		 * If no credentials are left, no worries! We have already removed the obsolete cookie and session variable.
+		 */
+		$this->resetUserHandleCookie();
+
 		return true;
 	}
 }

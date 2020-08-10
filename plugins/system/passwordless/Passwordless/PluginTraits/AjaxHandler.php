@@ -34,7 +34,7 @@ trait AjaxHandler
 	 *
 	 * @throws  Exception
 	 */
-	public function onAfterInitialise(): void
+	public function onAfterInitialiseAjax(): void
 	{
 		// At this stage we can safely load the language
 		$this->loadLanguage();

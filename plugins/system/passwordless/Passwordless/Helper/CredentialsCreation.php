@@ -323,16 +323,7 @@ abstract class CredentialsCreation
 		}
 
 		// Check the response against the request
-		$authenticatorAttestationResponseValidator->check($response, $publicKeyCredentialCreationOptions, $request);
-
-		/**
-		 * Everything is OK here. You can get the Public Key Credential Source. This object should be persisted using
-		 * the Public Key Credential Source repository.
-		 */
-		$publicKeyCredentialSource = PublicKeyCredentialSource::createFromPublicKeyCredential(
-			$publicKeyCredential,
-			$publicKeyCredentialCreationOptions->getUser()->getId()
-		);
+		$publicKeyCredentialSource = $authenticatorAttestationResponseValidator->check($response, $publicKeyCredentialCreationOptions, $request);
 
 		return $publicKeyCredentialSource;
 	}
