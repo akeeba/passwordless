@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ @package   AkeebaPasswordlessLogin
+  ~ @copyright Copyright (c)2018-2020 Nicholas K. Dionysopoulos / Akeeba Ltd
+  ~ @license   GNU General Public License version 3, or later
+  -->
+
+<schema>
+    <!-- Metadata -->
+    <meta>
+        <!-- Supported driver types -->
+        <drivers>
+            <driver>mysql</driver>
+            <driver>mysqli</driver>
+            <driver>pdomysql</driver>
+        </drivers>
+    </meta>
+
+    <!-- SQL commands to run on installation and update -->
+    <sql>
+        <!-- Create the #__ak_profiles table if it's missing -->
+        <action table="#__passwordless_credentials" canfail="0">
+            <condition type="missing" value=""/>
+            <query><![CDATA[
+CREATE TABLE IF NOT EXISTS `#__passwordless_credentials`
+(
+  `id`         VARCHAR(1000)   NOT NULL COMMENT 'Credential ID',
+  `user_id`    VARCHAR(128)    NOT NULL COMMENT 'User handle',
+  `label`      VARCHAR(190)    NOT NULL COMMENT 'Human readable label',
+  `credential` MEDIUMTEXT      NOT NULL COMMENT 'Attested credential data, JSON format',
+  PRIMARY KEY (`id`(100)),
+  INDEX (`user_id`(100))
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4
+  DEFAULT COLLATE = utf8mb4_unicode_ci;
+            ]]></query>
+        </action>
+    </sql>
+</schema>
