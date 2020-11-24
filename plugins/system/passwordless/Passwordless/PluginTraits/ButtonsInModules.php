@@ -204,7 +204,9 @@ trait ButtonsInModules
 		{
 			$this->needButtonInjection = true;
 
-			if (!Joomla::getUser()->guest)
+			$user = Joomla::getUser();
+
+			if (!empty($user) && !$user->guest)
 			{
 				$this->needButtonInjection = false;
 			}

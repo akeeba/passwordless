@@ -272,7 +272,7 @@ abstract class Joomla
 	 *
 	 * @since   1.0.0
 	 */
-	public static function getUser(?int $id = null): User
+	public static function getUser(?int $id = null): ?User
 	{
 		if (version_compare(JVERSION, '3.999.999', 'le'))
 		{
