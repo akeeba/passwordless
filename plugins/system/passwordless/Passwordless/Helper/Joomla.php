@@ -281,7 +281,7 @@ abstract class Joomla
 
 		if (is_null($id))
 		{
-			return Factory::getApplication()->getIdentity();
+			return Factory::getApplication()->getIdentity() ?? new User();
 		}
 
 		return Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($id);
