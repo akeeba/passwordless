@@ -197,14 +197,28 @@ abstract class Joomla
 	public static function renderLayout(string $layoutFile, $displayData = null, string $includePath = '', array $options = []): string
 	{
 		$basePath = JPATH_SITE . '/plugins/system/passwordless/layout';
-		$layout   = new FileLayout($layoutFile, $basePath, $options);
+		$layout   = self::getJLayoutFromFile($layoutFile, $options);
 
 		if (!empty($includePath))
 		{
 			$layout->addIncludePath($includePath);
 		}
 
-		return $layout->render($displayData);
+		$result = $layout->render($displayData);
+
+		if (empty($result))
+		{
+			$layout   = self::getJLayoutFromFile($layoutFile, $options, $basePath);
+
+			if (!empty($includePath))
+			{
+				$layout->addIncludePath($includePath);
+			}
+
+			$result = $layout->render($displayData);
+		}
+
+		return $result;
 	}
 
 	/**
