@@ -222,6 +222,20 @@ abstract class Joomla
 	}
 
 	/**
+	 * Return a Joomla! layout object, creating from a layout file
+	 *
+	 * @param   string       $layoutFile  Path to the layout file
+	 * @param   array        $options     Options to the layout file
+	 * @param   string|null  $basePath    Base path for the layout file
+	 *
+	 * @return  FileLayout
+	 */
+	public static function getJLayoutFromFile($layoutFile, $options, $basePath = null)
+	{
+		return new FileLayout($layoutFile, $basePath, $options);
+	}
+
+	/**
 	 * Execute a plugin event and return the results
 	 *
 	 * @param   string           $event   The plugin event to trigger.
