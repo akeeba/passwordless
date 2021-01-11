@@ -25,7 +25,14 @@ defined('_JEXEC') or die();
 // Register a PSR-4 autoloader for this plugin's classes if necessary
 if (!class_exists('Akeeba\\Passwordless\\Helper\\Joomla', true))
 {
-	JLoader::registerNamespace('Akeeba\\Passwordless', __DIR__ . '/Passwordless', false, false, 'psr4');
+	if (version_compare(JVERSION, '3.99999.99999', 'le'))
+	{
+		JLoader::registerNamespace('Akeeba\\Passwordless', __DIR__ . '/Passwordless', false, false, 'psr4');
+	}
+	else
+	{
+		JLoader::registerNamespace('Akeeba\\Passwordless', __DIR__ . '/Passwordless', false, false, 'psr4');
+	}
 }
 
 /**
