@@ -27,22 +27,6 @@ trait ButtonsInUserPage
 	protected $interceptLogin = true;
 
 	/**
-	 * Set up the login page button injection feature.
-	 *
-	 * @return  void
-	 */
-	protected function setupUserLoginPageButtons(): void
-	{
-		// Don't try to set up this feature if we are alraedy logged in
-		if (!$this->isButtonInjectionNecessary())
-		{
-			return;
-		}
-
-		$this->interceptLogin    = $this->params->get('interceptlogin', 1);
-	}
-
-	/**
 	 * Called after a component has finished running, right after Joomla has set the component output to the buffer.
 	 * Used to inject our login button in the front-end login page rendered by com_users.
 	 *
@@ -90,8 +74,18 @@ trait ButtonsInUserPage
 		}
 
 		// Make sure it is the right view / task
-		$view = $input->getCmd('view');
-		$task = $input->getCmd('task');
+		$fallbackView = version_compare(JVERSION, '3.999.999', 'ge')
+			? $view = $input->getCmd('controller', '')
+			: '';
+		$view         = $input->getCmd('view', $fallbackView);
+		$task         = $input->getCmd('task');
+
+		if (strpos($task, '.') !== false)
+		{
+			$parts = explode('.', $task);
+			$view = ($parts[0] ?? $view) ?: $view;
+			$task = ($parts[1] ?? $task) ?: $task;
+		}
 
 		$check1 = is_null($view) && is_null($task);
 		$check2 = is_null($view) && ($task === 'login');
@@ -112,12 +106,28 @@ trait ButtonsInUserPage
 
 		// Get the component output and append our buttons
 		$buttons = Integration::getLoginButtonHTML([
-			'relocate' => true
+			'relocate' => true,
 		]);
 
 		$buffer          = $document->getBuffer();
 		$componentOutput = $buffer['component'][''][''];
 		$componentOutput .= $buttons;
 		$document->setBuffer($componentOutput, 'component');
+	}
+
+	/**
+	 * Set up the login page button injection feature.
+	 *
+	 * @return  void
+	 */
+	protected function setupUserLoginPageButtons(): void
+	{
+		// Don't try to set up this feature if we are alraedy logged in
+		if (!$this->isButtonInjectionNecessary())
+		{
+			return;
+		}
+
+		$this->interceptLogin = $this->params->get('interceptlogin', 1);
 	}
 }
