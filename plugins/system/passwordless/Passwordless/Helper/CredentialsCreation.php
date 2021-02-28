@@ -124,14 +124,7 @@ abstract class CredentialsCreation
 		);
 
 		// Challenge
-		try
-		{
-			$challenge = random_bytes(32);
-		}
-		catch (Exception $e)
-		{
-			$challenge = Crypt::genRandomBytes(32);
-		}
+		$challenge = random_bytes(32);
 
 		// Public Key Credential Parameters
 		$publicKeyCredentialParametersList = [
