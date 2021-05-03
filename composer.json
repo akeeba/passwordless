@@ -11,7 +11,10 @@
     }
   ],
   "config": {
-    "vendor-dir": "plugins/system/passwordless/vendor"
+    "vendor-dir": "plugins/system/passwordless/vendor",
+    "platform": {
+      "php": "7.2.0"
+    }
   },
   "require": {
     "php": ">=7.2 <8.1",
