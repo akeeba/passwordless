@@ -16,7 +16,7 @@ This plugin is licensed under the [GNU General Public License, version 3 of the 
 
 ## Download
 
-This plugin is currently under active development. There are no public downloads.
+Check out the Releases section of this GitHub repository.
 
 ## Minimum requirements
 
@@ -39,6 +39,8 @@ We wrote this plugin for Joomla 3 when WebAuthn became a W3C standard, before We
 This repository contains the parallel development of our plugin for Joomla 3 _and_ 4. It stated goal is to support Joomla 3 until Joomla 3 reaches its end of life. It will also continue supporting Joomla 4. We can develop this plugin without the constraints of what can be accepted in the Joomla core and when. As a result we can explore new features which wouldn't make it to Joomla in a reasoanble amount of time.
 
 In an effort to avoid conflicts with Joomla 4, we renamed this plugin from plg_system_webauthn (which is now the name of the Joomla 4 core plugin) to plg_system_passwordless.
+
+Most notably, this plugin remembers the last user logged into the site. As a result, the next login attempt does not require entering the username, just clicking on the login button. Completely frictionless and perfectly secure.   
  
 ## For developers
 
