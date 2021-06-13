@@ -47,9 +47,12 @@ extract(array_merge([
 	'error'       => '',
 ], $displayData));
 
-HTMLHelper::_('stylesheet', 'plg_system_passwordless/backend.css', [
-	'relative' => true,
-]);
+if (version_compare(JVERSION, '3.999.999', 'le'))
+{
+	HTMLHelper::_('stylesheet', 'plg_system_passwordless/backend.css', [
+		'relative' => true,
+	]);
+}
 
 // Ensure the GMP Extension is loaded in PHP - as this is required by third party library
 $hasGMP    = function_exists('gmp_intval') !== false;
@@ -81,30 +84,37 @@ $postbackURL = base64_encode(rtrim(Uri::base(), '/') . '/index.php?' . Joomla::g
 	></span>
 
 	<?php if (is_string($error) && !empty($error)): ?>
-		<div class="akpwn-block--error">
-			<?= htmlentities($error) ?>
+		<div class="akpwn-block--error alert alert-danger">
+			<?= $error ?>
 		</div>
 	<?php endif; ?>
 
-	<table class="akpwl-table--striped">
+	<table class="akpwl-table--striped table table-striped">
 		<thead>
 		<tr>
-			<th><?= Text::_('PLG_SYSTEM_PASSWORDLESS_MANAGE_FIELD_KEYLABEL_LABEL') ?></th>
-			<th><?= Text::_('PLG_SYSTEM_PASSWORDLESS_MANAGE_HEADER_ACTIONS_LABEL') ?></th>
+			<th scope="col">
+				<?= Text::_('PLG_SYSTEM_PASSWORDLESS_MANAGE_FIELD_KEYLABEL_LABEL') ?>
+			</th>
+			<th scope="col">
+				<?= Text::_('PLG_SYSTEM_PASSWORDLESS_MANAGE_HEADER_ACTIONS_LABEL') ?>
+
+			</th>
 		</tr>
 		</thead>
 		<tbody>
 		<?php foreach ($credentials as $method): ?>
 			<tr data-credential_id="<?= $method['id'] ?>">
-				<td><?= htmlentities($method['label']) ?></td>
+				<td>
+					<?= htmlentities($method['label']) ?>
+				</td>
 				<td>
 					<button data-random-id="<?php echo $randomId; ?>"
-							class="plg_system_passwordless-manage-edit akpwl-btn--teal">
+							class="plg_system_passwordless-manage-edit akpwl-btn--teal btn btn-primary btn-sm">
 						<span class="icon-edit icon-white" aria-hidden="true"></span>
 						<?= Text::_('PLG_SYSTEM_PASSWORDLESS_MANAGE_BTN_EDIT_LABEL') ?>
 					</button>
 					<button data-random-id="<?php echo $randomId; ?>"
-							class="plg_system_passwordless-manage-delete akpwl-btn--red">
+							class="plg_system_passwordless-manage-delete akpwl-btn--red btn btn-danger btn-sm">
 						<span class="icon-minus-sign icon-white" aria-hidden="true"></span>
 						<?= Text::_('PLG_SYSTEM_PASSWORDLESS_MANAGE_BTN_DELETE_LABEL') ?>
 					</button>
@@ -126,7 +136,7 @@ $postbackURL = base64_encode(rtrim(Uri::base(), '/') . '/index.php?' . Joomla::g
 			<button
 					type="button"
 					id="plg_system_passwordless-manage-add"
-					class="akpwl-btn--green--block"
+					class="akpwl-btn--green--block btn btn-success"
 					data-random-id="<?php echo $randomId; ?>">
 				<span class="icon-plus icon-white" aria-hidden="true"></span>
 				<?php echo Text::_('PLG_SYSTEM_PASSWORDLESS_MANAGE_BTN_ADD_LABEL') ?>
