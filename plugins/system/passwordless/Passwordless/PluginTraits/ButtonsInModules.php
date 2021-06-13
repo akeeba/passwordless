@@ -13,6 +13,7 @@ defined('_JEXEC') or die();
 use Akeeba\Passwordless\Helper\Integration;
 use Akeeba\Passwordless\Helper\Joomla;
 use Exception;
+use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\UserHelper;
 
@@ -143,6 +144,15 @@ trait ButtonsInModules
 
 		$uri->setVar(Joomla::getToken(), '1');
 
+		// Get local path to image
+		$image = HTMLHelper::_('image', 'plg_system_passwordless/webauthn.svg', '', '', true, true);
+
+		// If you can't find the image then skip it
+		$image = $image ? JPATH_ROOT . substr($image, \strlen(Uri::root(true))) : '';
+
+		// Extract image if it exists
+		$image = file_exists($image) ? file_get_contents($image) : '';
+
 		return [
 			[
 				'label'                 => 'PLG_SYSTEM_PASSWORDLESS_LOGIN_LABEL',
@@ -150,8 +160,9 @@ trait ButtonsInModules
 				'id'                    => $randomId,
 				'data-passwordless-url' => $uri->toString(),
 				'data-webauthn-form'    => $form,
-				'image'                 => 'plg_system_passwordless/webauthn-black.png',
+				//'image'                 => 'plg_system_passwordless/webauthn-black.png',
 				'class'                 => 'plg_system_passwordless_login_button',
+				'svg'                   => $image,
 			],
 		];
 	}
