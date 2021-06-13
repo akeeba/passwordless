@@ -1,9 +1,6 @@
 <?php
-$hardlink_files = array(
-);
+$hardlink_files = [];
 
-$symlink_files = array(
-);
+$symlink_files = [];
 
-$symlink_folders = array(
-);
+$symlink_folders = [];
