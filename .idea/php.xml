@@ -4,6 +4,25 @@
     <include_path>
       <path value="$PROJECT_DIR$/../../master/joomla-cms" />
       <path value="$PROJECT_DIR$/../../dionysopoulos/joomlatypehints/generated_hints" />
+      <path value="$PROJECT_DIR$/plugins/system/passwordless/vendor/ramsey/uuid" />
+      <path value="$PROJECT_DIR$/plugins/system/passwordless/vendor/fgrosse/phpasn1" />
+      <path value="$PROJECT_DIR$/plugins/system/passwordless/vendor/symfony/polyfill-ctype" />
+      <path value="$PROJECT_DIR$/plugins/system/passwordless/vendor/laminas/laminas-zendframework-bridge" />
+      <path value="$PROJECT_DIR$/plugins/system/passwordless/vendor/php-http/message-factory" />
+      <path value="$PROJECT_DIR$/plugins/system/passwordless/vendor/laminas/laminas-diactoros" />
+      <path value="$PROJECT_DIR$/plugins/system/passwordless/vendor/spomky-labs/base64url" />
+      <path value="$PROJECT_DIR$/plugins/system/passwordless/vendor/beberlei/assert" />
+      <path value="$PROJECT_DIR$/plugins/system/passwordless/vendor/composer" />
+      <path value="$PROJECT_DIR$/plugins/system/passwordless/vendor/nyholm/psr7" />
+      <path value="$PROJECT_DIR$/plugins/system/passwordless/vendor/spomky-labs/cbor-php" />
+      <path value="$PROJECT_DIR$/plugins/system/passwordless/vendor/psr/http-message" />
+      <path value="$PROJECT_DIR$/plugins/system/passwordless/vendor/web-auth/cose-lib" />
+      <path value="$PROJECT_DIR$/plugins/system/passwordless/vendor/psr/http-factory" />
+      <path value="$PROJECT_DIR$/plugins/system/passwordless/vendor/web-auth/metadata-service" />
+      <path value="$PROJECT_DIR$/plugins/system/passwordless/vendor/psr/http-client" />
+      <path value="$PROJECT_DIR$/plugins/system/passwordless/vendor/web-auth/webauthn-lib" />
+      <path value="$PROJECT_DIR$/plugins/system/passwordless/vendor/brick/math" />
+      <path value="$PROJECT_DIR$/plugins/system/passwordless/vendor/paragonie/random_compat" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="7.2" />
