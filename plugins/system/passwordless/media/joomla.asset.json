@@ -13,13 +13,6 @@
 		},
 
 		{
-			"name": "plg_system_passwordless.button",
-			"description": "Login button CSS",
-			"type": "style",
-			"uri": "plg_system_passwordless/button.css"
-		},
-
-		{
 			"name": "plg_system_passwordless.login",
 			"description": "Login JavaScript",
 			"type": "script",
