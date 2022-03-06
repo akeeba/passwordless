@@ -52,15 +52,15 @@ final class LengthCalculator
             case $length <= 23:
                 return [$length, null];
             case $length <= 0xFF:
-                return [\Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject::LENGTH_1_BYTE, chr($length)];
+                return [\Akeeba\Passwordless\CBOR\CBORObject::LENGTH_1_BYTE, chr($length)];
             case $length <= 0xFFFF:
-                return [\Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject::LENGTH_2_BYTES, self::hex2bin(dechex($length))];
+                return [\Akeeba\Passwordless\CBOR\CBORObject::LENGTH_2_BYTES, self::hex2bin(dechex($length))];
             case $length <= 0xFFFFFFFF:
-                return [\Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject::LENGTH_4_BYTES, self::hex2bin(dechex($length))];
+                return [\Akeeba\Passwordless\CBOR\CBORObject::LENGTH_4_BYTES, self::hex2bin(dechex($length))];
             case \Akeeba\Passwordless\Brick\Math\BigInteger::of($length)->isLessThanOrEqualTo(\Akeeba\Passwordless\Brick\Math\BigInteger::fromBase('FFFFFFFFFFFFFFFF', 16)):
-                return [\Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject::LENGTH_8_BYTES, self::hex2bin(dechex($length))];
+                return [\Akeeba\Passwordless\CBOR\CBORObject::LENGTH_8_BYTES, self::hex2bin(dechex($length))];
             default:
-                return [\Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject::LENGTH_INDEFINITE, null];
+                return [\Akeeba\Passwordless\CBOR\CBORObject::LENGTH_INDEFINITE, null];
         }
     }
 

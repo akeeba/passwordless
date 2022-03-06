@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Akeeba\Passwordless\CBOR\Tag;
 
-use Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject;
+use \Akeeba\Passwordless\CBOR\CBORObject;
 use Akeeba\Passwordless\CBOR\IndefiniteLengthTextStringObject;
 use Akeeba\Passwordless\CBOR\Normalizable;
 use Akeeba\Passwordless\CBOR\Tag;
@@ -22,7 +22,7 @@ use InvalidArgumentException;
 
 final class UriTag extends \Akeeba\Passwordless\CBOR\Tag implements \Akeeba\Passwordless\CBOR\Normalizable
 {
-    public function __construct(int $additionalInformation, ?string $data, \Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject $object)
+    public function __construct(int $additionalInformation, ?string $data, \Akeeba\Passwordless\CBOR\CBORObject $object)
     {
         if (! $object instanceof \Akeeba\Passwordless\CBOR\TextStringObject && ! $object instanceof \Akeeba\Passwordless\CBOR\IndefiniteLengthTextStringObject) {
             throw new InvalidArgumentException('This tag only accepts a Text String object.');
@@ -36,12 +36,12 @@ final class UriTag extends \Akeeba\Passwordless\CBOR\Tag implements \Akeeba\Pass
         return self::TAG_URI;
     }
 
-    public static function createFromLoadedData(int $additionalInformation, ?string $data, \Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject $object): \Akeeba\Passwordless\CBOR\Tag
+    public static function createFromLoadedData(int $additionalInformation, ?string $data, \Akeeba\Passwordless\CBOR\CBORObject $object): \Akeeba\Passwordless\CBOR\Tag
     {
         return new self($additionalInformation, $data, $object);
     }
 
-    public static function create(\Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject $object): \Akeeba\Passwordless\CBOR\Tag
+    public static function create(\Akeeba\Passwordless\CBOR\CBORObject $object): \Akeeba\Passwordless\CBOR\Tag
     {
         [$ai, $data] = self::determineComponents(self::TAG_URI);
 

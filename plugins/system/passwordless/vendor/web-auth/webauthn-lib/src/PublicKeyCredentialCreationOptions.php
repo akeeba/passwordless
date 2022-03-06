@@ -13,8 +13,8 @@ declare(strict_types=1);
 
 namespace Akeeba\Passwordless\Webauthn;
 
-use Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion;
-use Akeeba\Passwordless\Base64Url\Akeeba\Passwordless\Base64Url;
+use Akeeba\Passwordless\Assert\Assertion;
+use Akeeba\Passwordless\Base64Url\Base64Url;
 use function count;
 use function Akeeba\Passwordless\Safe\json_decode;
 use Akeeba\Passwordless\Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
@@ -136,7 +136,7 @@ class PublicKeyCredentialCreationOptions extends \Akeeba\Passwordless\Webauthn\P
 
     public function setAttestation(string $attestation): self
     {
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::inArray($attestation, [
+        \Akeeba\Passwordless\Assert\Assertion::inArray($attestation, [
             self::ATTESTATION_CONVEYANCE_PREFERENCE_NONE,
             self::ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT,
             self::ATTESTATION_CONVEYANCE_PREFERENCE_INDIRECT,
@@ -186,20 +186,20 @@ class PublicKeyCredentialCreationOptions extends \Akeeba\Passwordless\Webauthn\P
     public static function createFromString(string $data): \Akeeba\Passwordless\Webauthn\PublicKeyCredentialOptions
     {
         $data = \Akeeba\Passwordless\Safe\json_decode($data, true);
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::isArray($data, 'Invalid data');
+        \Akeeba\Passwordless\Assert\Assertion::isArray($data, 'Invalid data');
 
         return self::createFromArray($data);
     }
 
     public static function createFromArray(array $json): \Akeeba\Passwordless\Webauthn\PublicKeyCredentialOptions
     {
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::keyExists($json, 'rp', 'Invalid input. "rp" is missing.');
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::keyExists($json, 'pubKeyCredParams', 'Invalid input. "pubKeyCredParams" is missing.');
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::isArray($json['pubKeyCredParams'], 'Invalid input. "pubKeyCredParams" is not an array.');
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::keyExists($json, 'challenge', 'Invalid input. "challenge" is missing.');
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::keyExists($json, 'attestation', 'Invalid input. "attestation" is missing.');
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::keyExists($json, 'user', 'Invalid input. "user" is missing.');
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::keyExists($json, 'authenticatorSelection', 'Invalid input. "authenticatorSelection" is missing.');
+        \Akeeba\Passwordless\Assert\Assertion::keyExists($json, 'rp', 'Invalid input. "rp" is missing.');
+        \Akeeba\Passwordless\Assert\Assertion::keyExists($json, 'pubKeyCredParams', 'Invalid input. "pubKeyCredParams" is missing.');
+        \Akeeba\Passwordless\Assert\Assertion::isArray($json['pubKeyCredParams'], 'Invalid input. "pubKeyCredParams" is not an array.');
+        \Akeeba\Passwordless\Assert\Assertion::keyExists($json, 'challenge', 'Invalid input. "challenge" is missing.');
+        \Akeeba\Passwordless\Assert\Assertion::keyExists($json, 'attestation', 'Invalid input. "attestation" is missing.');
+        \Akeeba\Passwordless\Assert\Assertion::keyExists($json, 'user', 'Invalid input. "user" is missing.');
+        \Akeeba\Passwordless\Assert\Assertion::keyExists($json, 'authenticatorSelection', 'Invalid input. "authenticatorSelection" is missing.');
 
         $pubKeyCredParams = [];
         foreach ($json['pubKeyCredParams'] as $pubKeyCredParam) {
@@ -215,7 +215,7 @@ class PublicKeyCredentialCreationOptions extends \Akeeba\Passwordless\Webauthn\P
         return self::create(
                 \Akeeba\Passwordless\Webauthn\PublicKeyCredentialRpEntity::createFromArray($json['rp']),
                 \Akeeba\Passwordless\Webauthn\PublicKeyCredentialUserEntity::createFromArray($json['user']),
-                \Akeeba\Passwordless\Base64Url\Akeeba\Passwordless\Base64Url::decode($json['challenge']),
+                Base64Url::decode($json['challenge']),
                 $pubKeyCredParams
             )
             ->excludeCredentials($excludeCredentials)
@@ -236,7 +236,7 @@ class PublicKeyCredentialCreationOptions extends \Akeeba\Passwordless\Webauthn\P
             'pubKeyCredParams' => array_map(static function (\Akeeba\Passwordless\Webauthn\PublicKeyCredentialParameters $object): array {
                 return $object->jsonSerialize();
             }, $this->pubKeyCredParams),
-            'challenge' => \Akeeba\Passwordless\Base64Url\Akeeba\Passwordless\Base64Url::encode($this->challenge),
+            'challenge' => Base64Url::encode($this->challenge),
             'attestation' => $this->attestation,
             'user' => $this->user->jsonSerialize(),
             'authenticatorSelection' => $this->authenticatorSelection->jsonSerialize(),

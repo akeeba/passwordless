@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Akeeba\Passwordless\Webauthn\TokenBinding;
 
-use Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion;
+use Akeeba\Passwordless\Assert\Assertion;
 use Psr\Http\Message\ServerRequestInterface;
 
 final class SecTokenBindingHandler implements \Akeeba\Passwordless\Webauthn\TokenBinding\TokenBindingHandler
@@ -24,10 +24,10 @@ final class SecTokenBindingHandler implements \Akeeba\Passwordless\Webauthn\Toke
             return;
         }
 
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::true($request->hasHeader('Sec-Token-Binding'), 'The header parameter "Sec-Token-Binding" is missing.');
+        \Akeeba\Passwordless\Assert\Assertion::true($request->hasHeader('Sec-Token-Binding'), 'The header parameter "Sec-Token-Binding" is missing.');
         $tokenBindingIds = $request->getHeader('Sec-Token-Binding');
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::count($tokenBindingIds, 1, 'The header parameter "Sec-Token-Binding" is invalid.');
+        \Akeeba\Passwordless\Assert\Assertion::count($tokenBindingIds, 1, 'The header parameter "Sec-Token-Binding" is invalid.');
         $tokenBindingId = reset($tokenBindingIds);
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::eq($tokenBindingId, $tokenBinding->getId(), 'The header parameter "Sec-Token-Binding" is invalid.');
+        \Akeeba\Passwordless\Assert\Assertion::eq($tokenBindingId, $tokenBinding->getId(), 'The header parameter "Sec-Token-Binding" is invalid.');
     }
 }

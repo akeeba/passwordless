@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Akeeba\Passwordless\Webauthn\AttestationStatement;
 
-use Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion;
+use Akeeba\Passwordless\Assert\Assertion;
 use Akeeba\Passwordless\CBOR\Decoder;
 use Akeeba\Passwordless\CBOR\MapObject;
 use Akeeba\Passwordless\CBOR\OtherObject\OtherObjectManager;
@@ -50,14 +50,14 @@ final class FidoU2FAttestationStatementSupport implements \Akeeba\Passwordless\W
      */
     public function load(array $attestation): \Akeeba\Passwordless\Webauthn\AttestationStatement\AttestationStatement
     {
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::keyExists($attestation, 'attStmt', 'Invalid attestation object');
+        \Akeeba\Passwordless\Assert\Assertion::keyExists($attestation, 'attStmt', 'Invalid attestation object');
         foreach (['sig', 'x5c'] as $key) {
-            \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::keyExists($attestation['attStmt'], $key, \Akeeba\Passwordless\Safe\sprintf('The attestation statement value "%s" is missing.', $key));
+            \Akeeba\Passwordless\Assert\Assertion::keyExists($attestation['attStmt'], $key, \Akeeba\Passwordless\Safe\sprintf('The attestation statement value "%s" is missing.', $key));
         }
         $certificates = $attestation['attStmt']['x5c'];
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::isArray($certificates, 'The attestation statement value "x5c" must be a list with one certificate.');
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::count($certificates, 1, 'The attestation statement value "x5c" must be a list with one certificate.');
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::allString($certificates, 'The attestation statement value "x5c" must be a list with one certificate.');
+        \Akeeba\Passwordless\Assert\Assertion::isArray($certificates, 'The attestation statement value "x5c" must be a list with one certificate.');
+        \Akeeba\Passwordless\Assert\Assertion::count($certificates, 1, 'The attestation statement value "x5c" must be a list with one certificate.');
+        \Akeeba\Passwordless\Assert\Assertion::allString($certificates, 'The attestation statement value "x5c" must be a list with one certificate.');
 
         reset($certificates);
         $certificates = \Akeeba\Passwordless\Webauthn\CertificateToolbox::convertAllDERToPEM($certificates);
@@ -68,13 +68,13 @@ final class FidoU2FAttestationStatementSupport implements \Akeeba\Passwordless\W
 
     public function isValid(string $clientDataJSONHash, \Akeeba\Passwordless\Webauthn\AttestationStatement\AttestationStatement $attestationStatement, \Akeeba\Passwordless\Webauthn\AuthenticatorData $authenticatorData): bool
     {
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::eq(
+        \Akeeba\Passwordless\Assert\Assertion::eq(
             $authenticatorData->getAttestedCredentialData()->getAaguid()->toString(),
             '00000000-0000-0000-0000-000000000000',
             'Invalid AAGUID for fido-u2f attestation statement. Shall be "00000000-0000-0000-0000-000000000000"'
         );
         $trustPath = $attestationStatement->getTrustPath();
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::isInstanceOf($trustPath, \Akeeba\Passwordless\Webauthn\TrustPath\CertificateTrustPath::class, 'Invalid trust path');
+        \Akeeba\Passwordless\Assert\Assertion::isInstanceOf($trustPath, \Akeeba\Passwordless\Webauthn\TrustPath\CertificateTrustPath::class, 'Invalid trust path');
         $dataToVerify = "\0";
         $dataToVerify .= $authenticatorData->getRpIdHash();
         $dataToVerify .= $clientDataJSONHash;
@@ -86,13 +86,13 @@ final class FidoU2FAttestationStatementSupport implements \Akeeba\Passwordless\W
 
     private function extractPublicKey(?string $publicKey): string
     {
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::notNull($publicKey, 'The attested credential data does not contain a valid public key.');
+        \Akeeba\Passwordless\Assert\Assertion::notNull($publicKey, 'The attested credential data does not contain a valid public key.');
 
         $publicKeyStream = new \Akeeba\Passwordless\Webauthn\StringStream($publicKey);
         $coseKey = $this->decoder->decode($publicKeyStream);
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::true($publicKeyStream->isEOF(), 'Invalid public key. Presence of extra bytes.');
+        \Akeeba\Passwordless\Assert\Assertion::true($publicKeyStream->isEOF(), 'Invalid public key. Presence of extra bytes.');
         $publicKeyStream->close();
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::isInstanceOf($coseKey, \Akeeba\Passwordless\CBOR\MapObject::class, 'The attested credential data does not contain a valid public key.');
+        \Akeeba\Passwordless\Assert\Assertion::isInstanceOf($coseKey, \Akeeba\Passwordless\CBOR\MapObject::class, 'The attested credential data does not contain a valid public key.');
 
         $coseKey = $coseKey->getNormalizedData();
         $ec2Key = new \Akeeba\Passwordless\Cose\Key\Ec2Key($coseKey + [\Akeeba\Passwordless\Cose\Key\Ec2Key::TYPE => 2, \Akeeba\Passwordless\Cose\Key\Ec2Key::DATA_CURVE => \Akeeba\Passwordless\Cose\Key\Ec2Key::CURVE_P256]);
@@ -108,11 +108,11 @@ final class FidoU2FAttestationStatementSupport implements \Akeeba\Passwordless\W
         } catch (Throwable $throwable) {
             throw new InvalidArgumentException('Invalid certificate or certificate chain', 0, $throwable);
         }
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::isArray($details, 'Invalid certificate or certificate chain');
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::keyExists($details, 'ec', 'Invalid certificate or certificate chain');
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::keyExists($details['ec'], 'curve_name', 'Invalid certificate or certificate chain');
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::eq($details['ec']['curve_name'], 'prime256v1', 'Invalid certificate or certificate chain');
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::keyExists($details['ec'], 'curve_oid', 'Invalid certificate or certificate chain');
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::eq($details['ec']['curve_oid'], '1.2.840.10045.3.1.7', 'Invalid certificate or certificate chain');
+        \Akeeba\Passwordless\Assert\Assertion::isArray($details, 'Invalid certificate or certificate chain');
+        \Akeeba\Passwordless\Assert\Assertion::keyExists($details, 'ec', 'Invalid certificate or certificate chain');
+        \Akeeba\Passwordless\Assert\Assertion::keyExists($details['ec'], 'curve_name', 'Invalid certificate or certificate chain');
+        \Akeeba\Passwordless\Assert\Assertion::eq($details['ec']['curve_name'], 'prime256v1', 'Invalid certificate or certificate chain');
+        \Akeeba\Passwordless\Assert\Assertion::keyExists($details['ec'], 'curve_oid', 'Invalid certificate or certificate chain');
+        \Akeeba\Passwordless\Assert\Assertion::eq($details['ec']['curve_oid'], '1.2.840.10045.3.1.7', 'Invalid certificate or certificate chain');
     }
 }

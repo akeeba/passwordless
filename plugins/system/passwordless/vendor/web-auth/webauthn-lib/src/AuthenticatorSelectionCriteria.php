@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Akeeba\Passwordless\Webauthn;
 
-use Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion;
+use Akeeba\Passwordless\Assert\Assertion;
 use JsonSerializable;
 use function Akeeba\Passwordless\Safe\json_decode;
 
@@ -128,7 +128,7 @@ class AuthenticatorSelectionCriteria implements JsonSerializable
     public static function createFromString(string $data): self
     {
         $data = \Akeeba\Passwordless\Safe\json_decode($data, true);
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::isArray($data, 'Invalid data');
+        \Akeeba\Passwordless\Assert\Assertion::isArray($data, 'Invalid data');
 
         return self::createFromArray($data);
     }

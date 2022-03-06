@@ -15,7 +15,7 @@ namespace Akeeba\Passwordless\CBOR;
 
 use InvalidArgumentException;
 
-abstract class Tag extends \Akeeba\Passwordless\CBOR\AbstractAkeeba\Passwordless\CBORObject
+abstract class Tag extends \Akeeba\Passwordless\CBOR\AbstractCBORObject
 {
     private const MAJOR_TYPE = self::MAJOR_TYPE_TAG;
 
@@ -29,7 +29,7 @@ abstract class Tag extends \Akeeba\Passwordless\CBOR\AbstractAkeeba\Passwordless
      */
     protected $object;
 
-    public function __construct(int $additionalInformation, ?string $data, \Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject $object)
+    public function __construct(int $additionalInformation, ?string $data, \Akeeba\Passwordless\CBOR\CBORObject $object)
     {
         parent::__construct(self::MAJOR_TYPE, $additionalInformation);
         $this->data = $data;
@@ -56,10 +56,10 @@ abstract class Tag extends \Akeeba\Passwordless\CBOR\AbstractAkeeba\Passwordless
     abstract public static function createFromLoadedData(
         int $additionalInformation,
         ?string $data,
-        \Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject $object
+        \Akeeba\Passwordless\CBOR\CBORObject $object
     ): self;
 
-    public function getValue(): \Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject
+    public function getValue(): \Akeeba\Passwordless\CBOR\CBORObject
     {
         return $this->object;
     }

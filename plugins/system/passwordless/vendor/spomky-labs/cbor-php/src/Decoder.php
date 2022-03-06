@@ -87,55 +87,55 @@ final class Decoder implements \Akeeba\Passwordless\CBOR\DecoderInterface
         return $this;
     }
 
-    public function decode(\Akeeba\Passwordless\CBOR\Stream $stream): \Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject
+    public function decode(\Akeeba\Passwordless\CBOR\Stream $stream): \Akeeba\Passwordless\CBOR\CBORObject
     {
         return $this->process($stream, false);
     }
 
-    private function process(\Akeeba\Passwordless\CBOR\Stream $stream, bool $breakable): \Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject
+    private function process(\Akeeba\Passwordless\CBOR\Stream $stream, bool $breakable): \Akeeba\Passwordless\CBOR\CBORObject
     {
         $ib = ord($stream->read(1));
         $mt = $ib >> 5;
         $ai = $ib & 0b00011111;
         $val = null;
         switch ($ai) {
-            case \Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject::LENGTH_1_BYTE: //24
-            case \Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject::LENGTH_2_BYTES: //25
-            case \Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject::LENGTH_4_BYTES: //26
-            case \Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject::LENGTH_8_BYTES: //27
+            case \Akeeba\Passwordless\CBOR\CBORObject::LENGTH_1_BYTE: //24
+            case \Akeeba\Passwordless\CBOR\CBORObject::LENGTH_2_BYTES: //25
+            case \Akeeba\Passwordless\CBOR\CBORObject::LENGTH_4_BYTES: //26
+            case \Akeeba\Passwordless\CBOR\CBORObject::LENGTH_8_BYTES: //27
                 $val = $stream->read(2 ** ($ai & 0b00000111));
                 break;
-            case \Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject::FUTURE_USE_1: //28
-            case \Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject::FUTURE_USE_2: //29
-            case \Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject::FUTURE_USE_3: //30
+            case \Akeeba\Passwordless\CBOR\CBORObject::FUTURE_USE_1: //28
+            case \Akeeba\Passwordless\CBOR\CBORObject::FUTURE_USE_2: //29
+            case \Akeeba\Passwordless\CBOR\CBORObject::FUTURE_USE_3: //30
                 throw new InvalidArgumentException(sprintf(
                     'Cannot parse the data. Found invalid Additional Information "%s" (%d).',
                     str_pad(decbin($ai), 8, '0', STR_PAD_LEFT),
                     $ai
                 ));
-            case \Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject::LENGTH_INDEFINITE: //31
+            case \Akeeba\Passwordless\CBOR\CBORObject::LENGTH_INDEFINITE: //31
                 return $this->processInfinite($stream, $mt, $breakable);
         }
 
         return $this->processFinite($stream, $mt, $ai, $val);
     }
 
-    private function processFinite(\Akeeba\Passwordless\CBOR\Stream $stream, int $mt, int $ai, ?string $val): \Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject
+    private function processFinite(\Akeeba\Passwordless\CBOR\Stream $stream, int $mt, int $ai, ?string $val): \Akeeba\Passwordless\CBOR\CBORObject
     {
         switch ($mt) {
-            case \Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject::MAJOR_TYPE_UNSIGNED_INTEGER: //0
+            case \Akeeba\Passwordless\CBOR\CBORObject::MAJOR_TYPE_UNSIGNED_INTEGER: //0
                 return \Akeeba\Passwordless\CBOR\UnsignedIntegerObject::createObjectForValue($ai, $val);
-            case \Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject::MAJOR_TYPE_NEGATIVE_INTEGER: //1
+            case \Akeeba\Passwordless\CBOR\CBORObject::MAJOR_TYPE_NEGATIVE_INTEGER: //1
                 return \Akeeba\Passwordless\CBOR\NegativeIntegerObject::createObjectForValue($ai, $val);
-            case \Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject::MAJOR_TYPE_BYTE_STRING: //2
+            case \Akeeba\Passwordless\CBOR\CBORObject::MAJOR_TYPE_BYTE_STRING: //2
                 $length = $val === null ? $ai : \Akeeba\Passwordless\CBOR\Utils::binToInt($val);
 
                 return \Akeeba\Passwordless\CBOR\ByteStringObject::create($stream->read($length));
-            case \Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject::MAJOR_TYPE_TEXT_STRING: //3
+            case \Akeeba\Passwordless\CBOR\CBORObject::MAJOR_TYPE_TEXT_STRING: //3
                 $length = $val === null ? $ai : \Akeeba\Passwordless\CBOR\Utils::binToInt($val);
 
                 return \Akeeba\Passwordless\CBOR\TextStringObject::create($stream->read($length));
-            case \Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject::MAJOR_TYPE_LIST: //4
+            case \Akeeba\Passwordless\CBOR\CBORObject::MAJOR_TYPE_LIST: //4
                 $object = \Akeeba\Passwordless\CBOR\ListObject::create();
                 $nbItems = $val === null ? $ai : \Akeeba\Passwordless\CBOR\Utils::binToInt($val);
                 for ($i = 0; $i < $nbItems; ++$i) {
@@ -143,7 +143,7 @@ final class Decoder implements \Akeeba\Passwordless\CBOR\DecoderInterface
                 }
 
                 return $object;
-            case \Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject::MAJOR_TYPE_MAP: //5
+            case \Akeeba\Passwordless\CBOR\CBORObject::MAJOR_TYPE_MAP: //5
                 $object = \Akeeba\Passwordless\CBOR\MapObject::create();
                 $nbItems = $val === null ? $ai : \Akeeba\Passwordless\CBOR\Utils::binToInt($val);
                 for ($i = 0; $i < $nbItems; ++$i) {
@@ -151,9 +151,9 @@ final class Decoder implements \Akeeba\Passwordless\CBOR\DecoderInterface
                 }
 
                 return $object;
-            case \Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject::MAJOR_TYPE_TAG: //6
+            case \Akeeba\Passwordless\CBOR\CBORObject::MAJOR_TYPE_TAG: //6
                 return $this->tagManager->createObjectForValue($ai, $val, $this->process($stream, false));
-            case \Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject::MAJOR_TYPE_OTHER_TYPE: //7
+            case \Akeeba\Passwordless\CBOR\CBORObject::MAJOR_TYPE_OTHER_TYPE: //7
                 return $this->otherObjectManager->createObjectForValue($ai, $val);
             default:
                 throw new RuntimeException(sprintf(
@@ -164,10 +164,10 @@ final class Decoder implements \Akeeba\Passwordless\CBOR\DecoderInterface
         }
     }
 
-    private function processInfinite(\Akeeba\Passwordless\CBOR\Stream $stream, int $mt, bool $breakable): \Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject
+    private function processInfinite(\Akeeba\Passwordless\CBOR\Stream $stream, int $mt, bool $breakable): \Akeeba\Passwordless\CBOR\CBORObject
     {
         switch ($mt) {
-            case \Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject::MAJOR_TYPE_BYTE_STRING: //2
+            case \Akeeba\Passwordless\CBOR\CBORObject::MAJOR_TYPE_BYTE_STRING: //2
                 $object = \Akeeba\Passwordless\CBOR\IndefiniteLengthByteStringObject::create();
                 while (! ($it = $this->process($stream, true)) instanceof \Akeeba\Passwordless\CBOR\OtherObject\BreakObject) {
                     if (! $it instanceof \Akeeba\Passwordless\CBOR\ByteStringObject) {
@@ -179,7 +179,7 @@ final class Decoder implements \Akeeba\Passwordless\CBOR\DecoderInterface
                 }
 
                 return $object;
-            case \Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject::MAJOR_TYPE_TEXT_STRING: //3
+            case \Akeeba\Passwordless\CBOR\CBORObject::MAJOR_TYPE_TEXT_STRING: //3
                 $object = \Akeeba\Passwordless\CBOR\IndefiniteLengthTextStringObject::create();
                 while (! ($it = $this->process($stream, true)) instanceof \Akeeba\Passwordless\CBOR\OtherObject\BreakObject) {
                     if (! $it instanceof \Akeeba\Passwordless\CBOR\TextStringObject) {
@@ -191,7 +191,7 @@ final class Decoder implements \Akeeba\Passwordless\CBOR\DecoderInterface
                 }
 
                 return $object;
-            case \Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject::MAJOR_TYPE_LIST: //4
+            case \Akeeba\Passwordless\CBOR\CBORObject::MAJOR_TYPE_LIST: //4
                 $object = \Akeeba\Passwordless\CBOR\IndefiniteLengthListObject::create();
                 $it = $this->process($stream, true);
                 while (! $it instanceof \Akeeba\Passwordless\CBOR\OtherObject\BreakObject) {
@@ -200,22 +200,22 @@ final class Decoder implements \Akeeba\Passwordless\CBOR\DecoderInterface
                 }
 
                 return $object;
-            case \Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject::MAJOR_TYPE_MAP: //5
+            case \Akeeba\Passwordless\CBOR\CBORObject::MAJOR_TYPE_MAP: //5
                 $object = \Akeeba\Passwordless\CBOR\IndefiniteLengthMapObject::create();
                 while (! ($it = $this->process($stream, true)) instanceof \Akeeba\Passwordless\CBOR\OtherObject\BreakObject) {
                     $object->add($it, $this->process($stream, false));
                 }
 
                 return $object;
-            case \Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject::MAJOR_TYPE_OTHER_TYPE: //7
+            case \Akeeba\Passwordless\CBOR\CBORObject::MAJOR_TYPE_OTHER_TYPE: //7
                 if (! $breakable) {
                     throw new InvalidArgumentException('Cannot parse the data. No enclosing indefinite.');
                 }
 
                 return \Akeeba\Passwordless\CBOR\OtherObject\BreakObject::create();
-            case \Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject::MAJOR_TYPE_UNSIGNED_INTEGER: //0
-            case \Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject::MAJOR_TYPE_NEGATIVE_INTEGER: //1
-            case \Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject::MAJOR_TYPE_TAG: //6
+            case \Akeeba\Passwordless\CBOR\CBORObject::MAJOR_TYPE_UNSIGNED_INTEGER: //0
+            case \Akeeba\Passwordless\CBOR\CBORObject::MAJOR_TYPE_NEGATIVE_INTEGER: //1
+            case \Akeeba\Passwordless\CBOR\CBORObject::MAJOR_TYPE_TAG: //6
             default:
                 throw new InvalidArgumentException(sprintf(
                     'Cannot parse the data. Found infinite length for Major Type "%s" (%d).',

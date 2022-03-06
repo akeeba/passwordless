@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Akeeba\Passwordless\Webauthn\MetadataService;
 
-use Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion;
+use Akeeba\Passwordless\Assert\Assertion;
 use JsonSerializable;
 use function Akeeba\Passwordless\Safe\sprintf;
 
@@ -36,9 +36,9 @@ class RgbPaletteEntry implements JsonSerializable
 
     public function __construct(int $r, int $g, int $b)
     {
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::range($r, 0, 255, \Akeeba\Passwordless\Webauthn\MetadataService\Utils::logicException('The key "r" is invalid'));
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::range($g, 0, 255, \Akeeba\Passwordless\Webauthn\MetadataService\Utils::logicException('The key "g" is invalid'));
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::range($b, 0, 255, \Akeeba\Passwordless\Webauthn\MetadataService\Utils::logicException('The key "b" is invalid'));
+        \Akeeba\Passwordless\Assert\Assertion::range($r, 0, 255, \Akeeba\Passwordless\Webauthn\MetadataService\Utils::logicException('The key "r" is invalid'));
+        \Akeeba\Passwordless\Assert\Assertion::range($g, 0, 255, \Akeeba\Passwordless\Webauthn\MetadataService\Utils::logicException('The key "g" is invalid'));
+        \Akeeba\Passwordless\Assert\Assertion::range($b, 0, 255, \Akeeba\Passwordless\Webauthn\MetadataService\Utils::logicException('The key "b" is invalid'));
         $this->r = $r;
         $this->g = $g;
         $this->b = $b;
@@ -62,8 +62,8 @@ class RgbPaletteEntry implements JsonSerializable
     public static function createFromArray(array $data): self
     {
         foreach (['r', 'g', 'b'] as $key) {
-            \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::keyExists($data, $key, \Akeeba\Passwordless\Safe\sprintf('The key "%s" is missing', $key));
-            \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::integer($data[$key], \Akeeba\Passwordless\Safe\sprintf('The key "%s" is invalid', $key));
+            \Akeeba\Passwordless\Assert\Assertion::keyExists($data, $key, \Akeeba\Passwordless\Safe\sprintf('The key "%s" is missing', $key));
+            \Akeeba\Passwordless\Assert\Assertion::integer($data[$key], \Akeeba\Passwordless\Safe\sprintf('The key "%s" is invalid', $key));
         }
 
         return new self(

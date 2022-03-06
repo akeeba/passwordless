@@ -16,7 +16,7 @@ namespace Akeeba\Passwordless\CBOR;
 /**
  * @final
  */
-class IndefiniteLengthByteStringObject extends \Akeeba\Passwordless\CBOR\AbstractAkeeba\Passwordless\CBORObject implements \Akeeba\Passwordless\CBOR\Normalizable
+class IndefiniteLengthByteStringObject extends \Akeeba\Passwordless\CBOR\AbstractCBORObject implements \Akeeba\Passwordless\CBOR\Normalizable
 {
     private const MAJOR_TYPE = self::MAJOR_TYPE_BYTE_STRING;
 

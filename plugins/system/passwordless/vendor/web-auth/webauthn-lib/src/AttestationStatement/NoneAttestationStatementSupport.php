@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Akeeba\Passwordless\Webauthn\AttestationStatement;
 
-use Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion;
+use Akeeba\Passwordless\Assert\Assertion;
 use function count;
 use Akeeba\Passwordless\Webauthn\AuthenticatorData;
 use Akeeba\Passwordless\Webauthn\TrustPath\EmptyTrustPath;
@@ -30,7 +30,7 @@ final class NoneAttestationStatementSupport implements \Akeeba\Passwordless\Weba
      */
     public function load(array $attestation): \Akeeba\Passwordless\Webauthn\AttestationStatement\AttestationStatement
     {
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::noContent($attestation['attStmt'], 'Invalid attestation object');
+        \Akeeba\Passwordless\Assert\Assertion::noContent($attestation['attStmt'], 'Invalid attestation object');
 
         return \Akeeba\Passwordless\Webauthn\AttestationStatement\AttestationStatement::createNone($attestation['fmt'], $attestation['attStmt'], new \Akeeba\Passwordless\Webauthn\TrustPath\EmptyTrustPath());
     }

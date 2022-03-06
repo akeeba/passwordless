@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace Akeeba\Passwordless\Cose\Key;
 
 use function array_key_exists;
-use Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion;
+use Akeeba\Passwordless\Assert\Assertion;
 
 class Key
 {
@@ -35,13 +35,13 @@ class Key
 
     public function __construct(array $data)
     {
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::keyExists($data, self::TYPE, 'Invalid key: the type is not defined');
+        \Akeeba\Passwordless\Assert\Assertion::keyExists($data, self::TYPE, 'Invalid key: the type is not defined');
         $this->data = $data;
     }
 
     public static function createFromData(array $data): self
     {
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::keyExists($data, self::TYPE, 'Invalid key: the type is not defined');
+        \Akeeba\Passwordless\Assert\Assertion::keyExists($data, self::TYPE, 'Invalid key: the type is not defined');
         switch ($data[self::TYPE]) {
             case 1:
                 return new \Akeeba\Passwordless\Cose\Key\OkpKey($data);
@@ -84,7 +84,7 @@ class Key
      */
     public function get(int $key)
     {
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::keyExists($this->data, $key, sprintf('The key has no data at index %d', $key));
+        \Akeeba\Passwordless\Assert\Assertion::keyExists($this->data, $key, sprintf('The key has no data at index %d', $key));
 
         return $this->data[$key];
     }

@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Akeeba\Passwordless\Webauthn;
 
-use Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion;
+use Akeeba\Passwordless\Assert\Assertion;
 use function count;
 use function in_array;
 use InvalidArgumentException;
@@ -147,15 +147,15 @@ class CertificateToolbox
     {
         foreach ($certificates as $certificate) {
             $parsed = openssl_x509_parse($certificate);
-            \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::isArray($parsed, 'Unable to read the certificate');
+            \Akeeba\Passwordless\Assert\Assertion::isArray($parsed, 'Unable to read the certificate');
             if (false === $allowRootCertificate) {
                 self::checkRootCertificate($parsed);
             }
 
-            \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::keyExists($parsed, 'validTo_time_t', 'The certificate has no validity period');
-            \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::keyExists($parsed, 'validFrom_time_t', 'The certificate has no validity period');
-            \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::lessOrEqualThan(time(), $parsed['validTo_time_t'], 'The certificate expired');
-            \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::greaterOrEqualThan(time(), $parsed['validFrom_time_t'], 'The certificate is not usable yet');
+            \Akeeba\Passwordless\Assert\Assertion::keyExists($parsed, 'validTo_time_t', 'The certificate has no validity period');
+            \Akeeba\Passwordless\Assert\Assertion::keyExists($parsed, 'validFrom_time_t', 'The certificate has no validity period');
+            \Akeeba\Passwordless\Assert\Assertion::lessOrEqualThan(time(), $parsed['validTo_time_t'], 'The certificate expired');
+            \Akeeba\Passwordless\Assert\Assertion::greaterOrEqualThan(time(), $parsed['validFrom_time_t'], 'The certificate is not usable yet');
         }
     }
 
@@ -164,13 +164,13 @@ class CertificateToolbox
      */
     private static function checkRootCertificate(array $parsed): void
     {
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::keyExists($parsed, 'subject', 'The certificate has no subject');
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::keyExists($parsed, 'issuer', 'The certificate has no issuer');
+        \Akeeba\Passwordless\Assert\Assertion::keyExists($parsed, 'subject', 'The certificate has no subject');
+        \Akeeba\Passwordless\Assert\Assertion::keyExists($parsed, 'issuer', 'The certificate has no issuer');
         $subject = $parsed['subject'];
         $issuer = $parsed['issuer'];
         \Akeeba\Passwordless\Safe\ksort($subject);
         \Akeeba\Passwordless\Safe\ksort($issuer);
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::notEq($subject, $issuer, 'Root certificates are not allowed');
+        \Akeeba\Passwordless\Assert\Assertion::notEq($subject, $issuer, 'Root certificates are not allowed');
     }
 
     /**

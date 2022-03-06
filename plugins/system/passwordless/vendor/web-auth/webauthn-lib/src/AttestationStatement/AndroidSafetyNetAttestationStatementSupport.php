@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Akeeba\Passwordless\Webauthn\AttestationStatement;
 
-use Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion;
+use Akeeba\Passwordless\Assert\Assertion;
 use InvalidArgumentException;
 use Jose\Component\Core\Algorithm as AlgorithmInterface;
 use Jose\Component\Core\AlgorithmManager;
@@ -137,15 +137,15 @@ final class AndroidSafetyNetAttestationStatementSupport implements \Akeeba\Passw
      */
     public function load(array $attestation): \Akeeba\Passwordless\Webauthn\AttestationStatement\AttestationStatement
     {
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::keyExists($attestation, 'attStmt', 'Invalid attestation object');
+        \Akeeba\Passwordless\Assert\Assertion::keyExists($attestation, 'attStmt', 'Invalid attestation object');
         foreach (['ver', 'response'] as $key) {
-            \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::keyExists($attestation['attStmt'], $key, \Akeeba\Passwordless\Safe\sprintf('The attestation statement value "%s" is missing.', $key));
-            \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::notEmpty($attestation['attStmt'][$key], \Akeeba\Passwordless\Safe\sprintf('The attestation statement value "%s" is empty.', $key));
+            \Akeeba\Passwordless\Assert\Assertion::keyExists($attestation['attStmt'], $key, \Akeeba\Passwordless\Safe\sprintf('The attestation statement value "%s" is missing.', $key));
+            \Akeeba\Passwordless\Assert\Assertion::notEmpty($attestation['attStmt'][$key], \Akeeba\Passwordless\Safe\sprintf('The attestation statement value "%s" is empty.', $key));
         }
         $jws = $this->jwsSerializer->unserialize($attestation['attStmt']['response']);
         $jwsHeader = $jws->getSignature(0)->getProtectedHeader();
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::keyExists($jwsHeader, 'x5c', 'The response in the attestation statement must contain a "x5c" header.');
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::notEmpty($jwsHeader['x5c'], 'The "x5c" parameter in the attestation statement response must contain at least one certificate.');
+        \Akeeba\Passwordless\Assert\Assertion::keyExists($jwsHeader, 'x5c', 'The response in the attestation statement must contain a "x5c" header.');
+        \Akeeba\Passwordless\Assert\Assertion::notEmpty($jwsHeader['x5c'], 'The "x5c" parameter in the attestation statement response must contain at least one certificate.');
         $certificates = $this->convertCertificatesToPem($jwsHeader['x5c']);
         $attestation['attStmt']['jws'] = $jws;
 
@@ -159,16 +159,16 @@ final class AndroidSafetyNetAttestationStatementSupport implements \Akeeba\Passw
     public function isValid(string $clientDataJSONHash, \Akeeba\Passwordless\Webauthn\AttestationStatement\AttestationStatement $attestationStatement, \Akeeba\Passwordless\Webauthn\AuthenticatorData $authenticatorData): bool
     {
         $trustPath = $attestationStatement->getTrustPath();
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::isInstanceOf($trustPath, \Akeeba\Passwordless\Webauthn\TrustPath\CertificateTrustPath::class, 'Invalid trust path');
+        \Akeeba\Passwordless\Assert\Assertion::isInstanceOf($trustPath, \Akeeba\Passwordless\Webauthn\TrustPath\CertificateTrustPath::class, 'Invalid trust path');
         $certificates = $trustPath->getCertificates();
         $firstCertificate = current($certificates);
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::string($firstCertificate, 'No certificate');
+        \Akeeba\Passwordless\Assert\Assertion::string($firstCertificate, 'No certificate');
 
         $parsedCertificate = openssl_x509_parse($firstCertificate);
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::isArray($parsedCertificate, 'Invalid attestation object');
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::keyExists($parsedCertificate, 'subject', 'Invalid attestation object');
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::keyExists($parsedCertificate['subject'], 'CN', 'Invalid attestation object');
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::eq($parsedCertificate['subject']['CN'], 'attest.android.com', 'Invalid attestation object');
+        \Akeeba\Passwordless\Assert\Assertion::isArray($parsedCertificate, 'Invalid attestation object');
+        \Akeeba\Passwordless\Assert\Assertion::keyExists($parsedCertificate, 'subject', 'Invalid attestation object');
+        \Akeeba\Passwordless\Assert\Assertion::keyExists($parsedCertificate['subject'], 'CN', 'Invalid attestation object');
+        \Akeeba\Passwordless\Assert\Assertion::eq($parsedCertificate['subject']['CN'], 'attest.android.com', 'Invalid attestation object');
 
         /** @var JWS $jws */
         $jws = $attestationStatement->get('jws');
@@ -186,25 +186,25 @@ final class AndroidSafetyNetAttestationStatementSupport implements \Akeeba\Passw
 
     private function validatePayload(?string $payload, string $clientDataJSONHash, \Akeeba\Passwordless\Webauthn\AuthenticatorData $authenticatorData): void
     {
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::notNull($payload, 'Invalid attestation object');
+        \Akeeba\Passwordless\Assert\Assertion::notNull($payload, 'Invalid attestation object');
         $payload = JsonConverter::decode($payload);
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::isArray($payload, 'Invalid attestation object');
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::keyExists($payload, 'nonce', 'Invalid attestation object. "nonce" is missing.');
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::eq($payload['nonce'], base64_encode(hash('sha256', $authenticatorData->getAuthData().$clientDataJSONHash, true)), 'Invalid attestation object. Invalid nonce');
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::keyExists($payload, 'ctsProfileMatch', 'Invalid attestation object. "ctsProfileMatch" is missing.');
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::true($payload['ctsProfileMatch'], 'Invalid attestation object. "ctsProfileMatch" value is false.');
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::keyExists($payload, 'timestampMs', 'Invalid attestation object. Timestamp is missing.');
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::integer($payload['timestampMs'], 'Invalid attestation object. Timestamp shall be an integer.');
+        \Akeeba\Passwordless\Assert\Assertion::isArray($payload, 'Invalid attestation object');
+        \Akeeba\Passwordless\Assert\Assertion::keyExists($payload, 'nonce', 'Invalid attestation object. "nonce" is missing.');
+        \Akeeba\Passwordless\Assert\Assertion::eq($payload['nonce'], base64_encode(hash('sha256', $authenticatorData->getAuthData().$clientDataJSONHash, true)), 'Invalid attestation object. Invalid nonce');
+        \Akeeba\Passwordless\Assert\Assertion::keyExists($payload, 'ctsProfileMatch', 'Invalid attestation object. "ctsProfileMatch" is missing.');
+        \Akeeba\Passwordless\Assert\Assertion::true($payload['ctsProfileMatch'], 'Invalid attestation object. "ctsProfileMatch" value is false.');
+        \Akeeba\Passwordless\Assert\Assertion::keyExists($payload, 'timestampMs', 'Invalid attestation object. Timestamp is missing.');
+        \Akeeba\Passwordless\Assert\Assertion::integer($payload['timestampMs'], 'Invalid attestation object. Timestamp shall be an integer.');
         $currentTime = time() * 1000;
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::lessOrEqualThan($payload['timestampMs'], $currentTime + $this->leeway, \Akeeba\Passwordless\Safe\sprintf('Invalid attestation object. Issued in the future. Current time: %d. Response time: %d', $currentTime, $payload['timestampMs']));
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::lessOrEqualThan($currentTime - $payload['timestampMs'], $this->maxAge, \Akeeba\Passwordless\Safe\sprintf('Invalid attestation object. Too old. Current time: %d. Response time: %d', $currentTime, $payload['timestampMs']));
+        \Akeeba\Passwordless\Assert\Assertion::lessOrEqualThan($payload['timestampMs'], $currentTime + $this->leeway, \Akeeba\Passwordless\Safe\sprintf('Invalid attestation object. Issued in the future. Current time: %d. Response time: %d', $currentTime, $payload['timestampMs']));
+        \Akeeba\Passwordless\Assert\Assertion::lessOrEqualThan($currentTime - $payload['timestampMs'], $this->maxAge, \Akeeba\Passwordless\Safe\sprintf('Invalid attestation object. Too old. Current time: %d. Response time: %d', $currentTime, $payload['timestampMs']));
     }
 
     private function validateSignature(JWS $jws, \Akeeba\Passwordless\Webauthn\TrustPath\CertificateTrustPath $trustPath): void
     {
         $jwk = JWKFactory::createFromCertificate($trustPath->getCertificates()[0]);
         $isValid = $this->jwsVerifier->verifyWithKey($jws, $jwk, 0);
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::true($isValid, 'Invalid response signature');
+        \Akeeba\Passwordless\Assert\Assertion::true($isValid, 'Invalid response signature');
     }
 
     private function validateUsingGoogleApi(\Akeeba\Passwordless\Webauthn\AttestationStatement\AttestationStatement $attestationStatement): void
@@ -222,9 +222,9 @@ final class AndroidSafetyNetAttestationStatementSupport implements \Akeeba\Passw
         $this->checkGoogleApiResponse($response);
         $responseBody = $this->getResponseBody($response);
         $responseBodyJson = \Akeeba\Passwordless\Safe\json_decode($responseBody, true);
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::keyExists($responseBodyJson, 'isValidSignature', 'Invalid response.');
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::boolean($responseBodyJson['isValidSignature'], 'Invalid response.');
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::true($responseBodyJson['isValidSignature'], 'Invalid response.');
+        \Akeeba\Passwordless\Assert\Assertion::keyExists($responseBodyJson, 'isValidSignature', 'Invalid response.');
+        \Akeeba\Passwordless\Assert\Assertion::boolean($responseBodyJson['isValidSignature'], 'Invalid response.');
+        \Akeeba\Passwordless\Assert\Assertion::true($responseBodyJson['isValidSignature'], 'Invalid response.');
     }
 
     private function getResponseBody(ResponseInterface $response): string
@@ -244,8 +244,8 @@ final class AndroidSafetyNetAttestationStatementSupport implements \Akeeba\Passw
 
     private function checkGoogleApiResponse(ResponseInterface $response): void
     {
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::eq(200, $response->getStatusCode(), 'Request did not succeeded');
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::true($response->hasHeader('content-type'), 'Unrecognized response');
+        \Akeeba\Passwordless\Assert\Assertion::eq(200, $response->getStatusCode(), 'Request did not succeeded');
+        \Akeeba\Passwordless\Assert\Assertion::true($response->hasHeader('content-type'), 'Unrecognized response');
 
         foreach ($response->getHeader('content-type') as $header) {
             if (0 === mb_strpos($header, 'application/json')) {

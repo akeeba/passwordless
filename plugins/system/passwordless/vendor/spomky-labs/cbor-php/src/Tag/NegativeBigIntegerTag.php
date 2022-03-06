@@ -15,7 +15,7 @@ namespace Akeeba\Passwordless\CBOR\Tag;
 
 use Akeeba\Passwordless\Brick\Math\BigInteger;
 use Akeeba\Passwordless\CBOR\ByteStringObject;
-use Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject;
+use \Akeeba\Passwordless\CBOR\CBORObject;
 use Akeeba\Passwordless\CBOR\IndefiniteLengthByteStringObject;
 use Akeeba\Passwordless\CBOR\Normalizable;
 use Akeeba\Passwordless\CBOR\Tag;
@@ -23,7 +23,7 @@ use InvalidArgumentException;
 
 final class NegativeBigIntegerTag extends \Akeeba\Passwordless\CBOR\Tag implements \Akeeba\Passwordless\CBOR\Normalizable
 {
-    public function __construct(int $additionalInformation, ?string $data, \Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject $object)
+    public function __construct(int $additionalInformation, ?string $data, \Akeeba\Passwordless\CBOR\CBORObject $object)
     {
         if (! $object instanceof \Akeeba\Passwordless\CBOR\ByteStringObject && ! $object instanceof \Akeeba\Passwordless\CBOR\IndefiniteLengthByteStringObject) {
             throw new InvalidArgumentException('This tag only accepts a Byte String object.');
@@ -37,12 +37,12 @@ final class NegativeBigIntegerTag extends \Akeeba\Passwordless\CBOR\Tag implemen
         return self::TAG_NEGATIVE_BIG_NUM;
     }
 
-    public static function createFromLoadedData(int $additionalInformation, ?string $data, \Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject $object): \Akeeba\Passwordless\CBOR\Tag
+    public static function createFromLoadedData(int $additionalInformation, ?string $data, \Akeeba\Passwordless\CBOR\CBORObject $object): \Akeeba\Passwordless\CBOR\Tag
     {
         return new self($additionalInformation, $data, $object);
     }
 
-    public static function create(\Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject $object): \Akeeba\Passwordless\CBOR\Tag
+    public static function create(\Akeeba\Passwordless\CBOR\CBORObject $object): \Akeeba\Passwordless\CBOR\Tag
     {
         [$ai, $data] = self::determineComponents(self::TAG_NEGATIVE_BIG_NUM);
 

@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Akeeba\Passwordless\Cose\Algorithm\Signature\RSA;
 
-use Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion;
+use Akeeba\Passwordless\Assert\Assertion;
 use Akeeba\Passwordless\Cose\Algorithm\Signature\Signature;
 use Akeeba\Passwordless\Cose\Key\Key;
 use Akeeba\Passwordless\Cose\Key\RsaKey;
@@ -24,7 +24,7 @@ abstract class RSA implements \Akeeba\Passwordless\Cose\Algorithm\Signature\Sign
     public function sign(string $data, \Akeeba\Passwordless\Cose\Key\Key $key): string
     {
         $key = $this->handleKey($key);
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::true($key->isPrivate(), 'The key is not private');
+        \Akeeba\Passwordless\Assert\Assertion::true($key->isPrivate(), 'The key is not private');
 
         if (false === openssl_sign($data, $signature, $key->asPem(), $this->getHashAlgorithm())) {
             throw new InvalidArgumentException('Unable to sign the data');

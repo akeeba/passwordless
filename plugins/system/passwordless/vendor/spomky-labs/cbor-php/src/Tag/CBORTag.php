@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Akeeba\Passwordless\CBOR\Tag;
 
-use Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject;
+use \Akeeba\Passwordless\CBOR\CBORObject;
 use Akeeba\Passwordless\CBOR\Normalizable;
 use Akeeba\Passwordless\CBOR\Tag;
 
@@ -24,12 +24,12 @@ final class CBORTag extends \Akeeba\Passwordless\CBOR\Tag implements \Akeeba\Pas
         return self::TAG_CBOR;
     }
 
-    public static function createFromLoadedData(int $additionalInformation, ?string $data, \Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject $object): \Akeeba\Passwordless\CBOR\Tag
+    public static function createFromLoadedData(int $additionalInformation, ?string $data, \Akeeba\Passwordless\CBOR\CBORObject $object): \Akeeba\Passwordless\CBOR\Tag
     {
         return new self($additionalInformation, $data, $object);
     }
 
-    public static function create(\Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject $object): \Akeeba\Passwordless\CBOR\Tag
+    public static function create(\Akeeba\Passwordless\CBOR\CBORObject $object): \Akeeba\Passwordless\CBOR\Tag
     {
         [$ai, $data] = self::determineComponents(self::TAG_CBOR);
 

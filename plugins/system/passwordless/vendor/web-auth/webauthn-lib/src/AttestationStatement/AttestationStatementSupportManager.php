@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace Akeeba\Passwordless\Webauthn\AttestationStatement;
 
 use function array_key_exists;
-use Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion;
+use Akeeba\Passwordless\Assert\Assertion;
 use function Akeeba\Passwordless\Safe\sprintf;
 
 class AttestationStatementSupportManager
@@ -36,7 +36,7 @@ class AttestationStatementSupportManager
 
     public function get(string $name): \Akeeba\Passwordless\Webauthn\AttestationStatement\AttestationStatementSupport
     {
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::true($this->has($name), \Akeeba\Passwordless\Safe\sprintf('The attestation statement format "%s" is not supported.', $name));
+        \Akeeba\Passwordless\Assert\Assertion::true($this->has($name), \Akeeba\Passwordless\Safe\sprintf('The attestation statement format "%s" is not supported.', $name));
 
         return $this->attestationStatementSupports[$name];
     }

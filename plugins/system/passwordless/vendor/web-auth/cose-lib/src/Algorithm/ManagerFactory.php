@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Akeeba\Passwordless\Cose\Algorithm;
 
-use Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion;
+use Akeeba\Passwordless\Assert\Assertion;
 
 class ManagerFactory
 {
@@ -41,7 +41,7 @@ class ManagerFactory
     {
         $manager = new \Akeeba\Passwordless\Cose\Algorithm\Manager();
         foreach ($aliases as $alias) {
-            \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::keyExists($this->algorithms, $alias, sprintf('The algorithm with alias "%s" is not supported', $alias));
+            \Akeeba\Passwordless\Assert\Assertion::keyExists($this->algorithms, $alias, sprintf('The algorithm with alias "%s" is not supported', $alias));
             $manager->add($this->algorithms[$alias]);
         }
 

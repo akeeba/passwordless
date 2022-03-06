@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Akeeba\Passwordless\Webauthn\MetadataService;
 
-use Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion;
+use Akeeba\Passwordless\Assert\Assertion;
 use function in_array;
 use JsonSerializable;
 use function Akeeba\Passwordless\Safe\sprintf;
@@ -64,7 +64,7 @@ class StatusReport implements JsonSerializable
 
     public function __construct(string $status, ?string $effectiveDate, ?string $certificate, ?string $url, ?string $certificationDescriptor, ?string $certificateNumber, ?string $certificationPolicyVersion, ?string $certificationRequirementsVersion)
     {
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::inArray($status, \Akeeba\Passwordless\Webauthn\MetadataService\AuthenticatorStatus::list(), \Akeeba\Passwordless\Webauthn\MetadataService\Utils::logicException('The value of the key "status" is not acceptable'));
+        \Akeeba\Passwordless\Assert\Assertion::inArray($status, \Akeeba\Passwordless\Webauthn\MetadataService\AuthenticatorStatus::list(), \Akeeba\Passwordless\Webauthn\MetadataService\Utils::logicException('The value of the key "status" is not acceptable'));
 
         $this->status = $status;
         $this->effectiveDate = $effectiveDate;
@@ -129,10 +129,10 @@ class StatusReport implements JsonSerializable
     public static function createFromArray(array $data): self
     {
         $data = \Akeeba\Passwordless\Webauthn\MetadataService\Utils::filterNullValues($data);
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::keyExists($data, 'status', \Akeeba\Passwordless\Webauthn\MetadataService\Utils::logicException('The key "status" is missing'));
+        \Akeeba\Passwordless\Assert\Assertion::keyExists($data, 'status', \Akeeba\Passwordless\Webauthn\MetadataService\Utils::logicException('The key "status" is missing'));
         foreach (['effectiveDate', 'certificate', 'url', 'certificationDescriptor', 'certificateNumber', 'certificationPolicyVersion', 'certificationRequirementsVersion'] as $key) {
             if (isset($data[$key])) {
-                \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::nullOrString($data[$key], \Akeeba\Passwordless\Webauthn\MetadataService\Utils::logicException(\Akeeba\Passwordless\Safe\sprintf('The value of the key "%s" is invalid', $key)));
+                \Akeeba\Passwordless\Assert\Assertion::nullOrString($data[$key], \Akeeba\Passwordless\Webauthn\MetadataService\Utils::logicException(\Akeeba\Passwordless\Safe\sprintf('The value of the key "%s" is invalid', $key)));
             }
         }
 

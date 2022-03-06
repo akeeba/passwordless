@@ -13,13 +13,13 @@ declare(strict_types=1);
 
 namespace Akeeba\Passwordless\Webauthn\TokenBinding;
 
-use Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion;
+use Akeeba\Passwordless\Assert\Assertion;
 use Psr\Http\Message\ServerRequestInterface;
 
 final class TokenBindingNotSupportedHandler implements \Akeeba\Passwordless\Webauthn\TokenBinding\TokenBindingHandler
 {
     public function check(\Akeeba\Passwordless\Webauthn\TokenBinding\TokenBinding $tokenBinding, ServerRequestInterface $request): void
     {
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::true(\Akeeba\Passwordless\Webauthn\TokenBinding\TokenBinding::TOKEN_BINDING_STATUS_PRESENT !== $tokenBinding->getStatus(), 'Token binding not supported.');
+        \Akeeba\Passwordless\Assert\Assertion::true(\Akeeba\Passwordless\Webauthn\TokenBinding\TokenBinding::TOKEN_BINDING_STATUS_PRESENT !== $tokenBinding->getStatus(), 'Token binding not supported.');
     }
 }

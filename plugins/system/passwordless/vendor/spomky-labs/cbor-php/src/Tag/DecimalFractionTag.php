@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Akeeba\Passwordless\CBOR\Tag;
 
-use Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject;
+use \Akeeba\Passwordless\CBOR\CBORObject;
 use Akeeba\Passwordless\CBOR\ListObject;
 use Akeeba\Passwordless\CBOR\NegativeIntegerObject;
 use Akeeba\Passwordless\CBOR\Normalizable;
@@ -26,7 +26,7 @@ use RuntimeException;
 
 final class DecimalFractionTag extends \Akeeba\Passwordless\CBOR\Tag implements \Akeeba\Passwordless\CBOR\Normalizable
 {
-    public function __construct(\Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject $object)
+    public function __construct(\Akeeba\Passwordless\CBOR\CBORObject $object)
     {
         if (! extension_loaded('bcmath')) {
             throw new RuntimeException('The extension "bcmath" is required to use this tag');
@@ -50,7 +50,7 @@ final class DecimalFractionTag extends \Akeeba\Passwordless\CBOR\Tag implements 
         parent::__construct(self::TAG_DECIMAL_FRACTION, null, $object);
     }
 
-    public static function create(\Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject $object): self
+    public static function create(\Akeeba\Passwordless\CBOR\CBORObject $object): self
     {
         return new self($object);
     }
@@ -60,12 +60,12 @@ final class DecimalFractionTag extends \Akeeba\Passwordless\CBOR\Tag implements 
         return self::TAG_DECIMAL_FRACTION;
     }
 
-    public static function createFromLoadedData(int $additionalInformation, ?string $data, \Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject $object): \Akeeba\Passwordless\CBOR\Tag
+    public static function createFromLoadedData(int $additionalInformation, ?string $data, \Akeeba\Passwordless\CBOR\CBORObject $object): \Akeeba\Passwordless\CBOR\Tag
     {
         return new self($object);
     }
 
-    public static function createFromExponentAndMantissa(\Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject $e, \Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject $m): \Akeeba\Passwordless\CBOR\Tag
+    public static function createFromExponentAndMantissa(\Akeeba\Passwordless\CBOR\CBORObject $e, \Akeeba\Passwordless\CBOR\CBORObject $m): \Akeeba\Passwordless\CBOR\Tag
     {
         $object = \Akeeba\Passwordless\CBOR\ListObject::create()
             ->add($e)

@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Akeeba\Passwordless\Webauthn\MetadataService;
 
-use Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion;
+use Akeeba\Passwordless\Assert\Assertion;
 use JsonSerializable;
 
 class VerificationMethodANDCombinations implements JsonSerializable
@@ -43,7 +43,7 @@ class VerificationMethodANDCombinations implements JsonSerializable
         $object = new self();
 
         foreach ($data as $datum) {
-            \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::isArray($datum, \Akeeba\Passwordless\Webauthn\MetadataService\Utils::logicException('Invalid data'));
+            \Akeeba\Passwordless\Assert\Assertion::isArray($datum, \Akeeba\Passwordless\Webauthn\MetadataService\Utils::logicException('Invalid data'));
             $object->addVerificationMethodDescriptor(\Akeeba\Passwordless\Webauthn\MetadataService\VerificationMethodDescriptor::createFromArray($datum));
         }
 

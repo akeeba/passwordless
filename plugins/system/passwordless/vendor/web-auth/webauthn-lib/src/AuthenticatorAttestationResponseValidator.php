@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Akeeba\Passwordless\Webauthn;
 
-use Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion;
+use Akeeba\Passwordless\Assert\Assertion;
 use function count;
 use function in_array;
 use InvalidArgumentException;
@@ -132,26 +132,26 @@ class AuthenticatorAttestationResponseValidator
             $C = $authenticatorAttestationResponse->getClientDataJSON();
 
             /** @see 7.1.3 */
-            \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::eq('webauthn.create', $C->getType(), 'The client data type is not "webauthn.create".');
+            \Akeeba\Passwordless\Assert\Assertion::eq('webauthn.create', $C->getType(), 'The client data type is not "webauthn.create".');
 
             /** @see 7.1.4 */
-            \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::true(hash_equals($publicKeyCredentialCreationOptions->getChallenge(), $C->getChallenge()), 'Invalid challenge.');
+            \Akeeba\Passwordless\Assert\Assertion::true(hash_equals($publicKeyCredentialCreationOptions->getChallenge(), $C->getChallenge()), 'Invalid challenge.');
 
             /** @see 7.1.5 */
             $rpId = $publicKeyCredentialCreationOptions->getRp()->getId() ?? $request->getUri()->getHost();
             $facetId = $this->getFacetId($rpId, $publicKeyCredentialCreationOptions->getExtensions(), $authenticatorAttestationResponse->getAttestationObject()->getAuthData()->getExtensions());
 
             $parsedRelyingPartyId = \Akeeba\Passwordless\Safe\parse_url($C->getOrigin());
-            \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::isArray($parsedRelyingPartyId, \Akeeba\Passwordless\Safe\sprintf('The origin URI "%s" is not valid', $C->getOrigin()));
-            \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::keyExists($parsedRelyingPartyId, 'scheme', 'Invalid origin rpId.');
+            \Akeeba\Passwordless\Assert\Assertion::isArray($parsedRelyingPartyId, \Akeeba\Passwordless\Safe\sprintf('The origin URI "%s" is not valid', $C->getOrigin()));
+            \Akeeba\Passwordless\Assert\Assertion::keyExists($parsedRelyingPartyId, 'scheme', 'Invalid origin rpId.');
             $clientDataRpId = $parsedRelyingPartyId['host'] ?? '';
-            \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::notEmpty($clientDataRpId, 'Invalid origin rpId.');
+            \Akeeba\Passwordless\Assert\Assertion::notEmpty($clientDataRpId, 'Invalid origin rpId.');
             $rpIdLength = mb_strlen($facetId);
-            \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::eq(mb_substr('.'.$clientDataRpId, -($rpIdLength + 1)), '.'.$facetId, 'rpId mismatch.');
+            \Akeeba\Passwordless\Assert\Assertion::eq(mb_substr('.'.$clientDataRpId, -($rpIdLength + 1)), '.'.$facetId, 'rpId mismatch.');
 
             if (!in_array($facetId, $securedRelyingPartyId, true)) {
                 $scheme = $parsedRelyingPartyId['scheme'] ?? '';
-                \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::eq('https', $scheme, 'Invalid scheme. HTTPS required.');
+                \Akeeba\Passwordless\Assert\Assertion::eq('https', $scheme, 'Invalid scheme. HTTPS required.');
             }
 
             /** @see 7.1.6 */
@@ -167,13 +167,13 @@ class AuthenticatorAttestationResponseValidator
 
             /** @see 7.1.9 */
             $rpIdHash = hash('sha256', $facetId, true);
-            \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::true(hash_equals($rpIdHash, $attestationObject->getAuthData()->getRpIdHash()), 'rpId hash mismatch.');
+            \Akeeba\Passwordless\Assert\Assertion::true(hash_equals($rpIdHash, $attestationObject->getAuthData()->getRpIdHash()), 'rpId hash mismatch.');
 
             /** @see 7.1.10 */
-            \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::true($attestationObject->getAuthData()->isUserPresent(), 'User was not present');
+            \Akeeba\Passwordless\Assert\Assertion::true($attestationObject->getAuthData()->isUserPresent(), 'User was not present');
             /** @see 7.1.11 */
             if (\Akeeba\Passwordless\Webauthn\AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_REQUIRED === $publicKeyCredentialCreationOptions->getAuthenticatorSelection()->getUserVerification()) {
-                \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::true($attestationObject->getAuthData()->isUserVerified(), 'User authentication required.');
+                \Akeeba\Passwordless\Assert\Assertion::true($attestationObject->getAuthData()->isUserVerified(), 'User authentication required.');
             }
 
             /** @see 7.1.12 */
@@ -188,20 +188,20 @@ class AuthenticatorAttestationResponseValidator
             /** @see 7.1.13 */
             $this->checkMetadataStatement($publicKeyCredentialCreationOptions, $attestationObject);
             $fmt = $attestationObject->getAttStmt()->getFmt();
-            \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::true($this->attestationStatementSupportManager->has($fmt), 'Unsupported attestation statement format.');
+            \Akeeba\Passwordless\Assert\Assertion::true($this->attestationStatementSupportManager->has($fmt), 'Unsupported attestation statement format.');
 
             /** @see 7.1.14 */
             $attestationStatementSupport = $this->attestationStatementSupportManager->get($fmt);
-            \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::true($attestationStatementSupport->isValid($clientDataJSONHash, $attestationObject->getAttStmt(), $attestationObject->getAuthData()), 'Invalid attestation statement.');
+            \Akeeba\Passwordless\Assert\Assertion::true($attestationStatementSupport->isValid($clientDataJSONHash, $attestationObject->getAttStmt(), $attestationObject->getAuthData()), 'Invalid attestation statement.');
 
             /** @see 7.1.15 */
             /** @see 7.1.16 */
             /** @see 7.1.17 */
-            \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::true($attestationObject->getAuthData()->hasAttestedCredentialData(), 'There is no attested credential data.');
+            \Akeeba\Passwordless\Assert\Assertion::true($attestationObject->getAuthData()->hasAttestedCredentialData(), 'There is no attested credential data.');
             $attestedCredentialData = $attestationObject->getAuthData()->getAttestedCredentialData();
-            \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::notNull($attestedCredentialData, 'There is no attested credential data.');
+            \Akeeba\Passwordless\Assert\Assertion::notNull($attestedCredentialData, 'There is no attested credential data.');
             $credentialId = $attestedCredentialData->getCredentialId();
-            \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::null($this->publicKeyCredentialSource->findOneByCredentialId($credentialId), 'The credential ID already exists.');
+            \Akeeba\Passwordless\Assert\Assertion::null($this->publicKeyCredentialSource->findOneByCredentialId($credentialId), 'The credential ID already exists.');
 
             /** @see 7.1.18 */
             /** @see 7.1.19 */
@@ -256,7 +256,7 @@ class AuthenticatorAttestationResponseValidator
     {
         $attestationStatement = $attestationObject->getAttStmt();
         $attestedCredentialData = $attestationObject->getAuthData()->getAttestedCredentialData();
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::notNull($attestedCredentialData, 'No attested credential data found');
+        \Akeeba\Passwordless\Assert\Assertion::notNull($attestedCredentialData, 'No attested credential data found');
         $aaguid = $attestedCredentialData->getAaguid()->toString();
         if (\Akeeba\Passwordless\Webauthn\PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_NONE === $publicKeyCredentialCreationOptions->getAttestation()) {
             $this->logger->debug('No attestation is asked.');
@@ -299,7 +299,7 @@ class AuthenticatorAttestationResponseValidator
         }
 
         //The MDS Repository is mandatory here
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::notNull($this->metadataStatementRepository, 'The Metadata Statement Repository is mandatory when requesting attestation objects.');
+        \Akeeba\Passwordless\Assert\Assertion::notNull($this->metadataStatementRepository, 'The Metadata Statement Repository is mandatory when requesting attestation objects.');
         $metadataStatement = $this->metadataStatementRepository->findOneByAAGUID($aaguid);
 
         // We check the last status report
@@ -315,12 +315,12 @@ class AuthenticatorAttestationResponseValidator
         }
 
         // At this point, the Metadata Statement is mandatory
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::notNull($metadataStatement, \Akeeba\Passwordless\Safe\sprintf('The Metadata Statement for the AAGUID "%s" is missing', $aaguid));
+        \Akeeba\Passwordless\Assert\Assertion::notNull($metadataStatement, \Akeeba\Passwordless\Safe\sprintf('The Metadata Statement for the AAGUID "%s" is missing', $aaguid));
 
         // Check Attestation Type is allowed
         if (0 !== count($metadataStatement->getAttestationTypes())) {
             $type = $this->getAttestationType($attestationStatement);
-            \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::inArray($type, $metadataStatement->getAttestationTypes(), 'Invalid attestation statement. The attestation type is not allowed for this authenticator');
+            \Akeeba\Passwordless\Assert\Assertion::inArray($type, $metadataStatement->getAttestationTypes(), 'Invalid attestation statement. The attestation type is not allowed for this authenticator');
         }
     }
 

@@ -14,8 +14,8 @@ declare(strict_types=1);
 namespace Akeeba\Passwordless\Webauthn;
 
 use function array_key_exists;
-use Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion;
-use Akeeba\Passwordless\Base64Url\Akeeba\Passwordless\Base64Url;
+use Akeeba\Passwordless\Assert\Assertion;
+use Akeeba\Passwordless\Base64Url\Base64Url;
 use InvalidArgumentException;
 use function Akeeba\Passwordless\Safe\json_decode;
 use function Akeeba\Passwordless\Safe\sprintf;
@@ -68,9 +68,9 @@ class CollectedClientData
 
     public static function createFormJson(string $data): self
     {
-        $rawData = \Akeeba\Passwordless\Base64Url\Akeeba\Passwordless\Base64Url::decode($data);
+        $rawData = Base64Url::decode($data);
         $json = \Akeeba\Passwordless\Safe\json_decode($rawData, true);
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::isArray($json, 'Invalid collected client data');
+        \Akeeba\Passwordless\Assert\Assertion::isArray($json, 'Invalid collected client data');
 
         return new self($rawData, $json);
     }
@@ -140,6 +140,6 @@ class CollectedClientData
             return;
         }
 
-        return $isB64 ? \Akeeba\Passwordless\Base64Url\Akeeba\Passwordless\Base64Url::decode($json[$key]) : $json[$key];
+        return $isB64 ? Base64Url::decode($json[$key]) : $json[$key];
     }
 }

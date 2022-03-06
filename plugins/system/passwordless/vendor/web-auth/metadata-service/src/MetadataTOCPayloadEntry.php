@@ -13,8 +13,8 @@ declare(strict_types=1);
 
 namespace Akeeba\Passwordless\Webauthn\MetadataService;
 
-use Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion;
-use Akeeba\Passwordless\Base64Url\Akeeba\Passwordless\Base64Url;
+use Akeeba\Passwordless\Assert\Assertion;
+use Akeeba\Passwordless\Base64Url\Base64Url;
 use function count;
 use JsonSerializable;
 use LogicException;
@@ -75,14 +75,14 @@ class MetadataTOCPayloadEntry implements JsonSerializable
             throw new LogicException('If neither AAID nor AAGUID are set, the attestation certificate identifier list shall not be empty');
         }
         foreach ($attestationCertificateKeyIdentifiers as $attestationCertificateKeyIdentifier) {
-            \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::string($attestationCertificateKeyIdentifier, \Akeeba\Passwordless\Webauthn\MetadataService\Utils::logicException('Invalid attestation certificate identifier. Shall be a list of strings'));
-            \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::notEmpty($attestationCertificateKeyIdentifier, \Akeeba\Passwordless\Webauthn\MetadataService\Utils::logicException('Invalid attestation certificate identifier. Shall be a list of strings'));
-            \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::regex($attestationCertificateKeyIdentifier, '/^[0-9a-f]+$/', \Akeeba\Passwordless\Webauthn\MetadataService\Utils::logicException('Invalid attestation certificate identifier. Shall be a list of strings'));
+            \Akeeba\Passwordless\Assert\Assertion::string($attestationCertificateKeyIdentifier, \Akeeba\Passwordless\Webauthn\MetadataService\Utils::logicException('Invalid attestation certificate identifier. Shall be a list of strings'));
+            \Akeeba\Passwordless\Assert\Assertion::notEmpty($attestationCertificateKeyIdentifier, \Akeeba\Passwordless\Webauthn\MetadataService\Utils::logicException('Invalid attestation certificate identifier. Shall be a list of strings'));
+            \Akeeba\Passwordless\Assert\Assertion::regex($attestationCertificateKeyIdentifier, '/^[0-9a-f]+$/', \Akeeba\Passwordless\Webauthn\MetadataService\Utils::logicException('Invalid attestation certificate identifier. Shall be a list of strings'));
         }
         $this->aaid = $aaid;
         $this->aaguid = $aaguid;
         $this->attestationCertificateKeyIdentifiers = $attestationCertificateKeyIdentifiers;
-        $this->hash = \Akeeba\Passwordless\Base64Url\Akeeba\Passwordless\Base64Url::decode($hash);
+        $this->hash = Base64Url::decode($hash);
         $this->url = $url;
         $this->timeOfLastStatusChange = $timeOfLastStatusChange;
         $this->rogueListURL = $rogueListURL;
@@ -147,9 +147,9 @@ class MetadataTOCPayloadEntry implements JsonSerializable
     public static function createFromArray(array $data): self
     {
         $data = \Akeeba\Passwordless\Webauthn\MetadataService\Utils::filterNullValues($data);
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::keyExists($data, 'timeOfLastStatusChange', \Akeeba\Passwordless\Webauthn\MetadataService\Utils::logicException('Invalid data. The parameter "timeOfLastStatusChange" is missing'));
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::keyExists($data, 'statusReports', \Akeeba\Passwordless\Webauthn\MetadataService\Utils::logicException('Invalid data. The parameter "statusReports" is missing'));
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::isArray($data['statusReports'], \Akeeba\Passwordless\Webauthn\MetadataService\Utils::logicException('Invalid data. The parameter "statusReports" shall be an array of StatusReport objects'));
+        \Akeeba\Passwordless\Assert\Assertion::keyExists($data, 'timeOfLastStatusChange', \Akeeba\Passwordless\Webauthn\MetadataService\Utils::logicException('Invalid data. The parameter "timeOfLastStatusChange" is missing'));
+        \Akeeba\Passwordless\Assert\Assertion::keyExists($data, 'statusReports', \Akeeba\Passwordless\Webauthn\MetadataService\Utils::logicException('Invalid data. The parameter "statusReports" is missing'));
+        \Akeeba\Passwordless\Assert\Assertion::isArray($data['statusReports'], \Akeeba\Passwordless\Webauthn\MetadataService\Utils::logicException('Invalid data. The parameter "statusReports" shall be an array of StatusReport objects'));
         $object = new self(
         $data['aaid'] ?? null,
         $data['aaguid'] ?? null,
@@ -173,7 +173,7 @@ class MetadataTOCPayloadEntry implements JsonSerializable
             'aaid' => $this->aaid,
             'aaguid' => $this->aaguid,
             'attestationCertificateKeyIdentifiers' => $this->attestationCertificateKeyIdentifiers,
-            'hash' => \Akeeba\Passwordless\Base64Url\Akeeba\Passwordless\Base64Url::encode($this->hash),
+            'hash' => Base64Url::encode($this->hash),
             'url' => $this->url,
             'statusReports' => array_map(static function (\Akeeba\Passwordless\Webauthn\MetadataService\StatusReport $object): array {
                 return $object->jsonSerialize();

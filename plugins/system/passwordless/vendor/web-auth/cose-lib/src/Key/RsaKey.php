@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace Akeeba\Passwordless\Cose\Key;
 
 use function array_key_exists;
-use Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion;
+use Akeeba\Passwordless\Assert\Assertion;
 use Akeeba\Passwordless\Brick\Math\BigInteger;
 use Akeeba\Passwordless\FG\ASN1\Universal\BitString;
 use Akeeba\Passwordless\FG\ASN1\Universal\Integer;
@@ -41,9 +41,9 @@ class RsaKey extends \Akeeba\Passwordless\Cose\Key\Key
     public function __construct(array $data)
     {
         parent::__construct($data);
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::eq($data[self::TYPE], self::TYPE_RSA, 'Invalid RSA key. The key type does not correspond to a RSA key');
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::keyExists($data, self::DATA_N, 'Invalid RSA key. The modulus is missing');
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::keyExists($data, self::DATA_E, 'Invalid RSA key. The exponent is missing');
+        \Akeeba\Passwordless\Assert\Assertion::eq($data[self::TYPE], self::TYPE_RSA, 'Invalid RSA key. The key type does not correspond to a RSA key');
+        \Akeeba\Passwordless\Assert\Assertion::keyExists($data, self::DATA_N, 'Invalid RSA key. The modulus is missing');
+        \Akeeba\Passwordless\Assert\Assertion::keyExists($data, self::DATA_E, 'Invalid RSA key. The exponent is missing');
     }
 
     public function n(): string
@@ -58,70 +58,70 @@ class RsaKey extends \Akeeba\Passwordless\Cose\Key\Key
 
     public function d(): string
     {
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::true($this->isPrivate(), 'The key is not private.');
+        \Akeeba\Passwordless\Assert\Assertion::true($this->isPrivate(), 'The key is not private.');
 
         return $this->get(self::DATA_D);
     }
 
     public function p(): string
     {
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::true($this->isPrivate(), 'The key is not private.');
+        \Akeeba\Passwordless\Assert\Assertion::true($this->isPrivate(), 'The key is not private.');
 
         return $this->get(self::DATA_P);
     }
 
     public function q(): string
     {
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::true($this->isPrivate(), 'The key is not private.');
+        \Akeeba\Passwordless\Assert\Assertion::true($this->isPrivate(), 'The key is not private.');
 
         return $this->get(self::DATA_Q);
     }
 
     public function dP(): string
     {
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::true($this->isPrivate(), 'The key is not private.');
+        \Akeeba\Passwordless\Assert\Assertion::true($this->isPrivate(), 'The key is not private.');
 
         return $this->get(self::DATA_DP);
     }
 
     public function dQ(): string
     {
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::true($this->isPrivate(), 'The key is not private.');
+        \Akeeba\Passwordless\Assert\Assertion::true($this->isPrivate(), 'The key is not private.');
 
         return $this->get(self::DATA_DQ);
     }
 
     public function QInv(): string
     {
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::true($this->isPrivate(), 'The key is not private.');
+        \Akeeba\Passwordless\Assert\Assertion::true($this->isPrivate(), 'The key is not private.');
 
         return $this->get(self::DATA_QI);
     }
 
     public function other(): array
     {
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::true($this->isPrivate(), 'The key is not private.');
+        \Akeeba\Passwordless\Assert\Assertion::true($this->isPrivate(), 'The key is not private.');
 
         return $this->get(self::DATA_OTHER);
     }
 
     public function rI(): string
     {
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::true($this->isPrivate(), 'The key is not private.');
+        \Akeeba\Passwordless\Assert\Assertion::true($this->isPrivate(), 'The key is not private.');
 
         return $this->get(self::DATA_RI);
     }
 
     public function dI(): string
     {
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::true($this->isPrivate(), 'The key is not private.');
+        \Akeeba\Passwordless\Assert\Assertion::true($this->isPrivate(), 'The key is not private.');
 
         return $this->get(self::DATA_DI);
     }
 
     public function tI(): string
     {
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::true($this->isPrivate(), 'The key is not private.');
+        \Akeeba\Passwordless\Assert\Assertion::true($this->isPrivate(), 'The key is not private.');
 
         return $this->get(self::DATA_TI);
     }
@@ -169,7 +169,7 @@ class RsaKey extends \Akeeba\Passwordless\Cose\Key\Key
 
     public function asPem(): string
     {
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::false($this->isPrivate(), 'Unsupported for private keys.');
+        \Akeeba\Passwordless\Assert\Assertion::false($this->isPrivate(), 'Unsupported for private keys.');
         $bitSring = new \Akeeba\Passwordless\FG\ASN1\Universal\Sequence(
             new \Akeeba\Passwordless\FG\ASN1\Universal\Integer($this->fromBase64ToInteger($this->n())),
             new \Akeeba\Passwordless\FG\ASN1\Universal\Integer($this->fromBase64ToInteger($this->e()))

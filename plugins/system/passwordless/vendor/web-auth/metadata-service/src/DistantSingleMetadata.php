@@ -13,8 +13,8 @@ declare(strict_types=1);
 
 namespace Akeeba\Passwordless\Webauthn\MetadataService;
 
-use Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion;
-use Akeeba\Passwordless\Base64Url\Akeeba\Passwordless\Base64Url;
+use Akeeba\Passwordless\Assert\Assertion;
+use Akeeba\Passwordless\Base64Url\Base64Url;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use function Akeeba\Passwordless\Safe\json_decode;
@@ -60,7 +60,7 @@ class DistantSingleMetadata extends \Akeeba\Passwordless\Webauthn\MetadataServic
     public function getMetadataStatement(): \Akeeba\Passwordless\Webauthn\MetadataService\MetadataStatement
     {
         $payload = $this->fetch();
-        $json = $this->isBase64Encoded ? \Akeeba\Passwordless\Base64Url\Akeeba\Passwordless\Base64Url::decode($payload) : $payload;
+        $json = $this->isBase64Encoded ? \Akeeba\Passwordless\Base64Url\Base64Url::decode($payload) : $payload;
         $data = \Akeeba\Passwordless\Safe\json_decode($json, true);
 
         return \Akeeba\Passwordless\Webauthn\MetadataService\MetadataStatement::createFromArray($data);
@@ -73,9 +73,9 @@ class DistantSingleMetadata extends \Akeeba\Passwordless\Webauthn\MetadataServic
             $request = $request->withHeader($k, $v);
         }
         $response = $this->httpClient->sendRequest($request);
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::eq(200, $response->getStatusCode(), \Akeeba\Passwordless\Safe\sprintf('Unable to contact the server. Response code is %d', $response->getStatusCode()));
+        \Akeeba\Passwordless\Assert\Assertion::eq(200, $response->getStatusCode(), \Akeeba\Passwordless\Safe\sprintf('Unable to contact the server. Response code is %d', $response->getStatusCode()));
         $content = $response->getBody()->getContents();
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::notEmpty($content, 'Unable to contact the server. The response has no content');
+        \Akeeba\Passwordless\Assert\Assertion::notEmpty($content, 'Unable to contact the server. The response has no content');
 
         return $content;
     }

@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Akeeba\Passwordless\Webauthn;
 
-use Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion;
+use Akeeba\Passwordless\Assert\Assertion;
 use JsonSerializable;
 use Akeeba\Passwordless\Ramsey\Uuid\Uuid;
 use Akeeba\Passwordless\Ramsey\Uuid\UuidInterface;
@@ -71,8 +71,8 @@ class AttestedCredentialData implements JsonSerializable
      */
     public static function createFromArray(array $json): self
     {
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::keyExists($json, 'aaguid', 'Invalid input. "aaguid" is missing.');
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::keyExists($json, 'credentialId', 'Invalid input. "credentialId" is missing.');
+        \Akeeba\Passwordless\Assert\Assertion::keyExists($json, 'aaguid', 'Invalid input. "aaguid" is missing.');
+        \Akeeba\Passwordless\Assert\Assertion::keyExists($json, 'credentialId', 'Invalid input. "credentialId" is missing.');
         switch (true) {
             case 36 === mb_strlen($json['aaguid'], '8bit'):
                 $uuid = \Akeeba\Passwordless\Ramsey\Uuid\Uuid::fromString($json['aaguid']);

@@ -13,8 +13,8 @@ declare(strict_types=1);
 
 namespace Akeeba\Passwordless\Webauthn\AttestationStatement;
 
-use Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion;
-use Akeeba\Passwordless\Base64Url\Akeeba\Passwordless\Base64Url;
+use Akeeba\Passwordless\Assert\Assertion;
+use Akeeba\Passwordless\Base64Url\Base64Url;
 use Akeeba\Passwordless\CBOR\Decoder;
 use Akeeba\Passwordless\CBOR\MapObject;
 use Akeeba\Passwordless\CBOR\OtherObject\OtherObjectManager;
@@ -50,27 +50,27 @@ final class TPMAttestationStatementSupport implements \Akeeba\Passwordless\Webau
      */
     public function load(array $attestation): \Akeeba\Passwordless\Webauthn\AttestationStatement\AttestationStatement
     {
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::keyExists($attestation, 'attStmt', 'Invalid attestation object');
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::keyNotExists($attestation['attStmt'], 'ecdaaKeyId', 'ECDAA not supported');
+        \Akeeba\Passwordless\Assert\Assertion::keyExists($attestation, 'attStmt', 'Invalid attestation object');
+        \Akeeba\Passwordless\Assert\Assertion::keyNotExists($attestation['attStmt'], 'ecdaaKeyId', 'ECDAA not supported');
         foreach (['ver', 'ver', 'sig', 'alg', 'certInfo', 'pubArea'] as $key) {
-            \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::keyExists($attestation['attStmt'], $key, \Akeeba\Passwordless\Safe\sprintf('The attestation statement value "%s" is missing.', $key));
+            \Akeeba\Passwordless\Assert\Assertion::keyExists($attestation['attStmt'], $key, \Akeeba\Passwordless\Safe\sprintf('The attestation statement value "%s" is missing.', $key));
         }
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::eq('2.0', $attestation['attStmt']['ver'], 'Invalid attestation object');
+        \Akeeba\Passwordless\Assert\Assertion::eq('2.0', $attestation['attStmt']['ver'], 'Invalid attestation object');
 
         $certInfo = $this->checkCertInfo($attestation['attStmt']['certInfo']);
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::eq('8017', bin2hex($certInfo['type']), 'Invalid attestation object');
+        \Akeeba\Passwordless\Assert\Assertion::eq('8017', bin2hex($certInfo['type']), 'Invalid attestation object');
 
         $pubArea = $this->checkPubArea($attestation['attStmt']['pubArea']);
         $pubAreaAttestedNameAlg = mb_substr($certInfo['attestedName'], 0, 2, '8bit');
         $pubAreaHash = hash($this->getTPMHash($pubAreaAttestedNameAlg), $attestation['attStmt']['pubArea'], true);
         $attestedName = $pubAreaAttestedNameAlg.$pubAreaHash;
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::eq($attestedName, $certInfo['attestedName'], 'Invalid attested name');
+        \Akeeba\Passwordless\Assert\Assertion::eq($attestedName, $certInfo['attestedName'], 'Invalid attested name');
 
         $attestation['attStmt']['parsedCertInfo'] = $certInfo;
         $attestation['attStmt']['parsedPubArea'] = $pubArea;
 
         $certificates = \Akeeba\Passwordless\Webauthn\CertificateToolbox::convertAllDERToPEM($attestation['attStmt']['x5c']);
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::minCount($certificates, 1, 'The attestation statement value "x5c" must be a list with at least one certificate.');
+        \Akeeba\Passwordless\Assert\Assertion::minCount($certificates, 1, 'The attestation statement value "x5c" must be a list with at least one certificate.');
 
         return \Akeeba\Passwordless\Webauthn\AttestationStatement\AttestationStatement::createAttCA(
             $this->name(),
@@ -83,7 +83,7 @@ final class TPMAttestationStatementSupport implements \Akeeba\Passwordless\Webau
     {
         $attToBeSigned = $authenticatorData->getAuthData().$clientDataJSONHash;
         $attToBeSignedHash = hash(\Akeeba\Passwordless\Cose\Algorithms::getHashAlgorithmFor((int) $attestationStatement->get('alg')), $attToBeSigned, true);
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::eq($attestationStatement->get('parsedCertInfo')['extraData'], $attToBeSignedHash, 'Invalid attestation hash');
+        \Akeeba\Passwordless\Assert\Assertion::eq($attestationStatement->get('parsedCertInfo')['extraData'], $attToBeSignedHash, 'Invalid attestation hash');
         $this->checkUniquePublicKey(
             $attestationStatement->get('parsedPubArea')['unique'],
             $authenticatorData->getAttestedCredentialData()->getCredentialPublicKey()
@@ -103,7 +103,7 @@ final class TPMAttestationStatementSupport implements \Akeeba\Passwordless\Webau
     {
         $cborDecoder = new \Akeeba\Passwordless\CBOR\Decoder(new \Akeeba\Passwordless\CBOR\Tag\TagObjectManager(), new \Akeeba\Passwordless\CBOR\OtherObject\OtherObjectManager());
         $publicKey = $cborDecoder->decode(new \Akeeba\Passwordless\Webauthn\StringStream($cborPublicKey));
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::isInstanceOf($publicKey, \Akeeba\Passwordless\CBOR\MapObject::class, 'Invalid public key');
+        \Akeeba\Passwordless\Assert\Assertion::isInstanceOf($publicKey, \Akeeba\Passwordless\CBOR\MapObject::class, 'Invalid public key');
         $key = new \Akeeba\Passwordless\Cose\Key\Key($publicKey->getNormalizedData(false));
 
         switch ($key->type()) {
@@ -121,7 +121,7 @@ final class TPMAttestationStatementSupport implements \Akeeba\Passwordless\Webau
                 throw new InvalidArgumentException('Invalid or unsupported key type.');
         }
 
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::eq($unique, $uniqueFromKey, 'Invalid pubArea.unique value');
+        \Akeeba\Passwordless\Assert\Assertion::eq($unique, $uniqueFromKey, 'Invalid pubArea.unique value');
     }
 
     /**
@@ -132,7 +132,7 @@ final class TPMAttestationStatementSupport implements \Akeeba\Passwordless\Webau
         $certInfo = new \Akeeba\Passwordless\Webauthn\StringStream($data);
 
         $magic = $certInfo->read(4);
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::eq('ff544347', bin2hex($magic), 'Invalid attestation object');
+        \Akeeba\Passwordless\Assert\Assertion::eq('ff544347', bin2hex($magic), 'Invalid attestation object');
 
         $type = $certInfo->read(2);
 
@@ -151,7 +151,7 @@ final class TPMAttestationStatementSupport implements \Akeeba\Passwordless\Webau
 
         $attestedQualifiedNameLength = \Akeeba\Passwordless\Safe\unpack('n', $certInfo->read(2))[1];
         $attestedQualifiedName = $certInfo->read($attestedQualifiedNameLength); //Ignore
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::true($certInfo->isEOF(), 'Invalid certificate information. Presence of extra bytes.');
+        \Akeeba\Passwordless\Assert\Assertion::true($certInfo->isEOF(), 'Invalid certificate information. Presence of extra bytes.');
         $certInfo->close();
 
         return [
@@ -186,7 +186,7 @@ final class TPMAttestationStatementSupport implements \Akeeba\Passwordless\Webau
 
         $uniqueLength = \Akeeba\Passwordless\Safe\unpack('n', $pubArea->read(2))[1];
         $unique = $pubArea->read($uniqueLength);
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::true($pubArea->isEOF(), 'Invalid public area. Presence of extra bytes.');
+        \Akeeba\Passwordless\Assert\Assertion::true($pubArea->isEOF(), 'Invalid public area. Presence of extra bytes.');
         $pubArea->close();
 
         return [
@@ -228,7 +228,7 @@ final class TPMAttestationStatementSupport implements \Akeeba\Passwordless\Webau
 
     private function getExponent(string $exponent): string
     {
-        return '00000000' === bin2hex($exponent) ? \Akeeba\Passwordless\Base64Url\Akeeba\Passwordless\Base64Url::decode('AQAB') : $exponent;
+        return '00000000' === bin2hex($exponent) ? Base64Url::decode('AQAB') : $exponent;
     }
 
     private function getTPMHash(string $nameAlg): string
@@ -250,7 +250,7 @@ final class TPMAttestationStatementSupport implements \Akeeba\Passwordless\Webau
     private function processWithCertificate(string $clientDataJSONHash, \Akeeba\Passwordless\Webauthn\AttestationStatement\AttestationStatement $attestationStatement, \Akeeba\Passwordless\Webauthn\AuthenticatorData $authenticatorData): bool
     {
         $trustPath = $attestationStatement->getTrustPath();
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::isInstanceOf($trustPath, \Akeeba\Passwordless\Webauthn\TrustPath\CertificateTrustPath::class, 'Invalid trust path');
+        \Akeeba\Passwordless\Assert\Assertion::isInstanceOf($trustPath, \Akeeba\Passwordless\Webauthn\TrustPath\CertificateTrustPath::class, 'Invalid trust path');
 
         $certificates = $trustPath->getCertificates();
 
@@ -269,37 +269,37 @@ final class TPMAttestationStatementSupport implements \Akeeba\Passwordless\Webau
     private function checkCertificate(string $attestnCert, \Akeeba\Passwordless\Webauthn\AuthenticatorData $authenticatorData): void
     {
         $parsed = openssl_x509_parse($attestnCert);
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::isArray($parsed, 'Invalid certificate');
+        \Akeeba\Passwordless\Assert\Assertion::isArray($parsed, 'Invalid certificate');
 
         //Check version
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::false(!isset($parsed['version']) || 2 !== $parsed['version'], 'Invalid certificate version');
+        \Akeeba\Passwordless\Assert\Assertion::false(!isset($parsed['version']) || 2 !== $parsed['version'], 'Invalid certificate version');
 
         //Check subject field is empty
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::false(!isset($parsed['subject']) || !is_array($parsed['subject']) || 0 !== count($parsed['subject']), 'Invalid certificate name. The Subject should be empty');
+        \Akeeba\Passwordless\Assert\Assertion::false(!isset($parsed['subject']) || !is_array($parsed['subject']) || 0 !== count($parsed['subject']), 'Invalid certificate name. The Subject should be empty');
 
         // Check period of validity
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::keyExists($parsed, 'validFrom_time_t', 'Invalid certificate start date.');
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::integer($parsed['validFrom_time_t'], 'Invalid certificate start date.');
+        \Akeeba\Passwordless\Assert\Assertion::keyExists($parsed, 'validFrom_time_t', 'Invalid certificate start date.');
+        \Akeeba\Passwordless\Assert\Assertion::integer($parsed['validFrom_time_t'], 'Invalid certificate start date.');
         $startDate = (new \Akeeba\Passwordless\Safe\DateTimeImmutable())->setTimestamp($parsed['validFrom_time_t']);
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::true($startDate < new \Akeeba\Passwordless\Safe\DateTimeImmutable(), 'Invalid certificate start date.');
+        \Akeeba\Passwordless\Assert\Assertion::true($startDate < new \Akeeba\Passwordless\Safe\DateTimeImmutable(), 'Invalid certificate start date.');
 
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::keyExists($parsed, 'validTo_time_t', 'Invalid certificate end date.');
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::integer($parsed['validTo_time_t'], 'Invalid certificate end date.');
+        \Akeeba\Passwordless\Assert\Assertion::keyExists($parsed, 'validTo_time_t', 'Invalid certificate end date.');
+        \Akeeba\Passwordless\Assert\Assertion::integer($parsed['validTo_time_t'], 'Invalid certificate end date.');
         $endDate = (new \Akeeba\Passwordless\Safe\DateTimeImmutable())->setTimestamp($parsed['validTo_time_t']);
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::true($endDate > new \Akeeba\Passwordless\Safe\DateTimeImmutable(), 'Invalid certificate end date.');
+        \Akeeba\Passwordless\Assert\Assertion::true($endDate > new \Akeeba\Passwordless\Safe\DateTimeImmutable(), 'Invalid certificate end date.');
 
         //Check extensions
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::false(!isset($parsed['extensions']) || !is_array($parsed['extensions']), 'Certificate extensions are missing');
+        \Akeeba\Passwordless\Assert\Assertion::false(!isset($parsed['extensions']) || !is_array($parsed['extensions']), 'Certificate extensions are missing');
 
         //Check subjectAltName
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::false(!isset($parsed['extensions']['subjectAltName']), 'The "subjectAltName" is missing');
+        \Akeeba\Passwordless\Assert\Assertion::false(!isset($parsed['extensions']['subjectAltName']), 'The "subjectAltName" is missing');
 
         //Check extendedKeyUsage
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::false(!isset($parsed['extensions']['extendedKeyUsage']), 'The "subjectAltName" is missing');
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::eq($parsed['extensions']['extendedKeyUsage'], '2.23.133.8.3', 'The "extendedKeyUsage" is invalid');
+        \Akeeba\Passwordless\Assert\Assertion::false(!isset($parsed['extensions']['extendedKeyUsage']), 'The "subjectAltName" is missing');
+        \Akeeba\Passwordless\Assert\Assertion::eq($parsed['extensions']['extendedKeyUsage'], '2.23.133.8.3', 'The "extendedKeyUsage" is invalid');
 
         // id-fido-gen-ce-aaguid OID check
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::false(in_array('1.3.6.1.4.1.45724.1.1.4', $parsed['extensions'], true) && !hash_equals($authenticatorData->getAttestedCredentialData()->getAaguid()->getBytes(), $parsed['extensions']['1.3.6.1.4.1.45724.1.1.4']), 'The value of the "aaguid" does not match with the certificate');
+        \Akeeba\Passwordless\Assert\Assertion::false(in_array('1.3.6.1.4.1.45724.1.1.4', $parsed['extensions'], true) && !hash_equals($authenticatorData->getAttestedCredentialData()->getAaguid()->getBytes(), $parsed['extensions']['1.3.6.1.4.1.45724.1.1.4']), 'The value of the "aaguid" does not match with the certificate');
     }
 
     private function processWithECDAA(): bool

@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Akeeba\Passwordless\CBOR\Tag;
 
-use Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject;
+use \Akeeba\Passwordless\CBOR\CBORObject;
 use Akeeba\Passwordless\CBOR\NegativeIntegerObject;
 use Akeeba\Passwordless\CBOR\Normalizable;
 use Akeeba\Passwordless\CBOR\OtherObject\DoublePrecisionFloatObject;
@@ -28,7 +28,7 @@ use const STR_PAD_RIGHT;
 
 final class TimestampTag extends \Akeeba\Passwordless\CBOR\Tag implements \Akeeba\Passwordless\CBOR\Normalizable
 {
-    public function __construct(int $additionalInformation, ?string $data, \Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject $object)
+    public function __construct(int $additionalInformation, ?string $data, \Akeeba\Passwordless\CBOR\CBORObject $object)
     {
         if (! $object instanceof \Akeeba\Passwordless\CBOR\UnsignedIntegerObject && ! $object instanceof \Akeeba\Passwordless\CBOR\NegativeIntegerObject && ! $object instanceof \Akeeba\Passwordless\CBOR\OtherObject\HalfPrecisionFloatObject && ! $object instanceof \Akeeba\Passwordless\CBOR\OtherObject\SinglePrecisionFloatObject && ! $object instanceof \Akeeba\Passwordless\CBOR\OtherObject\DoublePrecisionFloatObject) {
             throw new InvalidArgumentException('This tag only accepts integer-based or float-based objects.');
@@ -41,12 +41,12 @@ final class TimestampTag extends \Akeeba\Passwordless\CBOR\Tag implements \Akeeb
         return self::TAG_EPOCH_DATETIME;
     }
 
-    public static function createFromLoadedData(int $additionalInformation, ?string $data, \Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject $object): \Akeeba\Passwordless\CBOR\Tag
+    public static function createFromLoadedData(int $additionalInformation, ?string $data, \Akeeba\Passwordless\CBOR\CBORObject $object): \Akeeba\Passwordless\CBOR\Tag
     {
         return new self($additionalInformation, $data, $object);
     }
 
-    public static function create(\Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject $object): \Akeeba\Passwordless\CBOR\Tag
+    public static function create(\Akeeba\Passwordless\CBOR\CBORObject $object): \Akeeba\Passwordless\CBOR\Tag
     {
         [$ai, $data] = self::determineComponents(self::TAG_EPOCH_DATETIME);
 

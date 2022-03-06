@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Akeeba\Passwordless\Webauthn\MetadataService;
 
-use Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion;
+use Akeeba\Passwordless\Assert\Assertion;
 
 class CodeAccuracyDescriptor extends \Akeeba\Passwordless\Webauthn\MetadataService\AbstractDescriptor
 {
@@ -29,8 +29,8 @@ class CodeAccuracyDescriptor extends \Akeeba\Passwordless\Webauthn\MetadataServi
 
     public function __construct(int $base, int $minLength, ?int $maxRetries = null, ?int $blockSlowdown = null)
     {
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::greaterOrEqualThan($base, 0, \Akeeba\Passwordless\Webauthn\MetadataService\Utils::logicException('Invalid data. The value of "base" must be a positive integer'));
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::greaterOrEqualThan($minLength, 0, \Akeeba\Passwordless\Webauthn\MetadataService\Utils::logicException('Invalid data. The value of "minLength" must be a positive integer'));
+        \Akeeba\Passwordless\Assert\Assertion::greaterOrEqualThan($base, 0, \Akeeba\Passwordless\Webauthn\MetadataService\Utils::logicException('Invalid data. The value of "base" must be a positive integer'));
+        \Akeeba\Passwordless\Assert\Assertion::greaterOrEqualThan($minLength, 0, \Akeeba\Passwordless\Webauthn\MetadataService\Utils::logicException('Invalid data. The value of "minLength" must be a positive integer'));
         $this->base = $base;
         $this->minLength = $minLength;
         parent::__construct($maxRetries, $blockSlowdown);
@@ -48,8 +48,8 @@ class CodeAccuracyDescriptor extends \Akeeba\Passwordless\Webauthn\MetadataServi
 
     public static function createFromArray(array $data): self
     {
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::keyExists($data, 'base', \Akeeba\Passwordless\Webauthn\MetadataService\Utils::logicException('The parameter "base" is missing'));
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::keyExists($data, 'minLength', \Akeeba\Passwordless\Webauthn\MetadataService\Utils::logicException('The parameter "minLength" is missing'));
+        \Akeeba\Passwordless\Assert\Assertion::keyExists($data, 'base', \Akeeba\Passwordless\Webauthn\MetadataService\Utils::logicException('The parameter "base" is missing'));
+        \Akeeba\Passwordless\Assert\Assertion::keyExists($data, 'minLength', \Akeeba\Passwordless\Webauthn\MetadataService\Utils::logicException('The parameter "minLength" is missing'));
 
         return new self(
             $data['base'],

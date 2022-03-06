@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace Akeeba\Passwordless\CBOR\Tag;
 
 use function array_key_exists;
-use Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject;
+use \Akeeba\Passwordless\CBOR\CBORObject;
 use Akeeba\Passwordless\CBOR\Tag;
 use Akeeba\Passwordless\CBOR\Utils;
 use InvalidArgumentException;
@@ -49,7 +49,7 @@ class TagManager implements \Akeeba\Passwordless\CBOR\Tag\TagManagerInterface
         return array_key_exists($value, $this->classes) ? $this->classes[$value] : \Akeeba\Passwordless\CBOR\Tag\GenericTag::class;
     }
 
-    public function createObjectForValue(int $additionalInformation, ?string $data, \Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject $object): \Akeeba\Passwordless\CBOR\Tag
+    public function createObjectForValue(int $additionalInformation, ?string $data, \Akeeba\Passwordless\CBOR\CBORObject $object): \Akeeba\Passwordless\CBOR\Tag
     {
         $value = $additionalInformation;
         if ($additionalInformation >= 24) {

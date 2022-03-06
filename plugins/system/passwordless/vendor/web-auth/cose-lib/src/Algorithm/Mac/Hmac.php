@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Akeeba\Passwordless\Cose\Algorithm\Mac;
 
-use Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion;
+use Akeeba\Passwordless\Assert\Assertion;
 use Akeeba\Passwordless\Cose\Key\Key;
 
 abstract class Hmac implements \Akeeba\Passwordless\Cose\Algorithm\Mac\Mac
@@ -37,7 +37,7 @@ abstract class Hmac implements \Akeeba\Passwordless\Cose\Algorithm\Mac\Mac
 
     private function checKey(\Akeeba\Passwordless\Cose\Key\Key $key): void
     {
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::eq($key->type(), 4, 'Invalid key. Must be of type symmetric');
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::true($key->has(-1), 'Invalid key. The value of the key is missing');
+        \Akeeba\Passwordless\Assert\Assertion::eq($key->type(), 4, 'Invalid key. Must be of type symmetric');
+        \Akeeba\Passwordless\Assert\Assertion::true($key->has(-1), 'Invalid key. The value of the key is missing');
     }
 }

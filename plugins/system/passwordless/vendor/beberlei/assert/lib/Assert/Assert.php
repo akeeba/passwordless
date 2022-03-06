@@ -23,7 +23,7 @@ abstract class Assert
     protected static $lazyAssertionExceptionClass = \Akeeba\Passwordless\Assert\LazyAkeeba\Passwordless\AssertionException::class;
 
     /** @var string */
-    protected static $assertionClass = \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::class;
+    protected static $assertionClass = \Akeeba\Passwordless\Assert\Assertion::class;
 
     /**
      * Start validation on a value, returns {@link AssertionChain}.
@@ -42,9 +42,9 @@ abstract class Assert
      * The assertion chain can be stateful, that means be careful when you reuse
      * it. You should never pass around the chain.
      */
-    public static function that($value, $defaultMessage = null, string $defaultPropertyPath = null): \Akeeba\Passwordless\Assert\Akeeba\Passwordless\AssertionChain
+    public static function that($value, $defaultMessage = null, string $defaultPropertyPath = null): \Akeeba\Passwordless\Assert\AssertionChain
     {
-        $assertionChain = new \Akeeba\Passwordless\Assert\Akeeba\Passwordless\AssertionChain($value, $defaultMessage, $defaultPropertyPath);
+        $assertionChain = new \Akeeba\Passwordless\Assert\AssertionChain($value, $defaultMessage, $defaultPropertyPath);
 
         return $assertionChain->setAssertionClassName(static::$assertionClass);
     }
@@ -55,7 +55,7 @@ abstract class Assert
      * @param mixed $values
      * @param string|callable|null $defaultMessage
      */
-    public static function thatAll($values, $defaultMessage = null, string $defaultPropertyPath = null): \Akeeba\Passwordless\Assert\Akeeba\Passwordless\AssertionChain
+    public static function thatAll($values, $defaultMessage = null, string $defaultPropertyPath = null): \Akeeba\Passwordless\Assert\AssertionChain
     {
         return static::that($values, $defaultMessage, $defaultPropertyPath)->all();
     }
@@ -66,7 +66,7 @@ abstract class Assert
      * @param mixed $value
      * @param string|callable|null $defaultMessage
      */
-    public static function thatNullOr($value, $defaultMessage = null, string $defaultPropertyPath = null): \Akeeba\Passwordless\Assert\Akeeba\Passwordless\AssertionChain
+    public static function thatNullOr($value, $defaultMessage = null, string $defaultPropertyPath = null): \Akeeba\Passwordless\Assert\AssertionChain
     {
         return static::that($value, $defaultMessage, $defaultPropertyPath)->nullOr();
     }

@@ -15,5 +15,5 @@ namespace Akeeba\Passwordless\CBOR;
 
 interface DecoderInterface
 {
-    public function decode(\Akeeba\Passwordless\CBOR\Stream $stream): \Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject;
+    public function decode(\Akeeba\Passwordless\CBOR\Stream $stream): \Akeeba\Passwordless\CBOR\CBORObject;
 }

@@ -32,9 +32,9 @@ namespace Akeeba\Passwordless\Assert;
  * The assertion chain can be stateful, that means be careful when you reuse
  * it. You should never pass around the chain.
  */
-function that($value, $defaultMessage = null, string $defaultPropertyPath = null): \Akeeba\Passwordless\Assert\Akeeba\Passwordless\AssertionChain
+function that($value, $defaultMessage = null, string $defaultPropertyPath = null): \Akeeba\Passwordless\Assert\AssertionChain
 {
-    return \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assert::that($value, $defaultMessage, $defaultPropertyPath);
+    return \Akeeba\Passwordless\Assert\Assert::that($value, $defaultMessage, $defaultPropertyPath);
 }
 
 /**
@@ -44,9 +44,9 @@ function that($value, $defaultMessage = null, string $defaultPropertyPath = null
  * @param string|callable|null $defaultMessage
  * @param string $defaultPropertyPath
  */
-function thatAll($values, $defaultMessage = null, string $defaultPropertyPath = null): \Akeeba\Passwordless\Assert\Akeeba\Passwordless\AssertionChain
+function thatAll($values, $defaultMessage = null, string $defaultPropertyPath = null): \Akeeba\Passwordless\Assert\AssertionChain
 {
-    return \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assert::thatAll($values, $defaultMessage, $defaultPropertyPath);
+    return \Akeeba\Passwordless\Assert\Assert::thatAll($values, $defaultMessage, $defaultPropertyPath);
 }
 
 /**
@@ -58,9 +58,9 @@ function thatAll($values, $defaultMessage = null, string $defaultPropertyPath = 
  *
  * @deprecated In favour of Assert::thatNullOr($value, $defaultMessage = null, $defaultPropertyPath = null)
  */
-function thatNullOr($value, $defaultMessage = null, string $defaultPropertyPath = null): \Akeeba\Passwordless\Assert\Akeeba\Passwordless\AssertionChain
+function thatNullOr($value, $defaultMessage = null, string $defaultPropertyPath = null): \Akeeba\Passwordless\Assert\AssertionChain
 {
-    return \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assert::thatNullOr($value, $defaultMessage, $defaultPropertyPath);
+    return \Akeeba\Passwordless\Assert\Assert::thatNullOr($value, $defaultMessage, $defaultPropertyPath);
 }
 
 /**
@@ -68,5 +68,5 @@ function thatNullOr($value, $defaultMessage = null, string $defaultPropertyPath 
  */
 function lazy(): \Akeeba\Passwordless\Assert\LazyAkeeba\Passwordless\Assertion
 {
-    return \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assert::lazy();
+    return \Akeeba\Passwordless\Assert\Assert::lazy();
 }

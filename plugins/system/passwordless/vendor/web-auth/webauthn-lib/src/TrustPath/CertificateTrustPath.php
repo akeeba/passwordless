@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Akeeba\Passwordless\Webauthn\TrustPath;
 
-use Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion;
+use Akeeba\Passwordless\Assert\Assertion;
 
 final class CertificateTrustPath implements \Akeeba\Passwordless\Webauthn\TrustPath\TrustPath
 {
@@ -43,7 +43,7 @@ final class CertificateTrustPath implements \Akeeba\Passwordless\Webauthn\TrustP
      */
     public static function createFromArray(array $data): \Akeeba\Passwordless\Webauthn\TrustPath\TrustPath
     {
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::keyExists($data, 'x5c', 'The trust path type is invalid');
+        \Akeeba\Passwordless\Assert\Assertion::keyExists($data, 'x5c', 'The trust path type is invalid');
 
         return new \Akeeba\Passwordless\Webauthn\TrustPath\CertificateTrustPath($data['x5c']);
     }

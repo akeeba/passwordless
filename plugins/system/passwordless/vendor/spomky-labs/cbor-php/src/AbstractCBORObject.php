@@ -15,7 +15,7 @@ namespace Akeeba\Passwordless\CBOR;
 
 use function chr;
 
-abstract class AbstractCBORObject implements \Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject
+abstract class AbstractCBORObject implements \Akeeba\Passwordless\CBOR\CBORObject
 {
     /**
      * @var int

@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Akeeba\Passwordless\Webauthn\MetadataService;
 
-use Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion;
+use Akeeba\Passwordless\Assert\Assertion;
 
 class BiometricAccuracyDescriptor extends \Akeeba\Passwordless\Webauthn\MetadataService\AbstractDescriptor
 {
@@ -44,7 +44,7 @@ class BiometricAccuracyDescriptor extends \Akeeba\Passwordless\Webauthn\Metadata
 
     public function __construct(?float $FAR, ?float $FRR, ?float $EER, ?float $FAAR, ?int $maxReferenceDataSets, ?int $maxRetries = null, ?int $blockSlowdown = null)
     {
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::greaterOrEqualThan($maxReferenceDataSets, 0, \Akeeba\Passwordless\Webauthn\MetadataService\Utils::logicException('Invalid data. The value of "maxReferenceDataSets" must be a positive integer'));
+        \Akeeba\Passwordless\Assert\Assertion::greaterOrEqualThan($maxReferenceDataSets, 0, \Akeeba\Passwordless\Webauthn\MetadataService\Utils::logicException('Invalid data. The value of "maxReferenceDataSets" must be a positive integer'));
         $this->FRR = $FRR;
         $this->FAR = $FAR;
         $this->EER = $EER;

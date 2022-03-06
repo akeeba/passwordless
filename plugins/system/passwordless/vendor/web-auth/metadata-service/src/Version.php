@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace Akeeba\Passwordless\Webauthn\MetadataService;
 
 use function array_key_exists;
-use Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion;
+use Akeeba\Passwordless\Assert\Assertion;
 use JsonSerializable;
 use LogicException;
 use function Akeeba\Passwordless\Safe\sprintf;
@@ -36,8 +36,8 @@ class Version implements JsonSerializable
         if (null === $major && null === $minor) {
             throw new LogicException('Invalid data. Must contain at least one item');
         }
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::greaterOrEqualThan($major, 0, \Akeeba\Passwordless\Webauthn\MetadataService\Utils::logicException('Invalid argument "major"'));
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::greaterOrEqualThan($minor, 0, \Akeeba\Passwordless\Webauthn\MetadataService\Utils::logicException('Invalid argument "minor"'));
+        \Akeeba\Passwordless\Assert\Assertion::greaterOrEqualThan($major, 0, \Akeeba\Passwordless\Webauthn\MetadataService\Utils::logicException('Invalid argument "major"'));
+        \Akeeba\Passwordless\Assert\Assertion::greaterOrEqualThan($minor, 0, \Akeeba\Passwordless\Webauthn\MetadataService\Utils::logicException('Invalid argument "minor"'));
 
         $this->major = $major;
         $this->minor = $minor;
@@ -58,7 +58,7 @@ class Version implements JsonSerializable
         $data = \Akeeba\Passwordless\Webauthn\MetadataService\Utils::filterNullValues($data);
         foreach (['major', 'minor'] as $key) {
             if (array_key_exists($key, $data)) {
-                \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::integer($data[$key], \Akeeba\Passwordless\Safe\sprintf('Invalid value for key "%s"', $key));
+                \Akeeba\Passwordless\Assert\Assertion::integer($data[$key], \Akeeba\Passwordless\Safe\sprintf('Invalid value for key "%s"', $key));
             }
         }
 

@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace Akeeba\Passwordless\Webauthn\TrustPath;
 
 use function array_key_exists;
-use Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion;
+use Akeeba\Passwordless\Assert\Assertion;
 use function in_array;
 use InvalidArgumentException;
 use function Akeeba\Passwordless\Safe\class_implements;
@@ -27,7 +27,7 @@ abstract class TrustPathLoader
      */
     public static function loadTrustPath(array $data): \Akeeba\Passwordless\Webauthn\TrustPath\TrustPath
     {
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::keyExists($data, 'type', 'The trust path type is missing');
+        \Akeeba\Passwordless\Assert\Assertion::keyExists($data, 'type', 'The trust path type is missing');
         $type = $data['type'];
         $oldTypes = self::oldTrustPathTypes();
         switch (true) {

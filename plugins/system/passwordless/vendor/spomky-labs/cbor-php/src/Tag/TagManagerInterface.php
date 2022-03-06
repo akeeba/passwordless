@@ -13,10 +13,10 @@ declare(strict_types=1);
 
 namespace Akeeba\Passwordless\CBOR\Tag;
 
-use Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject;
+use \Akeeba\Passwordless\CBOR\CBORObject;
 use Akeeba\Passwordless\CBOR\Tag;
 
 interface TagManagerInterface
 {
-    public function createObjectForValue(int $additionalInformation, ?string $data, \Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject $object): \Akeeba\Passwordless\CBOR\Tag;
+    public function createObjectForValue(int $additionalInformation, ?string $data, \Akeeba\Passwordless\CBOR\CBORObject $object): \Akeeba\Passwordless\CBOR\Tag;
 }

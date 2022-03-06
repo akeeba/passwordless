@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Akeeba\Passwordless\Webauthn;
 
-use Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion;
+use Akeeba\Passwordless\Assert\Assertion;
 use Akeeba\Passwordless\CBOR\Decoder;
 use Akeeba\Passwordless\CBOR\OtherObject\OtherObjectManager;
 use Akeeba\Passwordless\CBOR\Tag\TagObjectManager;
@@ -105,12 +105,12 @@ class AuthenticatorAssertionResponseValidator
             ]);
             /** @see 7.2.1 */
             if (0 !== count($publicKeyCredentialRequestOptions->getAllowCredentials())) {
-                \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::true($this->isCredentialIdAllowed($credentialId, $publicKeyCredentialRequestOptions->getAllowCredentials()), 'The credential ID is not allowed.');
+                \Akeeba\Passwordless\Assert\Assertion::true($this->isCredentialIdAllowed($credentialId, $publicKeyCredentialRequestOptions->getAllowCredentials()), 'The credential ID is not allowed.');
             }
 
             /** @see 7.2.2 */
             $publicKeyCredentialSource = $this->publicKeyCredentialSourceRepository->findOneByCredentialId($credentialId);
-            \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::notNull($publicKeyCredentialSource, 'The credential ID is invalid.');
+            \Akeeba\Passwordless\Assert\Assertion::notNull($publicKeyCredentialSource, 'The credential ID is invalid.');
 
             /** @see 7.2.3 */
             $attestedCredentialData = $publicKeyCredentialSource->getAttestedCredentialData();
@@ -119,13 +119,13 @@ class AuthenticatorAssertionResponseValidator
 
             /** @see 7.2.2 User Handle*/
             if (null !== $userHandle) { //If the user was identified before the authentication ceremony was initiated,
-                \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::eq($credentialUserHandle, $userHandle, 'Invalid user handle');
+                \Akeeba\Passwordless\Assert\Assertion::eq($credentialUserHandle, $userHandle, 'Invalid user handle');
                 if (null !== $responseUserHandle && '' !== $responseUserHandle) {
-                    \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::eq($credentialUserHandle, $responseUserHandle, 'Invalid user handle');
+                    \Akeeba\Passwordless\Assert\Assertion::eq($credentialUserHandle, $responseUserHandle, 'Invalid user handle');
                 }
             } else {
-                \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::notEmpty($responseUserHandle, 'User handle is mandatory');
-                \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::eq($credentialUserHandle, $responseUserHandle, 'Invalid user handle');
+                \Akeeba\Passwordless\Assert\Assertion::notEmpty($responseUserHandle, 'User handle is mandatory');
+                \Akeeba\Passwordless\Assert\Assertion::eq($credentialUserHandle, $responseUserHandle, 'Invalid user handle');
             }
 
             $credentialPublicKey = $attestedCredentialData->getCredentialPublicKey();
@@ -133,10 +133,10 @@ class AuthenticatorAssertionResponseValidator
             if ($isU2F) {
                 $credentialPublicKey = \Akeeba\Passwordless\Webauthn\U2FPublicKey::createCOSEKey($credentialPublicKey);
             }
-            \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::notNull($credentialPublicKey, 'No public key available.');
+            \Akeeba\Passwordless\Assert\Assertion::notNull($credentialPublicKey, 'No public key available.');
             $stream = new \Akeeba\Passwordless\Webauthn\StringStream($credentialPublicKey);
             $credentialPublicKeyStream = $this->decoder->decode($stream);
-            \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::true($stream->isEOF(), 'Invalid key. Presence of extra bytes.');
+            \Akeeba\Passwordless\Assert\Assertion::true($stream->isEOF(), 'Invalid key. Presence of extra bytes.');
             $stream->close();
 
             /** @see 7.2.4 */
@@ -147,24 +147,24 @@ class AuthenticatorAssertionResponseValidator
             $C = $authenticatorAssertionResponse->getClientDataJSON();
 
             /** @see 7.2.7 */
-            \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::eq('webauthn.get', $C->getType(), 'The client data type is not "webauthn.get".');
+            \Akeeba\Passwordless\Assert\Assertion::eq('webauthn.get', $C->getType(), 'The client data type is not "webauthn.get".');
 
             /** @see 7.2.8 */
-            \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::true(hash_equals($publicKeyCredentialRequestOptions->getChallenge(), $C->getChallenge()), 'Invalid challenge.');
+            \Akeeba\Passwordless\Assert\Assertion::true(hash_equals($publicKeyCredentialRequestOptions->getChallenge(), $C->getChallenge()), 'Invalid challenge.');
 
             /** @see 7.2.9 */
             $rpId = $publicKeyCredentialRequestOptions->getRpId() ?? $request->getUri()->getHost();
             $facetId = $this->getFacetId($rpId, $publicKeyCredentialRequestOptions->getExtensions(), $authenticatorAssertionResponse->getAuthenticatorData()->getExtensions());
             $parsedRelyingPartyId = \Akeeba\Passwordless\Safe\parse_url($C->getOrigin());
-            \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::isArray($parsedRelyingPartyId, 'Invalid origin');
+            \Akeeba\Passwordless\Assert\Assertion::isArray($parsedRelyingPartyId, 'Invalid origin');
             if (!in_array($facetId, $securedRelyingPartyId, true)) {
                 $scheme = $parsedRelyingPartyId['scheme'] ?? '';
-                \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::eq('https', $scheme, 'Invalid scheme. HTTPS required.');
+                \Akeeba\Passwordless\Assert\Assertion::eq('https', $scheme, 'Invalid scheme. HTTPS required.');
             }
             $clientDataRpId = $parsedRelyingPartyId['host'] ?? '';
-            \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::notEmpty($clientDataRpId, 'Invalid origin rpId.');
+            \Akeeba\Passwordless\Assert\Assertion::notEmpty($clientDataRpId, 'Invalid origin rpId.');
             $rpIdLength = mb_strlen($facetId);
-            \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::eq(mb_substr('.'.$clientDataRpId, -($rpIdLength + 1)), '.'.$facetId, 'rpId mismatch.');
+            \Akeeba\Passwordless\Assert\Assertion::eq(mb_substr('.'.$clientDataRpId, -($rpIdLength + 1)), '.'.$facetId, 'rpId mismatch.');
 
             /** @see 7.2.10 */
             if (null !== $C->getTokenBinding()) {
@@ -175,13 +175,13 @@ class AuthenticatorAssertionResponseValidator
             // u2f response has full origin in rpIdHash
             /** @see 7.2.11 */
             $rpIdHash = hash('sha256', $expectedRpIdHash, true);
-            \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::true(hash_equals($rpIdHash, $authenticatorAssertionResponse->getAuthenticatorData()->getRpIdHash()), 'rpId hash mismatch.');
+            \Akeeba\Passwordless\Assert\Assertion::true(hash_equals($rpIdHash, $authenticatorAssertionResponse->getAuthenticatorData()->getRpIdHash()), 'rpId hash mismatch.');
 
             /** @see 7.2.12 */
-            \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::true($authenticatorAssertionResponse->getAuthenticatorData()->isUserPresent(), 'User was not present');
+            \Akeeba\Passwordless\Assert\Assertion::true($authenticatorAssertionResponse->getAuthenticatorData()->isUserPresent(), 'User was not present');
             /** @see 7.2.13 */
             if (\Akeeba\Passwordless\Webauthn\AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_REQUIRED === $publicKeyCredentialRequestOptions->getUserVerification()) {
-                \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::true($authenticatorAssertionResponse->getAuthenticatorData()->isUserVerified(), 'User authentication required.');
+                \Akeeba\Passwordless\Assert\Assertion::true($authenticatorAssertionResponse->getAuthenticatorData()->isUserVerified(), 'User authentication required.');
             }
 
             /** @see 7.2.14 */
@@ -201,9 +201,9 @@ class AuthenticatorAssertionResponseValidator
             $signature = $authenticatorAssertionResponse->getSignature();
             $coseKey = new \Akeeba\Passwordless\Cose\Key\Key($credentialPublicKeyStream->getNormalizedData());
             $algorithm = $this->algorithmManager->get($coseKey->alg());
-            \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::isInstanceOf($algorithm, \Akeeba\Passwordless\Cose\Algorithm\Signature\Signature::class, 'Invalid algorithm identifier. Should refer to a signature algorithm');
+            \Akeeba\Passwordless\Assert\Assertion::isInstanceOf($algorithm, \Akeeba\Passwordless\Cose\Algorithm\Signature\Signature::class, 'Invalid algorithm identifier. Should refer to a signature algorithm');
             $signature = \Akeeba\Passwordless\Webauthn\Util\CoseSignatureFixer::fix($signature, $algorithm);
-            \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::true($algorithm->verify($dataToVerify, $coseKey, $signature), 'Invalid signature.');
+            \Akeeba\Passwordless\Assert\Assertion::true($algorithm->verify($dataToVerify, $coseKey, $signature), 'Invalid signature.');
 
             /** @see 7.2.17 */
             $storedCounter = $publicKeyCredentialSource->getCounter();

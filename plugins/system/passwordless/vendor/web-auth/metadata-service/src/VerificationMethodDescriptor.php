@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Akeeba\Passwordless\Webauthn\MetadataService;
 
-use Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion;
+use Akeeba\Passwordless\Assert\Assertion;
 use JsonSerializable;
 use function Akeeba\Passwordless\Safe\sprintf;
 
@@ -53,7 +53,7 @@ class VerificationMethodDescriptor implements JsonSerializable
 
     public function __construct(int $userVerification, ?\Akeeba\Passwordless\Webauthn\MetadataService\CodeAccuracyDescriptor $caDesc = null, ?\Akeeba\Passwordless\Webauthn\MetadataService\BiometricAccuracyDescriptor $baDesc = null, ?\Akeeba\Passwordless\Webauthn\MetadataService\PatternAccuracyDescriptor $paDesc = null)
     {
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::greaterOrEqualThan($userVerification, 0, \Akeeba\Passwordless\Webauthn\MetadataService\Utils::logicException('The parameter "userVerification" is invalid'));
+        \Akeeba\Passwordless\Assert\Assertion::greaterOrEqualThan($userVerification, 0, \Akeeba\Passwordless\Webauthn\MetadataService\Utils::logicException('The parameter "userVerification" is invalid'));
         $this->userVerification = $userVerification;
         $this->caDesc = $caDesc;
         $this->baDesc = $baDesc;
@@ -138,11 +138,11 @@ class VerificationMethodDescriptor implements JsonSerializable
     public static function createFromArray(array $data): self
     {
         $data = \Akeeba\Passwordless\Webauthn\MetadataService\Utils::filterNullValues($data);
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::keyExists($data, 'userVerification', \Akeeba\Passwordless\Webauthn\MetadataService\Utils::logicException('The parameter "userVerification" is missing'));
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::integer($data['userVerification'], \Akeeba\Passwordless\Webauthn\MetadataService\Utils::logicException('The parameter "userVerification" is invalid'));
+        \Akeeba\Passwordless\Assert\Assertion::keyExists($data, 'userVerification', \Akeeba\Passwordless\Webauthn\MetadataService\Utils::logicException('The parameter "userVerification" is missing'));
+        \Akeeba\Passwordless\Assert\Assertion::integer($data['userVerification'], \Akeeba\Passwordless\Webauthn\MetadataService\Utils::logicException('The parameter "userVerification" is invalid'));
         foreach (['caDesc', 'baDesc', 'paDesc'] as $key) {
             if (isset($data[$key])) {
-                \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::isArray($data[$key], \Akeeba\Passwordless\Webauthn\MetadataService\Utils::logicException(\Akeeba\Passwordless\Safe\sprintf('Invalid parameter "%s"', $key)));
+                \Akeeba\Passwordless\Assert\Assertion::isArray($data[$key], \Akeeba\Passwordless\Webauthn\MetadataService\Utils::logicException(\Akeeba\Passwordless\Safe\sprintf('Invalid parameter "%s"', $key)));
             }
         }
 

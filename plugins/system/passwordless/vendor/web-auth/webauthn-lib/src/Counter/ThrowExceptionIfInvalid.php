@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Akeeba\Passwordless\Webauthn\Counter;
 
-use Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion;
+use Akeeba\Passwordless\Assert\Assertion;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Throwable;
@@ -34,7 +34,7 @@ final class ThrowExceptionIfInvalid implements \Akeeba\Passwordless\Webauthn\Cou
     public function check(\Akeeba\Passwordless\Webauthn\PublicKeyCredentialSource $publicKeyCredentialSource, int $currentCounter): void
     {
         try {
-            \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::greaterThan($currentCounter, $publicKeyCredentialSource->getCounter(), 'Invalid counter.');
+            \Akeeba\Passwordless\Assert\Assertion::greaterThan($currentCounter, $publicKeyCredentialSource->getCounter(), 'Invalid counter.');
         } catch (Throwable $throwable) {
             $this->logger->error('The counter is invalid', [
                 'current' => $currentCounter,

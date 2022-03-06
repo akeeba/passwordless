@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Akeeba\Passwordless\CBOR\Tag;
 
-use Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject;
+use \Akeeba\Passwordless\CBOR\CBORObject;
 use Akeeba\Passwordless\CBOR\ListObject;
 use Akeeba\Passwordless\CBOR\NegativeIntegerObject;
 use Akeeba\Passwordless\CBOR\Normalizable;
@@ -26,7 +26,7 @@ use RuntimeException;
 
 final class BigFloatTag extends \Akeeba\Passwordless\CBOR\Tag implements \Akeeba\Passwordless\CBOR\Normalizable
 {
-    public function __construct(int $additionalInformation, ?string $data, \Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject $object)
+    public function __construct(int $additionalInformation, ?string $data, \Akeeba\Passwordless\CBOR\CBORObject $object)
     {
         if (! extension_loaded('bcmath')) {
             throw new RuntimeException('The extension "bcmath" is required to use this tag');
@@ -56,19 +56,19 @@ final class BigFloatTag extends \Akeeba\Passwordless\CBOR\Tag implements \Akeeba
         return self::TAG_BIG_FLOAT;
     }
 
-    public static function createFromLoadedData(int $additionalInformation, ?string $data, \Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject $object): \Akeeba\Passwordless\CBOR\Tag
+    public static function createFromLoadedData(int $additionalInformation, ?string $data, \Akeeba\Passwordless\CBOR\CBORObject $object): \Akeeba\Passwordless\CBOR\Tag
     {
         return new self($additionalInformation, $data, $object);
     }
 
-    public static function create(\Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject $object): \Akeeba\Passwordless\CBOR\Tag
+    public static function create(\Akeeba\Passwordless\CBOR\CBORObject $object): \Akeeba\Passwordless\CBOR\Tag
     {
         [$ai, $data] = self::determineComponents(self::TAG_BIG_FLOAT);
 
         return new self($ai, $data, $object);
     }
 
-    public static function createFromExponentAndMantissa(\Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject $e, \Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject $m): \Akeeba\Passwordless\CBOR\Tag
+    public static function createFromExponentAndMantissa(\Akeeba\Passwordless\CBOR\CBORObject $e, \Akeeba\Passwordless\CBOR\CBORObject $m): \Akeeba\Passwordless\CBOR\Tag
     {
         $object = \Akeeba\Passwordless\CBOR\ListObject::create()
             ->add($e)

@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Akeeba\Passwordless\Cose\Key;
 
-use Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion;
+use Akeeba\Passwordless\Assert\Assertion;
 
 class SymmetricKey extends \Akeeba\Passwordless\Cose\Key\Key
 {
@@ -22,8 +22,8 @@ class SymmetricKey extends \Akeeba\Passwordless\Cose\Key\Key
     public function __construct(array $data)
     {
         parent::__construct($data);
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::eq($data[self::TYPE], self::TYPE_OCT, 'Invalid symmetric key. The key type does not correspond to a symmetric key');
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::keyExists($data, self::DATA_K, 'Invalid symmetric key. The parameter "k" is missing');
+        \Akeeba\Passwordless\Assert\Assertion::eq($data[self::TYPE], self::TYPE_OCT, 'Invalid symmetric key. The key type does not correspond to a symmetric key');
+        \Akeeba\Passwordless\Assert\Assertion::keyExists($data, self::DATA_K, 'Invalid symmetric key. The parameter "k" is missing');
     }
 
     public function k(): string

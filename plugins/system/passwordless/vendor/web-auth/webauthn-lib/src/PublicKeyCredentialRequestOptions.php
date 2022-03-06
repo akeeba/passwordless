@@ -13,8 +13,8 @@ declare(strict_types=1);
 
 namespace Akeeba\Passwordless\Webauthn;
 
-use Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion;
-use Akeeba\Passwordless\Base64Url\Akeeba\Passwordless\Base64Url;
+use Akeeba\Passwordless\Assert\Assertion;
+use Akeeba\Passwordless\Base64Url\Base64Url;
 use function count;
 use function Akeeba\Passwordless\Safe\json_decode;
 use Akeeba\Passwordless\Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
@@ -100,7 +100,7 @@ class PublicKeyCredentialRequestOptions extends \Akeeba\Passwordless\Webauthn\Pu
 
             return $this;
         }
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::inArray($userVerification, [
+        \Akeeba\Passwordless\Assert\Assertion::inArray($userVerification, [
             self::USER_VERIFICATION_REQUIREMENT_REQUIRED,
             self::USER_VERIFICATION_REQUIREMENT_PREFERRED,
             self::USER_VERIFICATION_REQUIREMENT_DISCOURAGED,
@@ -131,7 +131,7 @@ class PublicKeyCredentialRequestOptions extends \Akeeba\Passwordless\Webauthn\Pu
     public static function createFromString(string $data): \Akeeba\Passwordless\Webauthn\PublicKeyCredentialOptions
     {
         $data = \Akeeba\Passwordless\Safe\json_decode($data, true);
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::isArray($data, 'Invalid data');
+        \Akeeba\Passwordless\Assert\Assertion::isArray($data, 'Invalid data');
 
         return self::createFromArray($data);
     }
@@ -141,7 +141,7 @@ class PublicKeyCredentialRequestOptions extends \Akeeba\Passwordless\Webauthn\Pu
      */
     public static function createFromArray(array $json): \Akeeba\Passwordless\Webauthn\PublicKeyCredentialOptions
     {
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::keyExists($json, 'challenge', 'Invalid input. "challenge" is missing.');
+        \Akeeba\Passwordless\Assert\Assertion::keyExists($json, 'challenge', 'Invalid input. "challenge" is missing.');
 
         $allowCredentials = [];
         $allowCredentialList = $json['allowCredentials'] ?? [];
@@ -149,7 +149,7 @@ class PublicKeyCredentialRequestOptions extends \Akeeba\Passwordless\Webauthn\Pu
             $allowCredentials[] = \Akeeba\Passwordless\Webauthn\PublicKeyCredentialDescriptor::createFromArray($allowCredential);
         }
 
-        return self::create(\Akeeba\Passwordless\Base64Url\Akeeba\Passwordless\Base64Url::decode($json['challenge']))
+        return self::create(Base64Url::decode($json['challenge']))
             ->setRpId($json['rpId'] ?? null)
             ->allowCredentials($allowCredentials)
             ->setUserVerification($json['userVerification'] ?? null)
@@ -164,7 +164,7 @@ class PublicKeyCredentialRequestOptions extends \Akeeba\Passwordless\Webauthn\Pu
     public function jsonSerialize(): array
     {
         $json = [
-            'challenge' => \Akeeba\Passwordless\Base64Url\Akeeba\Passwordless\Base64Url::encode($this->challenge),
+            'challenge' => Base64Url::encode($this->challenge),
         ];
 
         if (null !== $this->rpId) {

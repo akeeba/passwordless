@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Akeeba\Passwordless\Webauthn\MetadataService;
 
-use Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion;
+use Akeeba\Passwordless\Assert\Assertion;
 use JsonSerializable;
 use function Akeeba\Passwordless\Safe\sprintf;
 
@@ -61,13 +61,13 @@ class DisplayPNGCharacteristicsDescriptor implements JsonSerializable
 
     public function __construct(int $width, int $height, int $bitDepth, int $colorType, int $compression, int $filter, int $interlace)
     {
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::greaterOrEqualThan($width, 0, \Akeeba\Passwordless\Webauthn\MetadataService\Utils::logicException('Invalid width'));
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::greaterOrEqualThan($height, 0, \Akeeba\Passwordless\Webauthn\MetadataService\Utils::logicException('Invalid height'));
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::range($bitDepth, 0, 254, \Akeeba\Passwordless\Webauthn\MetadataService\Utils::logicException('Invalid bit depth'));
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::range($colorType, 0, 254, \Akeeba\Passwordless\Webauthn\MetadataService\Utils::logicException('Invalid color type'));
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::range($compression, 0, 254, \Akeeba\Passwordless\Webauthn\MetadataService\Utils::logicException('Invalid compression'));
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::range($filter, 0, 254, \Akeeba\Passwordless\Webauthn\MetadataService\Utils::logicException('Invalid filter'));
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::range($interlace, 0, 254, \Akeeba\Passwordless\Webauthn\MetadataService\Utils::logicException('Invalid interlace'));
+        \Akeeba\Passwordless\Assert\Assertion::greaterOrEqualThan($width, 0, \Akeeba\Passwordless\Webauthn\MetadataService\Utils::logicException('Invalid width'));
+        \Akeeba\Passwordless\Assert\Assertion::greaterOrEqualThan($height, 0, \Akeeba\Passwordless\Webauthn\MetadataService\Utils::logicException('Invalid height'));
+        \Akeeba\Passwordless\Assert\Assertion::range($bitDepth, 0, 254, \Akeeba\Passwordless\Webauthn\MetadataService\Utils::logicException('Invalid bit depth'));
+        \Akeeba\Passwordless\Assert\Assertion::range($colorType, 0, 254, \Akeeba\Passwordless\Webauthn\MetadataService\Utils::logicException('Invalid color type'));
+        \Akeeba\Passwordless\Assert\Assertion::range($compression, 0, 254, \Akeeba\Passwordless\Webauthn\MetadataService\Utils::logicException('Invalid compression'));
+        \Akeeba\Passwordless\Assert\Assertion::range($filter, 0, 254, \Akeeba\Passwordless\Webauthn\MetadataService\Utils::logicException('Invalid filter'));
+        \Akeeba\Passwordless\Assert\Assertion::range($interlace, 0, 254, \Akeeba\Passwordless\Webauthn\MetadataService\Utils::logicException('Invalid interlace'));
 
         $this->width = $width;
         $this->height = $height;
@@ -132,7 +132,7 @@ class DisplayPNGCharacteristicsDescriptor implements JsonSerializable
     {
         $data = \Akeeba\Passwordless\Webauthn\MetadataService\Utils::filterNullValues($data);
         foreach (['width', 'compression', 'height', 'bitDepth', 'colorType', 'compression', 'filter', 'interlace'] as $key) {
-            \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::keyExists($data, $key, \Akeeba\Passwordless\Safe\sprintf('Invalid data. The key "%s" is missing', $key));
+            \Akeeba\Passwordless\Assert\Assertion::keyExists($data, $key, \Akeeba\Passwordless\Safe\sprintf('Invalid data. The key "%s" is missing', $key));
         }
         $object = new self(
             $data['width'],
@@ -145,7 +145,7 @@ class DisplayPNGCharacteristicsDescriptor implements JsonSerializable
         );
         if (isset($data['plte'])) {
             $plte = $data['plte'];
-            \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::isArray($plte, \Akeeba\Passwordless\Webauthn\MetadataService\Utils::logicException('Invalid "plte" parameter'));
+            \Akeeba\Passwordless\Assert\Assertion::isArray($plte, \Akeeba\Passwordless\Webauthn\MetadataService\Utils::logicException('Invalid "plte" parameter'));
             foreach ($plte as $item) {
                 $object->addPalette(\Akeeba\Passwordless\Webauthn\MetadataService\RgbPaletteEntry::createFromArray($item));
             }

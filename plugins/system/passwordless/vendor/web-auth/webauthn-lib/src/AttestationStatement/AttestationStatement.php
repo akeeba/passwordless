@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace Akeeba\Passwordless\Webauthn\AttestationStatement;
 
 use function array_key_exists;
-use Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion;
+use Akeeba\Passwordless\Assert\Assertion;
 use JsonSerializable;
 use function Akeeba\Passwordless\Safe\sprintf;
 use Akeeba\Passwordless\Webauthn\TrustPath\TrustPath;
@@ -128,7 +128,7 @@ class AttestationStatement implements JsonSerializable
      */
     public function get(string $key)
     {
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::true($this->has($key), \Akeeba\Passwordless\Safe\sprintf('The attestation statement has no key "%s".', $key));
+        \Akeeba\Passwordless\Assert\Assertion::true($this->has($key), \Akeeba\Passwordless\Safe\sprintf('The attestation statement has no key "%s".', $key));
 
         return $this->attStmt[$key];
     }
@@ -149,7 +149,7 @@ class AttestationStatement implements JsonSerializable
     public static function createFromArray(array $data): self
     {
         foreach (['fmt', 'attStmt', 'trustPath', 'type'] as $key) {
-            \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::keyExists($data, $key, \Akeeba\Passwordless\Safe\sprintf('The key "%s" is missing', $key));
+            \Akeeba\Passwordless\Assert\Assertion::keyExists($data, $key, \Akeeba\Passwordless\Safe\sprintf('The key "%s" is missing', $key));
         }
 
         return new self(

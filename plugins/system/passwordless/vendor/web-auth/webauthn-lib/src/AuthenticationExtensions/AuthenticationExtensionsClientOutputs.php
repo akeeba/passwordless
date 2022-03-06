@@ -15,7 +15,7 @@ namespace Akeeba\Passwordless\Webauthn\AuthenticationExtensions;
 
 use function array_key_exists;
 use ArrayIterator;
-use Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion;
+use Akeeba\Passwordless\Assert\Assertion;
 use function count;
 use Countable;
 use Iterator;
@@ -39,7 +39,7 @@ class AuthenticationExtensionsClientOutputs implements JsonSerializable, Countab
     public static function createFromString(string $data): self
     {
         $data = \Akeeba\Passwordless\Safe\json_decode($data, true);
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::isArray($data, 'Invalid data');
+        \Akeeba\Passwordless\Assert\Assertion::isArray($data, 'Invalid data');
 
         return self::createFromArray($data);
     }
@@ -67,7 +67,7 @@ class AuthenticationExtensionsClientOutputs implements JsonSerializable, Countab
      */
     public function get(string $key)
     {
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::true($this->has($key), \Akeeba\Passwordless\Safe\sprintf('The extension with key "%s" is not available', $key));
+        \Akeeba\Passwordless\Assert\Assertion::true($this->has($key), \Akeeba\Passwordless\Safe\sprintf('The extension with key "%s" is not available', $key));
 
         return $this->extensions[$key];
     }

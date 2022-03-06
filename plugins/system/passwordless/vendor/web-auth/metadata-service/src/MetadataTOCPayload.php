@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace Akeeba\Passwordless\Webauthn\MetadataService;
 
 use function array_key_exists;
-use Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion;
+use Akeeba\Passwordless\Assert\Assertion;
 use JsonSerializable;
 use function Akeeba\Passwordless\Safe\sprintf;
 
@@ -86,13 +86,13 @@ class MetadataTOCPayload implements JsonSerializable
     {
         $data = \Akeeba\Passwordless\Webauthn\MetadataService\Utils::filterNullValues($data);
         foreach (['no', 'nextUpdate', 'entries'] as $key) {
-            \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::keyExists($data, $key, \Akeeba\Passwordless\Webauthn\MetadataService\Utils::logicException(\Akeeba\Passwordless\Safe\sprintf('Invalid data. The parameter "%s" is missing', $key)));
+            \Akeeba\Passwordless\Assert\Assertion::keyExists($data, $key, \Akeeba\Passwordless\Webauthn\MetadataService\Utils::logicException(\Akeeba\Passwordless\Safe\sprintf('Invalid data. The parameter "%s" is missing', $key)));
         }
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::integer($data['no'], \Akeeba\Passwordless\Webauthn\MetadataService\Utils::logicException('Invalid data. The parameter "no" shall be an integer'));
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::string($data['nextUpdate'], \Akeeba\Passwordless\Webauthn\MetadataService\Utils::logicException('Invalid data. The parameter "nextUpdate" shall be a string'));
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::isArray($data['entries'], \Akeeba\Passwordless\Webauthn\MetadataService\Utils::logicException('Invalid data. The parameter "entries" shall be a n array of entries'));
+        \Akeeba\Passwordless\Assert\Assertion::integer($data['no'], \Akeeba\Passwordless\Webauthn\MetadataService\Utils::logicException('Invalid data. The parameter "no" shall be an integer'));
+        \Akeeba\Passwordless\Assert\Assertion::string($data['nextUpdate'], \Akeeba\Passwordless\Webauthn\MetadataService\Utils::logicException('Invalid data. The parameter "nextUpdate" shall be a string'));
+        \Akeeba\Passwordless\Assert\Assertion::isArray($data['entries'], \Akeeba\Passwordless\Webauthn\MetadataService\Utils::logicException('Invalid data. The parameter "entries" shall be a n array of entries'));
         if (array_key_exists('legalHeader', $data)) {
-            \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::string($data['legalHeader'], \Akeeba\Passwordless\Webauthn\MetadataService\Utils::logicException('Invalid data. The parameter "legalHeader" shall be a string'));
+            \Akeeba\Passwordless\Assert\Assertion::string($data['legalHeader'], \Akeeba\Passwordless\Webauthn\MetadataService\Utils::logicException('Invalid data. The parameter "legalHeader" shall be a string'));
         }
         $object = new self(
             $data['no'],

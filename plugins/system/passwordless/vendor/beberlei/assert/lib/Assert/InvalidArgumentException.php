@@ -14,7 +14,7 @@
 
 namespace Akeeba\Passwordless\Assert;
 
-class InvalidArgumentException extends \InvalidArgumentException implements \Akeeba\Passwordless\Assert\Akeeba\Passwordless\AssertionFailedException
+class InvalidArgumentException extends \InvalidArgumentException implements \Akeeba\Passwordless\Assert\AssertionFailedException
 {
     /**
      * @var string|null

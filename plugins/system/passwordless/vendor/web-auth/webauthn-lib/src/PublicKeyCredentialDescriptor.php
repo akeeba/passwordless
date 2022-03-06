@@ -13,8 +13,8 @@ declare(strict_types=1);
 
 namespace Akeeba\Passwordless\Webauthn;
 
-use Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion;
-use Akeeba\Passwordless\Base64Url\Akeeba\Passwordless\Base64Url;
+use Akeeba\Passwordless\Assert\Assertion;
+use Akeeba\Passwordless\Base64Url\Base64Url;
 use function count;
 use JsonSerializable;
 use function Akeeba\Passwordless\Safe\json_decode;
@@ -74,7 +74,7 @@ class PublicKeyCredentialDescriptor implements JsonSerializable
     public static function createFromString(string $data): self
     {
         $data = \Akeeba\Passwordless\Safe\json_decode($data, true);
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::isArray($data, 'Invalid data');
+        \Akeeba\Passwordless\Assert\Assertion::isArray($data, 'Invalid data');
 
         return self::createFromArray($data);
     }
@@ -84,12 +84,12 @@ class PublicKeyCredentialDescriptor implements JsonSerializable
      */
     public static function createFromArray(array $json): self
     {
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::keyExists($json, 'type', 'Invalid input. "type" is missing.');
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::keyExists($json, 'id', 'Invalid input. "id" is missing.');
+        \Akeeba\Passwordless\Assert\Assertion::keyExists($json, 'type', 'Invalid input. "type" is missing.');
+        \Akeeba\Passwordless\Assert\Assertion::keyExists($json, 'id', 'Invalid input. "id" is missing.');
 
         return new self(
             $json['type'],
-            \Akeeba\Passwordless\Base64Url\Akeeba\Passwordless\Base64Url::decode($json['id']),
+            Base64Url::decode($json['id']),
             $json['transports'] ?? []
         );
     }
@@ -101,7 +101,7 @@ class PublicKeyCredentialDescriptor implements JsonSerializable
     {
         $json = [
             'type' => $this->type,
-            'id' => \Akeeba\Passwordless\Base64Url\Akeeba\Passwordless\Base64Url::encode($this->id),
+            'id' => Base64Url::encode($this->id),
         ];
         if (0 !== count($this->transports)) {
             $json['transports'] = $this->transports;

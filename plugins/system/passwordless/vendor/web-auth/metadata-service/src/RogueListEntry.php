@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Akeeba\Passwordless\Webauthn\MetadataService;
 
-use Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion;
+use Akeeba\Passwordless\Assert\Assertion;
 use JsonSerializable;
 
 class RogueListEntry implements JsonSerializable
@@ -46,10 +46,10 @@ class RogueListEntry implements JsonSerializable
 
     public static function createFromArray(array $data): self
     {
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::keyExists($data, 'sk', 'The key "sk" is missing');
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::string($data['sk'], 'The key "sk" is invalid');
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::keyExists($data, 'date', 'The key "date" is missing');
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::string($data['date'], 'The key "date" is invalid');
+        \Akeeba\Passwordless\Assert\Assertion::keyExists($data, 'sk', 'The key "sk" is missing');
+        \Akeeba\Passwordless\Assert\Assertion::string($data['sk'], 'The key "sk" is invalid');
+        \Akeeba\Passwordless\Assert\Assertion::keyExists($data, 'date', 'The key "date" is missing');
+        \Akeeba\Passwordless\Assert\Assertion::string($data['date'], 'The key "date" is invalid');
 
         return new self(
             $data['sk'],

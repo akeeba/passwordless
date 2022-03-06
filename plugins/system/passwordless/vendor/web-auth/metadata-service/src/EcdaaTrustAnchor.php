@@ -13,8 +13,8 @@ declare(strict_types=1);
 
 namespace Akeeba\Passwordless\Webauthn\MetadataService;
 
-use Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion;
-use Akeeba\Passwordless\Base64Url\Akeeba\Passwordless\Base64Url;
+use Akeeba\Passwordless\Assert\Assertion;
+use Akeeba\Passwordless\Base64Url\Base64Url;
 use JsonSerializable;
 use function Akeeba\Passwordless\Safe\sprintf;
 
@@ -94,15 +94,15 @@ class EcdaaTrustAnchor implements JsonSerializable
     {
         $data = \Akeeba\Passwordless\Webauthn\MetadataService\Utils::filterNullValues($data);
         foreach (['X', 'Y', 'c', 'sx', 'sy', 'G1Curve'] as $key) {
-            \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::keyExists($data, $key, \Akeeba\Passwordless\Safe\sprintf('Invalid data. The key "%s" is missing', $key));
+            \Akeeba\Passwordless\Assert\Assertion::keyExists($data, $key, \Akeeba\Passwordless\Safe\sprintf('Invalid data. The key "%s" is missing', $key));
         }
 
         return new self(
-            \Akeeba\Passwordless\Base64Url\Akeeba\Passwordless\Base64Url::decode($data['X']),
-            \Akeeba\Passwordless\Base64Url\Akeeba\Passwordless\Base64Url::decode($data['Y']),
-            \Akeeba\Passwordless\Base64Url\Akeeba\Passwordless\Base64Url::decode($data['c']),
-            \Akeeba\Passwordless\Base64Url\Akeeba\Passwordless\Base64Url::decode($data['sx']),
-            \Akeeba\Passwordless\Base64Url\Akeeba\Passwordless\Base64Url::decode($data['sy']),
+            Base64Url::decode($data['X']),
+            Base64Url::decode($data['Y']),
+            Base64Url::decode($data['c']),
+            Base64Url::decode($data['sx']),
+            Base64Url::decode($data['sy']),
             $data['G1Curve']
         );
     }
@@ -110,11 +110,11 @@ class EcdaaTrustAnchor implements JsonSerializable
     public function jsonSerialize(): array
     {
         $data = [
-            'X' => \Akeeba\Passwordless\Base64Url\Akeeba\Passwordless\Base64Url::encode($this->X),
-            'Y' => \Akeeba\Passwordless\Base64Url\Akeeba\Passwordless\Base64Url::encode($this->Y),
-            'c' => \Akeeba\Passwordless\Base64Url\Akeeba\Passwordless\Base64Url::encode($this->c),
-            'sx' => \Akeeba\Passwordless\Base64Url\Akeeba\Passwordless\Base64Url::encode($this->sx),
-            'sy' => \Akeeba\Passwordless\Base64Url\Akeeba\Passwordless\Base64Url::encode($this->sy),
+            'X' => Base64Url::encode($this->X),
+            'Y' => Base64Url::encode($this->Y),
+            'c' => Base64Url::encode($this->c),
+            'sx' => Base64Url::encode($this->sx),
+            'sy' => Base64Url::encode($this->sy),
             'G1Curve' => $this->G1Curve,
         ];
 

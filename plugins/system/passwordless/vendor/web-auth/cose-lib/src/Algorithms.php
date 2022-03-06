@@ -13,8 +13,8 @@ declare(strict_types=1);
 
 namespace Akeeba\Passwordless\Cose;
 
-use Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion;
-use Akeeba\Passwordless\Assert\Akeeba\Passwordless\AssertionFailedException;
+use Akeeba\Passwordless\Assert\Assertion;
+use Akeeba\Passwordless\Assert\AssertionFailedException;
 
 /**
  * @see https://www.iana.org/assignments/cose/cose.xhtml#algorithms
@@ -106,7 +106,7 @@ abstract class Algorithms
      */
     public static function getOpensslAlgorithmFor(int $algorithmIdentifier): int
     {
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::keyExists(self::COSE_ALGORITHM_MAP, $algorithmIdentifier, 'The specified algorithm identifier is not supported');
+        \Akeeba\Passwordless\Assert\Assertion::keyExists(self::COSE_ALGORITHM_MAP, $algorithmIdentifier, 'The specified algorithm identifier is not supported');
 
         return self::COSE_ALGORITHM_MAP[$algorithmIdentifier];
     }
@@ -116,7 +116,7 @@ abstract class Algorithms
      */
     public static function getHashAlgorithmFor(int $algorithmIdentifier): string
     {
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::keyExists(self::COSE_HASH_MAP, $algorithmIdentifier, 'The specified algorithm identifier is not supported');
+        \Akeeba\Passwordless\Assert\Assertion::keyExists(self::COSE_HASH_MAP, $algorithmIdentifier, 'The specified algorithm identifier is not supported');
 
         return self::COSE_HASH_MAP[$algorithmIdentifier];
     }

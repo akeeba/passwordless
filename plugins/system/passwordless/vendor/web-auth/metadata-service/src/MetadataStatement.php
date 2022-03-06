@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Akeeba\Passwordless\Webauthn\MetadataService;
 
-use Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion;
+use Akeeba\Passwordless\Assert\Assertion;
 use InvalidArgumentException;
 use JsonSerializable;
 use function Akeeba\Passwordless\Safe\json_decode;
@@ -244,7 +244,7 @@ class MetadataStatement implements JsonSerializable
     public static function createFromString(string $statement): self
     {
         $data = \Akeeba\Passwordless\Safe\json_decode($statement, true);
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::isArray($data, 'Invalid Metadata Statement');
+        \Akeeba\Passwordless\Assert\Assertion::isArray($data, 'Invalid Metadata Statement');
 
         return self::createFromArray($data);
     }
@@ -455,9 +455,9 @@ class MetadataStatement implements JsonSerializable
         $object->protocolFamily = $data['protocolFamily'];
         if (isset($data['upv'])) {
             $upv = $data['upv'];
-            \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::isArray($upv, 'Invalid Metadata Statement');
+            \Akeeba\Passwordless\Assert\Assertion::isArray($upv, 'Invalid Metadata Statement');
             foreach ($upv as $value) {
-                \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::isArray($value, 'Invalid Metadata Statement');
+                \Akeeba\Passwordless\Assert\Assertion::isArray($value, 'Invalid Metadata Statement');
                 $object->upv[] = \Akeeba\Passwordless\Webauthn\MetadataService\Version::createFromArray($value);
             }
         }
@@ -469,9 +469,9 @@ class MetadataStatement implements JsonSerializable
         $object->attestationTypes = $data['attestationTypes'] ?? [];
         if (isset($data['userVerificationDetails'])) {
             $userVerificationDetails = $data['userVerificationDetails'];
-            \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::isArray($userVerificationDetails, 'Invalid Metadata Statement');
+            \Akeeba\Passwordless\Assert\Assertion::isArray($userVerificationDetails, 'Invalid Metadata Statement');
             foreach ($userVerificationDetails as $value) {
-                \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::isArray($value, 'Invalid Metadata Statement');
+                \Akeeba\Passwordless\Assert\Assertion::isArray($value, 'Invalid Metadata Statement');
                 $object->userVerificationDetails[] = \Akeeba\Passwordless\Webauthn\MetadataService\VerificationMethodANDCombinations::createFromArray($value);
             }
         }
@@ -487,9 +487,9 @@ class MetadataStatement implements JsonSerializable
         $object->tcDisplayContentType = $data['tcDisplayContentType'] ?? null;
         if (isset($data['tcDisplayPNGCharacteristics'])) {
             $tcDisplayPNGCharacteristics = $data['tcDisplayPNGCharacteristics'];
-            \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::isArray($tcDisplayPNGCharacteristics, 'Invalid Metadata Statement');
+            \Akeeba\Passwordless\Assert\Assertion::isArray($tcDisplayPNGCharacteristics, 'Invalid Metadata Statement');
             foreach ($tcDisplayPNGCharacteristics as $tcDisplayPNGCharacteristic) {
-                \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::isArray($tcDisplayPNGCharacteristic, 'Invalid Metadata Statement');
+                \Akeeba\Passwordless\Assert\Assertion::isArray($tcDisplayPNGCharacteristic, 'Invalid Metadata Statement');
                 $object->tcDisplayPNGCharacteristics[] = \Akeeba\Passwordless\Webauthn\MetadataService\DisplayPNGCharacteristicsDescriptor::createFromArray($tcDisplayPNGCharacteristic);
             }
         }
@@ -498,18 +498,18 @@ class MetadataStatement implements JsonSerializable
         $object->icon = $data['icon'] ?? null;
         if (isset($data['supportedExtensions'])) {
             $supportedExtensions = $data['supportedExtensions'];
-            \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::isArray($supportedExtensions, 'Invalid Metadata Statement');
+            \Akeeba\Passwordless\Assert\Assertion::isArray($supportedExtensions, 'Invalid Metadata Statement');
             foreach ($supportedExtensions as $supportedExtension) {
-                \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::isArray($supportedExtension, 'Invalid Metadata Statement');
+                \Akeeba\Passwordless\Assert\Assertion::isArray($supportedExtension, 'Invalid Metadata Statement');
                 $object->supportedExtensions[] = \Akeeba\Passwordless\Webauthn\MetadataService\ExtensionDescriptor::createFromArray($supportedExtension);
             }
         }
         $object->rootCertificates = $data['rootCertificates'] ?? [];
         if (isset($data['statusReports'])) {
             $reports = $data['statusReports'];
-            \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::isArray($reports, 'Invalid Metadata Statement');
+            \Akeeba\Passwordless\Assert\Assertion::isArray($reports, 'Invalid Metadata Statement');
             foreach ($reports as $report) {
-                \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::isArray($report, 'Invalid Metadata Statement');
+                \Akeeba\Passwordless\Assert\Assertion::isArray($report, 'Invalid Metadata Statement');
                 $object->statusReports[] = \Akeeba\Passwordless\Webauthn\MetadataService\StatusReport::createFromArray($report);
             }
         }

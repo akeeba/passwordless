@@ -13,8 +13,8 @@ declare(strict_types=1);
 
 namespace Akeeba\Passwordless\Webauthn\MetadataService;
 
-use Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion;
-use Akeeba\Passwordless\Base64Url\Akeeba\Passwordless\Base64Url;
+use Akeeba\Passwordless\Assert\Assertion;
+use Akeeba\Passwordless\Base64Url\Base64Url;
 use Jose\Component\KeyManagement\JWKFactory;
 use Jose\Component\Signature\Algorithm\ES256;
 use Jose\Component\Signature\Serializer\CompactSerializer;
@@ -41,9 +41,9 @@ class MetadataStatementFetcher
     {
         $payload = self::fetch($uri, $client, $requestFactory, $additionalHeaders);
         if ('' !== $hash) {
-            \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::true(hash_equals($hash, hash($hashingFunction, $payload, true)), 'The hash cannot be verified. The metadata statement shall be rejected');
+            \Akeeba\Passwordless\Assert\Assertion::true(hash_equals($hash, hash($hashingFunction, $payload, true)), 'The hash cannot be verified. The metadata statement shall be rejected');
         }
-        $json = $isBase64UrlEncoded ? \Akeeba\Passwordless\Base64Url\Akeeba\Passwordless\Base64Url::decode($payload) : $payload;
+        $json = $isBase64UrlEncoded ? Base64Url::decode($payload) : $payload;
         $data = \Akeeba\Passwordless\Safe\json_decode($json, true);
 
         return \Akeeba\Passwordless\Webauthn\MetadataService\MetadataStatement::createFromArray($data);
@@ -56,9 +56,9 @@ class MetadataStatementFetcher
             $request = $request->withHeader($k, $v);
         }
         $response = $client->sendRequest($request);
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::eq(200, $response->getStatusCode(), \Akeeba\Passwordless\Safe\sprintf('Unable to contact the server. Response code is %d', $response->getStatusCode()));
+        \Akeeba\Passwordless\Assert\Assertion::eq(200, $response->getStatusCode(), \Akeeba\Passwordless\Safe\sprintf('Unable to contact the server. Response code is %d', $response->getStatusCode()));
         $content = $response->getBody()->getContents();
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::notEmpty($content, 'Unable to contact the server. The response has no content');
+        \Akeeba\Passwordless\Assert\Assertion::notEmpty($content, 'Unable to contact the server. The response has no content');
 
         return $content;
     }
@@ -66,19 +66,19 @@ class MetadataStatementFetcher
     private static function getJwsPayload(string $token): string
     {
         $jws = (new CompactSerializer())->unserialize($token);
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::eq(1, $jws->countSignatures(), 'Invalid response from the metadata service. Only one signature shall be present.');
+        \Akeeba\Passwordless\Assert\Assertion::eq(1, $jws->countSignatures(), 'Invalid response from the metadata service. Only one signature shall be present.');
         $signature = $jws->getSignature(0);
         $payload = $jws->getPayload();
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::notEmpty($payload, 'Invalid response from the metadata service. The token payload is empty.');
+        \Akeeba\Passwordless\Assert\Assertion::notEmpty($payload, 'Invalid response from the metadata service. The token payload is empty.');
         $header = $signature->getProtectedHeader();
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::keyExists($header, 'alg', 'The "alg" parameter is missing.');
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::eq($header['alg'], 'ES256', 'The expected "alg" parameter value should be "ES256".');
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::keyExists($header, 'x5c', 'The "x5c" parameter is missing.');
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::isArray($header['x5c'], 'The "x5c" parameter should be an array.');
+        \Akeeba\Passwordless\Assert\Assertion::keyExists($header, 'alg', 'The "alg" parameter is missing.');
+        \Akeeba\Passwordless\Assert\Assertion::eq($header['alg'], 'ES256', 'The expected "alg" parameter value should be "ES256".');
+        \Akeeba\Passwordless\Assert\Assertion::keyExists($header, 'x5c', 'The "x5c" parameter is missing.');
+        \Akeeba\Passwordless\Assert\Assertion::isArray($header['x5c'], 'The "x5c" parameter should be an array.');
         $key = JWKFactory::createFromX5C($header['x5c']);
         $algorithm = new ES256();
         $isValid = $algorithm->verify($key, $signature->getEncodedProtectedHeader().'.'.$jws->getEncodedPayload(), $signature->getSignature());
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::true($isValid, 'Invalid response from the metadata service. The token signature is invalid.');
+        \Akeeba\Passwordless\Assert\Assertion::true($isValid, 'Invalid response from the metadata service. The token signature is invalid.');
 
         return $jws->getPayload();
     }

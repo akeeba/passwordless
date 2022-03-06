@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Akeeba\Passwordless\Webauthn;
 
-use Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion;
+use Akeeba\Passwordless\Assert\Assertion;
 use function Akeeba\Passwordless\Safe\base64_decode;
 use function Akeeba\Passwordless\Safe\json_decode;
 
@@ -32,7 +32,7 @@ class PublicKeyCredentialUserEntity extends \Akeeba\Passwordless\Webauthn\Public
     public function __construct(string $name, string $id, string $displayName, ?string $icon = null)
     {
         parent::__construct($name, $icon);
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::maxLength($id, 64, 'User ID max length is 64 bytes', 'id', '8bit');
+        \Akeeba\Passwordless\Assert\Assertion::maxLength($id, 64, 'User ID max length is 64 bytes', 'id', '8bit');
         $this->id = $id;
         $this->displayName = $displayName;
     }
@@ -50,7 +50,7 @@ class PublicKeyCredentialUserEntity extends \Akeeba\Passwordless\Webauthn\Public
     public static function createFromString(string $data): self
     {
         $data = \Akeeba\Passwordless\Safe\json_decode($data, true);
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::isArray($data, 'Invalid data');
+        \Akeeba\Passwordless\Assert\Assertion::isArray($data, 'Invalid data');
 
         return self::createFromArray($data);
     }
@@ -60,9 +60,9 @@ class PublicKeyCredentialUserEntity extends \Akeeba\Passwordless\Webauthn\Public
      */
     public static function createFromArray(array $json): self
     {
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::keyExists($json, 'name', 'Invalid input. "name" is missing.');
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::keyExists($json, 'id', 'Invalid input. "id" is missing.');
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::keyExists($json, 'displayName', 'Invalid input. "displayName" is missing.');
+        \Akeeba\Passwordless\Assert\Assertion::keyExists($json, 'name', 'Invalid input. "name" is missing.');
+        \Akeeba\Passwordless\Assert\Assertion::keyExists($json, 'id', 'Invalid input. "id" is missing.');
+        \Akeeba\Passwordless\Assert\Assertion::keyExists($json, 'displayName', 'Invalid input. "displayName" is missing.');
         $id = \Akeeba\Passwordless\Safe\base64_decode($json['id'], true);
 
         return new self(

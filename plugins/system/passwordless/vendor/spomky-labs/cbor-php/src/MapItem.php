@@ -25,23 +25,23 @@ class MapItem
      */
     private $value;
 
-    public function __construct(\Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject $key, \Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject $value)
+    public function __construct(\Akeeba\Passwordless\CBOR\CBORObject $key, \Akeeba\Passwordless\CBOR\CBORObject $value)
     {
         $this->key = $key;
         $this->value = $value;
     }
 
-    public static function create(\Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject $key, \Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject $value): self
+    public static function create(\Akeeba\Passwordless\CBOR\CBORObject $key, \Akeeba\Passwordless\CBOR\CBORObject $value): self
     {
         return new self($key, $value);
     }
 
-    public function getKey(): \Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject
+    public function getKey(): \Akeeba\Passwordless\CBOR\CBORObject
     {
         return $this->key;
     }
 
-    public function getValue(): \Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject
+    public function getValue(): \Akeeba\Passwordless\CBOR\CBORObject
     {
         return $this->value;
     }

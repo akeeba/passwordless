@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Akeeba\Passwordless\Webauthn\TrustPath;
 
-use Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion;
+use Akeeba\Passwordless\Assert\Assertion;
 
 final class EcdaaKeyIdTrustPath implements \Akeeba\Passwordless\Webauthn\TrustPath\TrustPath
 {
@@ -48,7 +48,7 @@ final class EcdaaKeyIdTrustPath implements \Akeeba\Passwordless\Webauthn\TrustPa
      */
     public static function createFromArray(array $data): \Akeeba\Passwordless\Webauthn\TrustPath\TrustPath
     {
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::keyExists($data, 'ecdaaKeyId', 'The trust path type is invalid');
+        \Akeeba\Passwordless\Assert\Assertion::keyExists($data, 'ecdaaKeyId', 'The trust path type is invalid');
 
         return new \Akeeba\Passwordless\Webauthn\TrustPath\EcdaaKeyIdTrustPath($data['ecdaaKeyId']);
     }

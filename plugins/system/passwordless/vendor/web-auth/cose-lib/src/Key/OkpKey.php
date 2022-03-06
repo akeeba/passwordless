@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace Akeeba\Passwordless\Cose\Key;
 
 use function array_key_exists;
-use Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion;
+use Akeeba\Passwordless\Assert\Assertion;
 
 class OkpKey extends \Akeeba\Passwordless\Cose\Key\Key
 {
@@ -37,10 +37,10 @@ class OkpKey extends \Akeeba\Passwordless\Cose\Key\Key
     public function __construct(array $data)
     {
         parent::__construct($data);
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::eq($data[self::TYPE], self::TYPE_OKP, 'Invalid OKP key. The key type does not correspond to an OKP key');
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::keyExists($data, self::DATA_CURVE, 'Invalid EC2 key. The curve is missing');
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::keyExists($data, self::DATA_X, 'Invalid OKP key. The x coordinate is missing');
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::inArray((int) $data[self::DATA_CURVE], self::SUPPORTED_CURVES, 'The curve is not supported');
+        \Akeeba\Passwordless\Assert\Assertion::eq($data[self::TYPE], self::TYPE_OKP, 'Invalid OKP key. The key type does not correspond to an OKP key');
+        \Akeeba\Passwordless\Assert\Assertion::keyExists($data, self::DATA_CURVE, 'Invalid EC2 key. The curve is missing');
+        \Akeeba\Passwordless\Assert\Assertion::keyExists($data, self::DATA_X, 'Invalid OKP key. The x coordinate is missing');
+        \Akeeba\Passwordless\Assert\Assertion::inArray((int) $data[self::DATA_CURVE], self::SUPPORTED_CURVES, 'The curve is not supported');
     }
 
     public function x(): string
@@ -55,7 +55,7 @@ class OkpKey extends \Akeeba\Passwordless\Cose\Key\Key
 
     public function d(): string
     {
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::true($this->isPrivate(), 'The key is not private');
+        \Akeeba\Passwordless\Assert\Assertion::true($this->isPrivate(), 'The key is not private');
 
         return $this->get(self::DATA_D);
     }

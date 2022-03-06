@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Akeeba\Passwordless\Webauthn;
 
-use Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion;
+use Akeeba\Passwordless\Assert\Assertion;
 use Akeeba\Passwordless\CBOR\Stream;
 use function Akeeba\Passwordless\Safe\fclose;
 use function Akeeba\Passwordless\Safe\fopen;
@@ -55,7 +55,7 @@ final class StringStream implements \Akeeba\Passwordless\CBOR\Stream
         }
         $read = \Akeeba\Passwordless\Safe\fread($this->data, $length);
         $bytesRead = mb_strlen($read, '8bit');
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::length($read, $length, \Akeeba\Passwordless\Safe\sprintf('Out of range. Expected: %d, read: %d.', $length, $bytesRead), null, '8bit');
+        \Akeeba\Passwordless\Assert\Assertion::length($read, $length, \Akeeba\Passwordless\Safe\sprintf('Out of range. Expected: %d, read: %d.', $length, $bytesRead), null, '8bit');
         $this->totalRead += $bytesRead;
 
         return $read;

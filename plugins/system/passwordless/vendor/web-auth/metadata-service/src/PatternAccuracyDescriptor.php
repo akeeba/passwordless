@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace Akeeba\Passwordless\Webauthn\MetadataService;
 
 use function array_key_exists;
-use Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion;
+use Akeeba\Passwordless\Assert\Assertion;
 use function Akeeba\Passwordless\Safe\sprintf;
 
 class PatternAccuracyDescriptor extends \Akeeba\Passwordless\Webauthn\MetadataService\AbstractDescriptor
@@ -26,7 +26,7 @@ class PatternAccuracyDescriptor extends \Akeeba\Passwordless\Webauthn\MetadataSe
 
     public function __construct(int $minComplexity, ?int $maxRetries = null, ?int $blockSlowdown = null)
     {
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::greaterOrEqualThan($minComplexity, 0, \Akeeba\Passwordless\Webauthn\MetadataService\Utils::logicException('Invalid data. The value of "minComplexity" must be a positive integer'));
+        \Akeeba\Passwordless\Assert\Assertion::greaterOrEqualThan($minComplexity, 0, \Akeeba\Passwordless\Webauthn\MetadataService\Utils::logicException('Invalid data. The value of "minComplexity" must be a positive integer'));
         $this->minComplexity = $minComplexity;
         parent::__construct($maxRetries, $blockSlowdown);
     }
@@ -39,10 +39,10 @@ class PatternAccuracyDescriptor extends \Akeeba\Passwordless\Webauthn\MetadataSe
     public static function createFromArray(array $data): self
     {
         $data = \Akeeba\Passwordless\Webauthn\MetadataService\Utils::filterNullValues($data);
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::keyExists($data, 'minComplexity', \Akeeba\Passwordless\Webauthn\MetadataService\Utils::logicException('The key "minComplexity" is missing'));
+        \Akeeba\Passwordless\Assert\Assertion::keyExists($data, 'minComplexity', \Akeeba\Passwordless\Webauthn\MetadataService\Utils::logicException('The key "minComplexity" is missing'));
         foreach (['minComplexity', 'maxRetries', 'blockSlowdown'] as $key) {
             if (array_key_exists($key, $data)) {
-                \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::integer($data[$key], \Akeeba\Passwordless\Webauthn\MetadataService\Utils::logicException(\Akeeba\Passwordless\Safe\sprintf('Invalid data. The value of "%s" must be a positive integer', $key)));
+                \Akeeba\Passwordless\Assert\Assertion::integer($data[$key], \Akeeba\Passwordless\Webauthn\MetadataService\Utils::logicException(\Akeeba\Passwordless\Safe\sprintf('Invalid data. The value of "%s" must be a positive integer', $key)));
             }
         }
 

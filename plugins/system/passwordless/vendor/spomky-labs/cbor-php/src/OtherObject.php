@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Akeeba\Passwordless\CBOR;
 
-abstract class OtherObject extends \Akeeba\Passwordless\CBOR\AbstractAkeeba\Passwordless\CBORObject
+abstract class OtherObject extends \Akeeba\Passwordless\CBOR\AbstractCBORObject
 {
     private const MAJOR_TYPE = self::MAJOR_TYPE_OTHER_TYPE;
 

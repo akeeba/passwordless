@@ -26,7 +26,7 @@ use IteratorAggregate;
  * @phpstan-implements ArrayAccess<int, CBORObject>
  * @phpstan-implements IteratorAggregate<int, CBORObject>
  */
-class ListObject extends \Akeeba\Passwordless\CBOR\AbstractAkeeba\Passwordless\CBORObject implements Countable, IteratorAggregate, \Akeeba\Passwordless\CBOR\Normalizable, ArrayAccess
+class ListObject extends \Akeeba\Passwordless\CBOR\AbstractCBORObject implements Countable, IteratorAggregate, \Akeeba\Passwordless\CBOR\Normalizable, ArrayAccess
 {
     private const MAJOR_TYPE = self::MAJOR_TYPE_LIST;
 
@@ -47,7 +47,7 @@ class ListObject extends \Akeeba\Passwordless\CBOR\AbstractAkeeba\Passwordless\C
     {
         [$additionalInformation, $length] = \Akeeba\Passwordless\CBOR\LengthCalculator::getLengthOfArray($data);
         array_map(static function ($item): void {
-            if (! $item instanceof \Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject) {
+            if (! $item instanceof \Akeeba\Passwordless\CBOR\CBORObject) {
                 throw new InvalidArgumentException('The list must contain only CBORObject objects.');
             }
         }, $data);
@@ -78,7 +78,7 @@ class ListObject extends \Akeeba\Passwordless\CBOR\AbstractAkeeba\Passwordless\C
         return new self($data);
     }
 
-    public function add(\Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject $object): self
+    public function add(\Akeeba\Passwordless\CBOR\CBORObject $object): self
     {
         $this->data[] = $object;
         [$this->additionalInformation, $this->length] = \Akeeba\Passwordless\CBOR\LengthCalculator::getLengthOfArray($this->data);
@@ -103,7 +103,7 @@ class ListObject extends \Akeeba\Passwordless\CBOR\AbstractAkeeba\Passwordless\C
         return $this;
     }
 
-    public function get(int $index): \Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject
+    public function get(int $index): \Akeeba\Passwordless\CBOR\CBORObject
     {
         if (! $this->has($index)) {
             throw new InvalidArgumentException('Index not found.');
@@ -112,7 +112,7 @@ class ListObject extends \Akeeba\Passwordless\CBOR\AbstractAkeeba\Passwordless\C
         return $this->data[$index];
     }
 
-    public function set(int $index, \Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject $object): self
+    public function set(int $index, \Akeeba\Passwordless\CBOR\CBORObject $object): self
     {
         if (! $this->has($index)) {
             throw new InvalidArgumentException('Index not found.');
@@ -129,7 +129,7 @@ class ListObject extends \Akeeba\Passwordless\CBOR\AbstractAkeeba\Passwordless\C
      */
     public function normalize(): array
     {
-        return array_map(static function (\Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject $object) {
+        return array_map(static function (\Akeeba\Passwordless\CBOR\CBORObject $object) {
             return $object instanceof \Akeeba\Passwordless\CBOR\Normalizable ? $object->normalize() : $object;
         }, $this->data);
     }
@@ -141,7 +141,7 @@ class ListObject extends \Akeeba\Passwordless\CBOR\AbstractAkeeba\Passwordless\C
      */
     public function getNormalizedData(bool $ignoreTags = false): array
     {
-        return array_map(static function (\Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject $object) use ($ignoreTags) {
+        return array_map(static function (\Akeeba\Passwordless\CBOR\CBORObject $object) use ($ignoreTags) {
             return $object->getNormalizedData($ignoreTags);
         }, $this->data);
     }
@@ -164,7 +164,7 @@ class ListObject extends \Akeeba\Passwordless\CBOR\AbstractAkeeba\Passwordless\C
         return $this->has($offset);
     }
 
-    public function offsetGet($offset): \Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject
+    public function offsetGet($offset): \Akeeba\Passwordless\CBOR\CBORObject
     {
         return $this->get($offset);
     }

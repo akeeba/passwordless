@@ -13,8 +13,8 @@ declare(strict_types=1);
 
 namespace Akeeba\Passwordless\Webauthn;
 
-use Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion;
-use Akeeba\Passwordless\Base64Url\Akeeba\Passwordless\Base64Url;
+use Akeeba\Passwordless\Assert\Assertion;
+use Akeeba\Passwordless\Base64Url\Base64Url;
 use InvalidArgumentException;
 use JsonSerializable;
 use Akeeba\Passwordless\Ramsey\Uuid\Uuid;
@@ -190,7 +190,7 @@ class PublicKeyCredentialSource implements JsonSerializable
             if ('otherUI' === $key) {
                 continue;
             }
-            \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::keyExists($data, $key, \Akeeba\Passwordless\Safe\sprintf('The parameter "%s" is missing', $key));
+            \Akeeba\Passwordless\Assert\Assertion::keyExists($data, $key, \Akeeba\Passwordless\Safe\sprintf('The parameter "%s" is missing', $key));
         }
         switch (true) {
             case 36 === mb_strlen($data['aaguid'], '8bit'):
@@ -203,14 +203,14 @@ class PublicKeyCredentialSource implements JsonSerializable
 
         try {
             return new self(
-                \Akeeba\Passwordless\Base64Url\Akeeba\Passwordless\Base64Url::decode($data['publicKeyCredentialId']),
+                Base64Url::decode($data['publicKeyCredentialId']),
                 $data['type'],
                 $data['transports'],
                 $data['attestationType'],
                 \Akeeba\Passwordless\Webauthn\TrustPath\TrustPathLoader::loadTrustPath($data['trustPath']),
                 $uuid,
-                \Akeeba\Passwordless\Base64Url\Akeeba\Passwordless\Base64Url::decode($data['credentialPublicKey']),
-                \Akeeba\Passwordless\Base64Url\Akeeba\Passwordless\Base64Url::decode($data['userHandle']),
+                Base64Url::decode($data['credentialPublicKey']),
+                Base64Url::decode($data['userHandle']),
                 $data['counter'],
                 $data['otherUI'] ?? null
             );
@@ -225,14 +225,14 @@ class PublicKeyCredentialSource implements JsonSerializable
     public function jsonSerialize(): array
     {
         return [
-            'publicKeyCredentialId' => \Akeeba\Passwordless\Base64Url\Akeeba\Passwordless\Base64Url::encode($this->publicKeyCredentialId),
+            'publicKeyCredentialId' => Base64Url::encode($this->publicKeyCredentialId),
             'type' => $this->type,
             'transports' => $this->transports,
             'attestationType' => $this->attestationType,
             'trustPath' => $this->trustPath->jsonSerialize(),
             'aaguid' => $this->aaguid->toString(),
-            'credentialPublicKey' => \Akeeba\Passwordless\Base64Url\Akeeba\Passwordless\Base64Url::encode($this->credentialPublicKey),
-            'userHandle' => \Akeeba\Passwordless\Base64Url\Akeeba\Passwordless\Base64Url::encode($this->userHandle),
+            'credentialPublicKey' => Base64Url::encode($this->credentialPublicKey),
+            'userHandle' => Base64Url::encode($this->userHandle),
             'counter' => $this->counter,
             'otherUI' => $this->otherUI,
         ];

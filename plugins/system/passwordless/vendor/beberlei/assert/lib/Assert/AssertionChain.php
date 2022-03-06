@@ -164,7 +164,7 @@ class AssertionChain
      * @param string $methodName
      * @param array $args
      */
-    public function __call($methodName, $args): \Akeeba\Passwordless\Assert\Akeeba\Passwordless\AssertionChain
+    public function __call($methodName, $args): \Akeeba\Passwordless\Assert\AssertionChain
     {
         if (true === $this->alwaysValid) {
             return $this;
@@ -206,7 +206,7 @@ class AssertionChain
     /**
      * Switch chain into validation mode for an array of values.
      */
-    public function all(): \Akeeba\Passwordless\Assert\Akeeba\Passwordless\AssertionChain
+    public function all(): \Akeeba\Passwordless\Assert\AssertionChain
     {
         $this->all = true;
 
@@ -216,7 +216,7 @@ class AssertionChain
     /**
      * Switch chain into mode allowing nulls, ignoring further assertions.
      */
-    public function nullOr(): \Akeeba\Passwordless\Assert\Akeeba\Passwordless\AssertionChain
+    public function nullOr(): \Akeeba\Passwordless\Assert\AssertionChain
     {
         if (null === $this->value) {
             $this->alwaysValid = true;
@@ -230,14 +230,14 @@ class AssertionChain
      *
      * @return $this
      */
-    public function setAssertionClassName($className): \Akeeba\Passwordless\Assert\Akeeba\Passwordless\AssertionChain
+    public function setAssertionClassName($className): \Akeeba\Passwordless\Assert\AssertionChain
     {
         if (!\is_string($className)) {
             throw new LogicException('Exception class name must be passed as a string');
         }
 
-        if (\Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::class !== $className && !\is_subclass_of($className, \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::class)) {
-            throw new LogicException($className.' is not (a subclass of) '.\Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::class);
+        if (\Akeeba\Passwordless\Assert\Assertion::class !== $className && !\is_subclass_of($className, \Akeeba\Passwordless\Assert\Assertion::class)) {
+            throw new LogicException($className.' is not (a subclass of) '.\Akeeba\Passwordless\Assert\Assertion::class);
         }
 
         $this->assertionClassName = $className;

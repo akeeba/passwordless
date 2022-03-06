@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace Akeeba\Passwordless\Cose\Algorithm;
 
 use function array_key_exists;
-use Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion;
+use Akeeba\Passwordless\Assert\Assertion;
 
 class Manager
 {
@@ -49,7 +49,7 @@ class Manager
 
     public function get(int $identifier): \Akeeba\Passwordless\Cose\Algorithm\Algorithm
     {
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::true($this->has($identifier), 'Unsupported algorithm');
+        \Akeeba\Passwordless\Assert\Assertion::true($this->has($identifier), 'Unsupported algorithm');
 
         return $this->algorithms[$identifier];
     }

@@ -26,7 +26,7 @@ use IteratorAggregate;
  * @phpstan-implements ArrayAccess<int, CBORObject>
  * @phpstan-implements IteratorAggregate<int, MapItem>
  */
-final class MapObject extends \Akeeba\Passwordless\CBOR\AbstractAkeeba\Passwordless\CBORObject implements Countable, IteratorAggregate, \Akeeba\Passwordless\CBOR\Normalizable, ArrayAccess
+final class MapObject extends \Akeeba\Passwordless\CBOR\AbstractCBORObject implements Countable, IteratorAggregate, \Akeeba\Passwordless\CBOR\Normalizable, ArrayAccess
 {
     private const MAJOR_TYPE = self::MAJOR_TYPE_MAP;
 
@@ -83,7 +83,7 @@ final class MapObject extends \Akeeba\Passwordless\CBOR\AbstractAkeeba\Passwordl
         return new self($data);
     }
 
-    public function add(\Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject $key, \Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject $value): self
+    public function add(\Akeeba\Passwordless\CBOR\CBORObject $key, \Akeeba\Passwordless\CBOR\CBORObject $value): self
     {
         if (! $key instanceof \Akeeba\Passwordless\CBOR\Normalizable) {
             throw new InvalidArgumentException('Invalid key. Shall be normalizable');
@@ -120,7 +120,7 @@ final class MapObject extends \Akeeba\Passwordless\CBOR\AbstractAkeeba\Passwordl
     /**
      * @param int|string $index
      */
-    public function get($index): \Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject
+    public function get($index): \Akeeba\Passwordless\CBOR\CBORObject
     {
         if (! $this->has($index)) {
             throw new InvalidArgumentException('Index not found.');
@@ -193,17 +193,17 @@ final class MapObject extends \Akeeba\Passwordless\CBOR\AbstractAkeeba\Passwordl
         return $this->has($offset);
     }
 
-    public function offsetGet($offset): \Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject
+    public function offsetGet($offset): \Akeeba\Passwordless\CBOR\CBORObject
     {
         return $this->get($offset);
     }
 
     public function offsetSet($offset, $value): void
     {
-        if (! $offset instanceof \Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject) {
+        if (! $offset instanceof \Akeeba\Passwordless\CBOR\CBORObject) {
             throw new InvalidArgumentException('Invalid key');
         }
-        if (! $value instanceof \Akeeba\Passwordless\CBOR\Akeeba\Passwordless\CBORObject) {
+        if (! $value instanceof \Akeeba\Passwordless\CBOR\CBORObject) {
             throw new InvalidArgumentException('Invalid value');
         }
 

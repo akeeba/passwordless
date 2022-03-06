@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Akeeba\Passwordless\Webauthn;
 
-use Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion;
+use Akeeba\Passwordless\Assert\Assertion;
 use Akeeba\Passwordless\Cose\Algorithm\Algorithm;
 use Akeeba\Passwordless\Cose\Algorithm\ManagerFactory;
 use Akeeba\Passwordless\Cose\Algorithm\Signature\ECDSA;
@@ -192,7 +192,7 @@ class Server
      */
     public function setSecuredRelyingPartyId(array $securedRelyingPartyId): self
     {
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::allString($securedRelyingPartyId, 'Invalid list. Shall be a list of strings');
+        \Akeeba\Passwordless\Assert\Assertion::allString($securedRelyingPartyId, 'Invalid list. Shall be a list of strings');
         $this->securedRelyingPartyId = $securedRelyingPartyId;
 
         return $this;
@@ -255,7 +255,7 @@ class Server
 
         $publicKeyCredential = $publicKeyCredentialLoader->load($data);
         $authenticatorResponse = $publicKeyCredential->getResponse();
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::isInstanceOf($authenticatorResponse, \Akeeba\Passwordless\Webauthn\AuthenticatorAttestationResponse::class, 'Not an authenticator attestation response');
+        \Akeeba\Passwordless\Assert\Assertion::isInstanceOf($authenticatorResponse, \Akeeba\Passwordless\Webauthn\AuthenticatorAttestationResponse::class, 'Not an authenticator attestation response');
 
         $authenticatorAttestationResponseValidator = new \Akeeba\Passwordless\Webauthn\AuthenticatorAttestationResponseValidator(
             $attestationStatementSupportManager,
@@ -281,7 +281,7 @@ class Server
 
         $publicKeyCredential = $publicKeyCredentialLoader->load($data);
         $authenticatorResponse = $publicKeyCredential->getResponse();
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::isInstanceOf($authenticatorResponse, \Akeeba\Passwordless\Webauthn\AuthenticatorAssertionResponse::class, 'Not an authenticator assertion response');
+        \Akeeba\Passwordless\Assert\Assertion::isInstanceOf($authenticatorResponse, \Akeeba\Passwordless\Webauthn\AuthenticatorAssertionResponse::class, 'Not an authenticator assertion response');
 
         $authenticatorAssertionResponseValidator = new \Akeeba\Passwordless\Webauthn\AuthenticatorAssertionResponseValidator(
             $this->publicKeyCredentialSourceRepository,

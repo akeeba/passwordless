@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Akeeba\Passwordless\Webauthn;
 
-use Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion;
+use Akeeba\Passwordless\Assert\Assertion;
 
 class PublicKeyCredentialRpEntity extends \Akeeba\Passwordless\Webauthn\PublicKeyCredentialEntity
 {
@@ -38,7 +38,7 @@ class PublicKeyCredentialRpEntity extends \Akeeba\Passwordless\Webauthn\PublicKe
      */
     public static function createFromArray(array $json): self
     {
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::keyExists($json, 'name', 'Invalid input. "name" is missing.');
+        \Akeeba\Passwordless\Assert\Assertion::keyExists($json, 'name', 'Invalid input. "name" is missing.');
 
         return new self(
             $json['name'],

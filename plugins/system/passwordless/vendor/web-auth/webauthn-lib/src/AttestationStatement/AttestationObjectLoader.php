@@ -13,8 +13,8 @@ declare(strict_types=1);
 
 namespace Akeeba\Passwordless\Webauthn\AttestationStatement;
 
-use Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion;
-use Akeeba\Passwordless\Base64Url\Akeeba\Passwordless\Base64Url;
+use Akeeba\Passwordless\Assert\Assertion;
+use Akeeba\Passwordless\Base64Url\Base64Url;
 use Akeeba\Passwordless\CBOR\Decoder;
 use Akeeba\Passwordless\CBOR\MapObject;
 use Akeeba\Passwordless\CBOR\OtherObject\OtherObjectManager;
@@ -74,18 +74,18 @@ class AttestationObjectLoader
     {
         try {
             $this->logger->info('Trying to load the data', ['data' => $data]);
-            $decodedData = \Akeeba\Passwordless\Base64Url\Akeeba\Passwordless\Base64Url::decode($data);
+            $decodedData = Base64Url::decode($data);
             $stream = new \Akeeba\Passwordless\Webauthn\StringStream($decodedData);
             $parsed = $this->decoder->decode($stream);
 
             $this->logger->info('Loading the Attestation Statement');
             $attestationObject = $parsed->getNormalizedData();
-            \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::true($stream->isEOF(), 'Invalid attestation object. Presence of extra bytes.');
+            \Akeeba\Passwordless\Assert\Assertion::true($stream->isEOF(), 'Invalid attestation object. Presence of extra bytes.');
             $stream->close();
-            \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::isArray($attestationObject, 'Invalid attestation object');
-            \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::keyExists($attestationObject, 'authData', 'Invalid attestation object');
-            \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::keyExists($attestationObject, 'fmt', 'Invalid attestation object');
-            \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::keyExists($attestationObject, 'attStmt', 'Invalid attestation object');
+            \Akeeba\Passwordless\Assert\Assertion::isArray($attestationObject, 'Invalid attestation object');
+            \Akeeba\Passwordless\Assert\Assertion::keyExists($attestationObject, 'authData', 'Invalid attestation object');
+            \Akeeba\Passwordless\Assert\Assertion::keyExists($attestationObject, 'fmt', 'Invalid attestation object');
+            \Akeeba\Passwordless\Assert\Assertion::keyExists($attestationObject, 'attStmt', 'Invalid attestation object');
             $authData = $attestationObject['authData'];
 
             $attestationStatementSupport = $this->attestationStatementSupportManager->get($attestationObject['fmt']);
@@ -108,7 +108,7 @@ class AttestationObjectLoader
                 $credentialLength = \Akeeba\Passwordless\Safe\unpack('n', $credentialLength)[1];
                 $credentialId = $authDataStream->read($credentialLength);
                 $credentialPublicKey = $this->decoder->decode($authDataStream);
-                \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::isInstanceOf($credentialPublicKey, \Akeeba\Passwordless\CBOR\MapObject::class, 'The data does not contain a valid credential public key.');
+                \Akeeba\Passwordless\Assert\Assertion::isInstanceOf($credentialPublicKey, \Akeeba\Passwordless\CBOR\MapObject::class, 'The data does not contain a valid credential public key.');
                 $attestedCredentialData = new \Akeeba\Passwordless\Webauthn\AttestedCredentialData($aaguid, $credentialId, (string) $credentialPublicKey);
                 $this->logger->info('Attested Credential Data loaded');
                 $this->logger->debug('Attested Credential Data loaded', ['at' => $attestedCredentialData]);
@@ -122,7 +122,7 @@ class AttestationObjectLoader
                 $this->logger->info('Extension Data loaded');
                 $this->logger->debug('Extension Data loaded', ['ed' => $extension]);
             }
-            \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::true($authDataStream->isEOF(), 'Invalid authentication data. Presence of extra bytes.');
+            \Akeeba\Passwordless\Assert\Assertion::true($authDataStream->isEOF(), 'Invalid authentication data. Presence of extra bytes.');
             $authDataStream->close();
 
             $authenticatorData = new \Akeeba\Passwordless\Webauthn\AuthenticatorData($authData, $rp_id_hash, $flags, $signCount, $attestedCredentialData, $extension);

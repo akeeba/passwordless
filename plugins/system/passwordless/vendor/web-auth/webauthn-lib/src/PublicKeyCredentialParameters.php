@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Akeeba\Passwordless\Webauthn;
 
-use Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion;
+use Akeeba\Passwordless\Assert\Assertion;
 use JsonSerializable;
 use function Akeeba\Passwordless\Safe\json_decode;
 
@@ -48,7 +48,7 @@ class PublicKeyCredentialParameters implements JsonSerializable
     public static function createFromString(string $data): self
     {
         $data = \Akeeba\Passwordless\Safe\json_decode($data, true);
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::isArray($data, 'Invalid data');
+        \Akeeba\Passwordless\Assert\Assertion::isArray($data, 'Invalid data');
 
         return self::createFromArray($data);
     }
@@ -58,10 +58,10 @@ class PublicKeyCredentialParameters implements JsonSerializable
      */
     public static function createFromArray(array $json): self
     {
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::keyExists($json, 'type', 'Invalid input. "type" is missing.');
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::string($json['type'], 'Invalid input. "type" is not a string.');
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::keyExists($json, 'alg', 'Invalid input. "alg" is missing.');
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::integer($json['alg'], 'Invalid input. "alg" is not an integer.');
+        \Akeeba\Passwordless\Assert\Assertion::keyExists($json, 'type', 'Invalid input. "type" is missing.');
+        \Akeeba\Passwordless\Assert\Assertion::string($json['type'], 'Invalid input. "type" is not a string.');
+        \Akeeba\Passwordless\Assert\Assertion::keyExists($json, 'alg', 'Invalid input. "alg" is missing.');
+        \Akeeba\Passwordless\Assert\Assertion::integer($json['alg'], 'Invalid input. "alg" is not an integer.');
 
         return new self(
             $json['type'],

@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Akeeba\Passwordless\CBOR;
 
-final class ByteStringObject extends \Akeeba\Passwordless\CBOR\AbstractAkeeba\Passwordless\CBORObject implements \Akeeba\Passwordless\CBOR\Normalizable
+final class ByteStringObject extends \Akeeba\Passwordless\CBOR\AbstractCBORObject implements \Akeeba\Passwordless\CBOR\Normalizable
 {
     private const MAJOR_TYPE = self::MAJOR_TYPE_BYTE_STRING;
 

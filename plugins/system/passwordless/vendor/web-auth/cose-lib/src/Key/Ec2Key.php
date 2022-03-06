@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace Akeeba\Passwordless\Cose\Key;
 
 use function array_key_exists;
-use Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion;
+use Akeeba\Passwordless\Assert\Assertion;
 use Akeeba\Passwordless\FG\ASN1\ExplicitlyTaggedObject;
 use Akeeba\Passwordless\FG\ASN1\Universal\BitString;
 use Akeeba\Passwordless\FG\ASN1\Universal\Integer;
@@ -58,13 +58,13 @@ class Ec2Key extends \Akeeba\Passwordless\Cose\Key\Key
     public function __construct(array $data)
     {
         parent::__construct($data);
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::eq($data[self::TYPE], self::TYPE_EC2, 'Invalid EC2 key. The key type does not correspond to an EC2 key');
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::keyExists($data, self::DATA_CURVE, 'Invalid EC2 key. The curve is missing');
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::keyExists($data, self::DATA_X, 'Invalid EC2 key. The x coordinate is missing');
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::keyExists($data, self::DATA_Y, 'Invalid EC2 key. The y coordinate is missing');
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::length($data[self::DATA_X], self::CURVE_KEY_LENGTH[$data[self::DATA_CURVE]], 'Invalid length for x coordinate', null, '8bit');
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::length($data[self::DATA_Y], self::CURVE_KEY_LENGTH[$data[self::DATA_CURVE]], 'Invalid length for y coordinate', null, '8bit');
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::inArray((int) $data[self::DATA_CURVE], self::SUPPORTED_CURVES, 'The curve is not supported');
+        \Akeeba\Passwordless\Assert\Assertion::eq($data[self::TYPE], self::TYPE_EC2, 'Invalid EC2 key. The key type does not correspond to an EC2 key');
+        \Akeeba\Passwordless\Assert\Assertion::keyExists($data, self::DATA_CURVE, 'Invalid EC2 key. The curve is missing');
+        \Akeeba\Passwordless\Assert\Assertion::keyExists($data, self::DATA_X, 'Invalid EC2 key. The x coordinate is missing');
+        \Akeeba\Passwordless\Assert\Assertion::keyExists($data, self::DATA_Y, 'Invalid EC2 key. The y coordinate is missing');
+        \Akeeba\Passwordless\Assert\Assertion::length($data[self::DATA_X], self::CURVE_KEY_LENGTH[$data[self::DATA_CURVE]], 'Invalid length for x coordinate', null, '8bit');
+        \Akeeba\Passwordless\Assert\Assertion::length($data[self::DATA_Y], self::CURVE_KEY_LENGTH[$data[self::DATA_CURVE]], 'Invalid length for y coordinate', null, '8bit');
+        \Akeeba\Passwordless\Assert\Assertion::inArray((int) $data[self::DATA_CURVE], self::SUPPORTED_CURVES, 'The curve is not supported');
     }
 
     public function toPublic(): self
@@ -92,7 +92,7 @@ class Ec2Key extends \Akeeba\Passwordless\Cose\Key\Key
 
     public function d(): string
     {
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::true($this->isPrivate(), 'The key is not private');
+        \Akeeba\Passwordless\Assert\Assertion::true($this->isPrivate(), 'The key is not private');
 
         return $this->get(self::DATA_D);
     }

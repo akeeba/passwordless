@@ -14,8 +14,8 @@ declare(strict_types=1);
 namespace Akeeba\Passwordless\Webauthn\TokenBinding;
 
 use function array_key_exists;
-use Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion;
-use Akeeba\Passwordless\Base64Url\Akeeba\Passwordless\Base64Url;
+use Akeeba\Passwordless\Assert\Assertion;
+use Akeeba\Passwordless\Base64Url\Base64Url;
 use function Akeeba\Passwordless\Safe\sprintf;
 
 class TokenBinding
@@ -36,7 +36,7 @@ class TokenBinding
 
     public function __construct(string $status, ?string $id)
     {
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::false(self::TOKEN_BINDING_STATUS_PRESENT === $status && null === $id, 'The member "id" is required when status is "present"');
+        \Akeeba\Passwordless\Assert\Assertion::false(self::TOKEN_BINDING_STATUS_PRESENT === $status && null === $id, 'The member "id" is required when status is "present"');
         $this->status = $status;
         $this->id = $id;
     }
@@ -46,14 +46,14 @@ class TokenBinding
      */
     public static function createFormArray(array $json): self
     {
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::keyExists($json, 'status', 'The member "status" is required');
+        \Akeeba\Passwordless\Assert\Assertion::keyExists($json, 'status', 'The member "status" is required');
         $status = $json['status'];
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::inArray(
+        \Akeeba\Passwordless\Assert\Assertion::inArray(
             $status,
             self::getSupportedStatus(),
             \Akeeba\Passwordless\Safe\sprintf('The member "status" is invalid. Supported values are: %s', implode(', ', self::getSupportedStatus()))
         );
-        $id = array_key_exists('id', $json) ? \Akeeba\Passwordless\Base64Url\Akeeba\Passwordless\Base64Url::decode($json['id']) : null;
+        $id = array_key_exists('id', $json) ? Base64Url::decode($json['id']) : null;
 
         return new self($status, $id);
     }

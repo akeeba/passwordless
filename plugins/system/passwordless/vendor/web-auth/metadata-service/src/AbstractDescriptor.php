@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Akeeba\Passwordless\Webauthn\MetadataService;
 
-use Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion;
+use Akeeba\Passwordless\Assert\Assertion;
 use JsonSerializable;
 
 abstract class AbstractDescriptor implements JsonSerializable
@@ -30,8 +30,8 @@ abstract class AbstractDescriptor implements JsonSerializable
 
     public function __construct(?int $maxRetries = null, ?int $blockSlowdown = null)
     {
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::greaterOrEqualThan($maxRetries, 0, \Akeeba\Passwordless\Webauthn\MetadataService\Utils::logicException('Invalid data. The value of "maxRetries" must be a positive integer'));
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::greaterOrEqualThan($blockSlowdown, 0, \Akeeba\Passwordless\Webauthn\MetadataService\Utils::logicException('Invalid data. The value of "blockSlowdown" must be a positive integer'));
+        \Akeeba\Passwordless\Assert\Assertion::greaterOrEqualThan($maxRetries, 0, \Akeeba\Passwordless\Webauthn\MetadataService\Utils::logicException('Invalid data. The value of "maxRetries" must be a positive integer'));
+        \Akeeba\Passwordless\Assert\Assertion::greaterOrEqualThan($blockSlowdown, 0, \Akeeba\Passwordless\Webauthn\MetadataService\Utils::logicException('Invalid data. The value of "blockSlowdown" must be a positive integer'));
 
         $this->maxRetries = $maxRetries;
         $this->blockSlowdown = $blockSlowdown;

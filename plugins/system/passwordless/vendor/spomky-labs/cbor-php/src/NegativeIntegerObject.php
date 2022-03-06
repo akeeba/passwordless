@@ -20,7 +20,7 @@ use const STR_PAD_LEFT;
 /**
  * @final
  */
-class NegativeIntegerObject extends \Akeeba\Passwordless\CBOR\AbstractAkeeba\Passwordless\CBORObject implements \Akeeba\Passwordless\CBOR\Normalizable
+class NegativeIntegerObject extends \Akeeba\Passwordless\CBOR\AbstractCBORObject implements \Akeeba\Passwordless\CBOR\Normalizable
 {
     private const MAJOR_TYPE = self::MAJOR_TYPE_NEGATIVE_INTEGER;
 

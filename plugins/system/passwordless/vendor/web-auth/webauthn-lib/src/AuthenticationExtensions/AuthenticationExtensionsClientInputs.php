@@ -15,7 +15,7 @@ namespace Akeeba\Passwordless\Webauthn\AuthenticationExtensions;
 
 use function array_key_exists;
 use ArrayIterator;
-use Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion;
+use Akeeba\Passwordless\Assert\Assertion;
 use function count;
 use Countable;
 use Iterator;
@@ -58,7 +58,7 @@ class AuthenticationExtensionsClientInputs implements JsonSerializable, Countabl
      */
     public function get(string $key)
     {
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::true($this->has($key), \Akeeba\Passwordless\Safe\sprintf('The extension with key "%s" is not available', $key));
+        \Akeeba\Passwordless\Assert\Assertion::true($this->has($key), \Akeeba\Passwordless\Safe\sprintf('The extension with key "%s" is not available', $key));
 
         return $this->extensions[$key];
     }

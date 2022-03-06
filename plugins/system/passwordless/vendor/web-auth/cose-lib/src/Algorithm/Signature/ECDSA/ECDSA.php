@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Akeeba\Passwordless\Cose\Algorithm\Signature\ECDSA;
 
-use Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion;
+use Akeeba\Passwordless\Assert\Assertion;
 use Akeeba\Passwordless\Cose\Algorithm\Signature\Signature;
 use Akeeba\Passwordless\Cose\Key\Ec2Key;
 use Akeeba\Passwordless\Cose\Key\Key;
@@ -46,7 +46,7 @@ abstract class ECDSA implements \Akeeba\Passwordless\Cose\Algorithm\Signature\Si
     private function handleKey(\Akeeba\Passwordless\Cose\Key\Key $key): \Akeeba\Passwordless\Cose\Key\Ec2Key
     {
         $key = new \Akeeba\Passwordless\Cose\Key\Ec2Key($key->getData());
-        \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assertion::eq($key->curve(), $this->getCurve(), 'This key cannot be used with this algorithm');
+        \Akeeba\Passwordless\Assert\Assertion::eq($key->curve(), $this->getCurve(), 'This key cannot be used with this algorithm');
 
         return $key;
     }

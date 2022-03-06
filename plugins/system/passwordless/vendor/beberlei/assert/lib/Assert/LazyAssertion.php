@@ -122,7 +122,7 @@ class LazyAssertion
     private $errors = [];
 
     /** @var string The class to use as AssertionChain factory */
-    private $assertClass = \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assert::class;
+    private $assertClass = \Akeeba\Passwordless\Assert\Assert::class;
 
     /** @var string|LazyAssertionException The class to use for exceptions */
     private $exceptionClass = \Akeeba\Passwordless\Assert\LazyAkeeba\Passwordless\AssertionException::class;
@@ -174,7 +174,7 @@ class LazyAssertion
 
         try {
             \call_user_func_array([$this->currentChain, $method], $args);
-        } catch (\Akeeba\Passwordless\Assert\Akeeba\Passwordless\AssertionFailedException $e) {
+        } catch (\Akeeba\Passwordless\Assert\AssertionFailedException $e) {
             $this->errors[] = $e;
             $this->currentChainFailed = true;
         }
@@ -201,8 +201,8 @@ class LazyAssertion
      */
     public function setAssertClass(string $className): \Akeeba\Passwordless\Assert\LazyAkeeba\Passwordless\Assertion
     {
-        if (\Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assert::class !== $className && !\is_subclass_of($className, \Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assert::class)) {
-            throw new LogicException($className.' is not (a subclass of) '.\Akeeba\Passwordless\Assert\Akeeba\Passwordless\Assert::class);
+        if (\Akeeba\Passwordless\Assert\Assert::class !== $className && !\is_subclass_of($className, \Akeeba\Passwordless\Assert\Assert::class)) {
+            throw new LogicException($className.' is not (a subclass of) '.\Akeeba\Passwordless\Assert\Assert::class);
         }
 
         $this->assertClass = $className;
