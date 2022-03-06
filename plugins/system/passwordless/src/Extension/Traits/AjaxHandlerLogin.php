@@ -35,13 +35,11 @@ trait AjaxHandlerLogin
 	 * Returns the public key set for the user and a unique challenge in a Public Key Credential Request encoded as
 	 * JSON.
 	 *
-	 * @return  string  A JSON-encoded object or JSON-encoded false if the username is invalid or no credentials stored
-	 *
 	 * @throws  Exception
 	 *
 	 * @since   1.0.0
 	 */
-	public function onAjaxPasswordlessLogin(): void
+	public function onAjaxPasswordlessLogin(Event $event): void
 	{
 		$returnUrl = $this->app->getSession()->get('plg_system_passwordless.returnUrl', Uri::base());
 		$userId    = $this->app->getSession()->get('plg_system_passwordless.userId', 0);
@@ -122,7 +120,7 @@ trait AjaxHandlerLogin
 	/**
 	 * Logs in a user to the site, bypassing the authentication plugins.
 	 *
-	 * @param   int  $userId  The user ID to log in
+	 * @param   int   $userId   The user ID to log in
 	 *
 	 * @throws Exception
 	 * @since   1.0.0
@@ -238,7 +236,7 @@ trait AjaxHandlerLogin
 	/**
 	 * Have Joomla! process a login failure
 	 *
-	 * @param   AuthenticationResponse  $response  The Joomla! auth response object
+	 * @param   AuthenticationResponse   $response   The Joomla! auth response object
 	 *
 	 * @return  bool
 	 *

@@ -12,28 +12,36 @@ defined('_JEXEC') or die();
 
 use Exception;
 use Joomla\CMS\Log\Log;
+use Joomla\Event\Event;
 use Joomla\Utilities\ArrayHelper;
 
 trait UserDeletion
 {
+	use EventReturnAware;
+
 	/**
 	 * Remove all passwordless credential information for the given user ID.
 	 *
 	 * This method is called after user data is deleted from the database.
 	 *
-	 * @param   array        $user     Holds the user data
-	 * @param   bool         $success  True if user was successfully stored in the database
-	 * @param   string|null  $msg      Message
-	 *
-	 * @return  bool
+	 * @return  void
 	 *
 	 * @since   1.0.0
 	 */
-	public function onUserAfterDelete(array $user, bool $success, ?string $msg): bool
+	public function onUserAfterDelete(Event $event): void
 	{
+		/**
+		 * @var   array       $user    Holds the user data
+		 * @var   bool        $success True if user was successfully stored in the database
+		 * @var   string|null $msg     Message
+		 */
+		[$user, $success, $msg] = $event->getArguments();
+
 		if (!$success)
 		{
-			return false;
+			$this->returnFromEvent($event, false);
+
+			return;
 		}
 
 		$userId = ArrayHelper::getValue($user, 'id', 0, 'int');
@@ -57,6 +65,6 @@ trait UserDeletion
 			}
 		}
 
-		return true;
+		$this->returnFromEvent($event, true);
 	}
 }

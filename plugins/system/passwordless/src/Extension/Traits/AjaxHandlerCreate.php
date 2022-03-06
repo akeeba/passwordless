@@ -10,16 +10,17 @@ namespace Joomla\Plugin\System\Passwordless\Extension\Traits;
 // Protect from unauthorized access
 defined('_JEXEC') or die();
 
+use Akeeba\Passwordless\Webauthn\PublicKeyCredentialSource;
 use Exception;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Layout\FileLayout;
 use Joomla\CMS\User\User;
 use Joomla\CMS\User\UserFactoryInterface;
+use Joomla\Event\Event;
 use Joomla\Plugin\System\Passwordless\Credential\Authentication;
 use Joomla\Plugin\System\Passwordless\Credential\CredentialsRepository;
 use RuntimeException;
-use Akeeba\Passwordless\Webauthn\PublicKeyCredentialSource;
 
 /**
  * Ajax handler for akaction=create
@@ -30,16 +31,16 @@ use Akeeba\Passwordless\Webauthn\PublicKeyCredentialSource;
  */
 trait AjaxHandlerCreate
 {
+	use EventReturnAware;
+
 	/**
 	 * Handle the callback to add a new WebAuthn authenticator
-	 *
-	 * @return  string
 	 *
 	 * @throws  Exception
 	 *
 	 * @since   1.0.0
 	 */
-	public function onAjaxPasswordlessCreate(): string
+	public function onAjaxPasswordlessCreate(Event $event): void
 	{
 		/**
 		 * Fundamental sanity check: this callback is only allowed after a Public Key has been created server-side and
@@ -119,6 +120,6 @@ trait AjaxHandlerCreate
 
 		$layout = new FileLayout('akeeba.passwordless.manage', JPATH_SITE . '/plugins/system/passwordless/layout');
 
-		return $layout->render($layoutParameters);
+		$this->returnFromEvent($event, $layout->render($layoutParameters));
 	}
 }

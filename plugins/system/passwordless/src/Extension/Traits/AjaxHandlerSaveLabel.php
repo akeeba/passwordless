@@ -12,6 +12,7 @@ defined('_JEXEC') or die();
 
 use Exception;
 use Joomla\CMS\User\User;
+use Joomla\Event\Event;
 use Joomla\Plugin\System\Passwordless\Credential\CredentialsRepository;
 
 /**
@@ -23,16 +24,16 @@ use Joomla\Plugin\System\Passwordless\Credential\CredentialsRepository;
  */
 trait AjaxHandlerSaveLabel
 {
+	use EventReturnAware;
+
 	/**
 	 * Handle the callback to rename an authenticator
-	 *
-	 * @return  bool
 	 *
 	 * @throws  Exception
 	 *
 	 * @since   1.0.0
 	 */
-	public function onAjaxPasswordlessSavelabel(): bool
+	public function onAjaxPasswordlessSavelabel(Event $event): void
 	{
 		// Initialize objects
 		$input      = $this->app->input;
@@ -45,14 +46,18 @@ trait AjaxHandlerSaveLabel
 		// Is this a valid credential?
 		if (empty($credential_id))
 		{
-			return false;
+			$this->returnFromEvent($event, false);
+
+			return;
 		}
 
 		$credential_id = base64_decode($credential_id);
 
 		if (empty($credential_id) || !$repository->has($credential_id))
 		{
-			return false;
+			$this->returnFromEvent($event, false);
+
+			return;
 		}
 
 		// Make sure I am editing my own key
@@ -64,18 +69,24 @@ trait AjaxHandlerSaveLabel
 		}
 		catch (Exception $e)
 		{
-			return false;
+			$this->returnFromEvent($event, false);
+
+			return;
 		}
 
 		if ($credential_handle !== $my_handle)
 		{
-			return false;
+			$this->returnFromEvent($event, false);
+
+			return;
 		}
 
 		// Make sure the new label is not empty
 		if (empty($new_label))
 		{
-			return false;
+			$this->returnFromEvent($event, false);
+
+			return;
 		}
 
 		// Save the new label
@@ -85,9 +96,11 @@ trait AjaxHandlerSaveLabel
 		}
 		catch (Exception $e)
 		{
-			return false;
+			$this->returnFromEvent($event, false);
+
+			return;
 		}
 
-		return true;
+		$this->returnFromEvent($event, true);
 	}
 }

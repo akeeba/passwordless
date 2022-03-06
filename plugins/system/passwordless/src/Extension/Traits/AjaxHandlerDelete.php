@@ -12,6 +12,7 @@ defined('_JEXEC') or die();
 
 use Exception;
 use Joomla\CMS\User\User;
+use Joomla\Event\Event;
 use Joomla\Plugin\System\Passwordless\Credential\CredentialsRepository;
 
 /**
@@ -23,15 +24,16 @@ use Joomla\Plugin\System\Passwordless\Credential\CredentialsRepository;
  */
 trait AjaxHandlerDelete
 {
+	use EventReturnAware;
+
 	/**
 	 * Handle the callback to remove an authenticator
 	 *
-	 * @return  bool
 	 * @throws  Exception
 	 *
 	 * @since   1.0.0
 	 */
-	public function onAjaxPasswordlessDelete(): bool
+	public function onAjaxPasswordlessDelete(Event $event): void
 	{
 		// Initialize objects
 		$input      = $this->app->input;
@@ -43,14 +45,18 @@ trait AjaxHandlerDelete
 		// Is this a valid credential?
 		if (empty($credential_id))
 		{
-			return false;
+			$this->returnFromEvent($event, false);
+
+			return;
 		}
 
 		$credential_id = base64_decode($credential_id);
 
 		if (empty($credential_id) || !$repository->has($credential_id))
 		{
-			return false;
+			$this->returnFromEvent($event, false);
+
+			return;
 		}
 
 		// Make sure I am editing my own key
@@ -62,12 +68,16 @@ trait AjaxHandlerDelete
 		}
 		catch (Exception $e)
 		{
-			return false;
+			$this->returnFromEvent($event, false);
+
+			return;
 		}
 
 		if ($credential_handle !== $my_handle)
 		{
-			return false;
+			$this->returnFromEvent($event, false);
+
+			return;
 		}
 
 		// Delete the record
@@ -77,7 +87,9 @@ trait AjaxHandlerDelete
 		}
 		catch (Exception $e)
 		{
-			return false;
+			$this->returnFromEvent($event, false);
+
+			return;
 		}
 
 		/**
@@ -90,6 +102,6 @@ trait AjaxHandlerDelete
 		 */
 		$this->resetUserHandleCookie();
 
-		return true;
+		$this->returnFromEvent($event, true);
 	}
 }

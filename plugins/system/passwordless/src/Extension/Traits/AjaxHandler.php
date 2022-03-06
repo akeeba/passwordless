@@ -16,6 +16,7 @@ use Joomla\CMS\Event\GenericEvent;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Uri\Uri;
+use Joomla\Event\Event;
 use Joomla\Plugin\System\Passwordless\Exception\AjaxNonCmsAppException;
 use RuntimeException;
 
@@ -28,76 +29,17 @@ use RuntimeException;
 trait AjaxHandler
 {
 	/**
-	 * We need to log into the backend BUT com_ajax is not accessible unless we are already logged in. Moreover, since
-	 * the backend is a separate application from the frontend we cannot share the user session between them. Therefore
-	 * I am going to write my own AJAX handler for the backend by abusing the onAfterInitialize event.
-	 *
-	 * @return  void
-	 *
-	 * @throws  Exception
-	 * @since   1.0.0
-	 */
-	private function onAfterInitialiseAjax(): void
-	{
-		// Only applies when it's the administrator application with no user logged in
-		$user = $this->app->getIdentity();
-
-		if (!$this->app->isClient('administrator') || empty($user) || !$user->guest)
-		{
-			return;
-		}
-
-		$input = $this->app->input;
-
-		// ...and this is a request to com_ajax...
-		if ($input->getCmd('option', '') != 'com_ajax')
-		{
-			return;
-		}
-
-		// ...about a system plugin...
-		if ($input->getCmd('group', '') != 'system')
-		{
-			return;
-		}
-
-		// ...called 'passwordless'
-		if ($input->getCmd('plugin', '') != 'passwordless')
-		{
-			return;
-		}
-
-		/**
-		 * Why do we go through onAjaxPasswordless instead of importing the code directly in here?
-		 *
-		 * AJAX responses are called through com_ajax. In the frontend the com_ajax component itself is handling the
-		 * request, without going through our special onAfterInitialize handler. As a result, it calls the
-		 * onAjaxPasswordless plugin event directly.
-		 *
-		 * In the backend, however, com_ajax is not accessible before we log in. This doesn't help us any since we need
-		 * it when we are not logged in, to perform the passwordless login. Therefore our special onAfterInitialize
-		 * code kicks in and simulates what com_ajax would do, to a degree that it's sufficient for our purposes.
-		 *
-		 * Only in the second case would it make sense to import the code here. In the interest of keeping it DRY we do
-		 * not do that, instead going through the plugin event with a negligible performance impact in the order of a
-		 * millisecond or less. This is orders of magnitude less than the roundtrip time of the AJAX request.
-		 */
-		$event = new GenericEvent('onAjaxPasswordless', []);
-		$this->app->getDispatcher()->dispatch($event->getName(), $event);
-	}
-
-	/**
 	 * Processes the callbacks from the passwordless login views.
 	 *
 	 * Note: this method is called from Joomla's com_ajax or, in the case of backend logins, through the special
 	 * onAfterInitialize handler we have created to work around com_ajax usage limitations in the backend.
 	 *
-	 * @return  void
+	 * @return  never-return
 	 *
 	 * @throws  Exception
 	 * @since   1.0.0
 	 */
-	public function onAjaxPasswordless(): void
+	public function onAjaxPasswordless(Event $event)
 	{
 		try
 		{
@@ -212,5 +154,64 @@ trait AjaxHandler
 
 		$this->app->getSession()->set('plg_system_passwordless.returnUrl', null);
 		$this->app->redirect($returnURL);
+	}
+
+	/**
+	 * We need to log into the backend BUT com_ajax is not accessible unless we are already logged in. Moreover, since
+	 * the backend is a separate application from the frontend we cannot share the user session between them. Therefore
+	 * I am going to write my own AJAX handler for the backend by abusing the onAfterInitialize event.
+	 *
+	 * @return  void
+	 *
+	 * @throws  Exception
+	 * @since   1.0.0
+	 */
+	private function onAfterInitialiseAjax(): void
+	{
+		// Only applies when it's the administrator application with no user logged in
+		$user = $this->app->getIdentity();
+
+		if (!$this->app->isClient('administrator') || empty($user) || !$user->guest)
+		{
+			return;
+		}
+
+		$input = $this->app->input;
+
+		// ...and this is a request to com_ajax...
+		if ($input->getCmd('option', '') != 'com_ajax')
+		{
+			return;
+		}
+
+		// ...about a system plugin...
+		if ($input->getCmd('group', '') != 'system')
+		{
+			return;
+		}
+
+		// ...called 'passwordless'
+		if ($input->getCmd('plugin', '') != 'passwordless')
+		{
+			return;
+		}
+
+		/**
+		 * Why do we go through onAjaxPasswordless instead of importing the code directly in here?
+		 *
+		 * AJAX responses are called through com_ajax. In the frontend the com_ajax component itself is handling the
+		 * request, without going through our special onAfterInitialize handler. As a result, it calls the
+		 * onAjaxPasswordless plugin event directly.
+		 *
+		 * In the backend, however, com_ajax is not accessible before we log in. This doesn't help us any since we need
+		 * it when we are not logged in, to perform the passwordless login. Therefore our special onAfterInitialize
+		 * code kicks in and simulates what com_ajax would do, to a degree that it's sufficient for our purposes.
+		 *
+		 * Only in the second case would it make sense to import the code here. In the interest of keeping it DRY we do
+		 * not do that, instead going through the plugin event with a negligible performance impact in the order of a
+		 * millisecond or less. This is orders of magnitude less than the roundtrip time of the AJAX request.
+		 */
+		$event = new GenericEvent('onAjaxPasswordless', []);
+		$this->app->getDispatcher()->dispatch($event->getName(), $event);
 	}
 }

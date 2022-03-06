@@ -16,6 +16,7 @@ use Joomla\CMS\Form\Form;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\User\User;
 use Joomla\CMS\User\UserFactoryInterface;
+use Joomla\Event\Event;
 use Joomla\Registry\Registry;
 
 /**
@@ -27,29 +28,34 @@ use Joomla\Registry\Registry;
  */
 trait UserProfileFields
 {
+	use EventReturnAware;
+
 	/**
 	 * Adds additional fields to the user editing form
 	 *
-	 * @param   Form   $form  The form to be altered.
-	 * @param   mixed  $data  The associated data for the form.
-	 *
-	 * @return  boolean
-	 *
 	 * @throws  Exception
 	 */
-	public function onContentPrepareForm(Form $form, $data)
+	public function onContentPrepareForm(Event $event): void
 	{
+		/**
+		 * @var   Form  $form The form to be altered.
+		 * @var   mixed $data The associated data for the form.
+		 */
+		[$form, $data] = $event->getArguments();
+
+		$this->returnFromEvent($event, true);
+
 		// Check we are manipulating a valid form.
 		if (!($form instanceof Form))
 		{
-			return true;
+			return;
 		}
 
 		$name = $form->getName();
 
 		if (!in_array($name, ['com_admin.profile', 'com_users.user', 'com_users.profile', 'com_users.registration']))
 		{
-			return true;
+			return;
 		}
 
 		// Get the user ID
@@ -73,28 +79,26 @@ trait UserProfileFields
 		// Make sure the loaded user is the correct one
 		if ($user->id != $id)
 		{
-			return true;
+			return;
 		}
 
 		// Make sure I am either editing myself OR I am a Super User
 		if (!$this->canEditUser($user))
 		{
-			return true;
+			return;
 		}
 
 		// Add the fields to the form.
 		Log::add(Log::INFO, 'plg_system_passwordless', 'Injecting Akeeba Passwordless Login fields in user profile edit page');
-		Form::addFormPath(dirname(__FILE__) . '/../../fields');
+		Form::addFormPath(__DIR__ . '/../../');
 		$form->loadFile('passwordless', false);
-
-		return true;
 	}
 
 	/**
 	 * Is the current user allowed to edit the social login configuration of $user? To do so I must either be editing my
 	 * own account OR I have to be a Super User.
 	 *
-	 * @param   ?User  $user  The user you want to know if we're allowed to edit
+	 * @param   ?User   $user   The user you want to know if we're allowed to edit
 	 *
 	 * @return  bool
 	 *

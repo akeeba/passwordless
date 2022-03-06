@@ -1,23 +1,26 @@
 <?php
 /**
  * @package   AkeebaPasswordlessLogin
- * @copyright Copyright (c)2018-2021 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2018-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
+namespace Joomla\Plugin\System\Passwordless\Field;
+
 // Prevent direct access
+defined('_JEXEC') or die;
+
 use Akeeba\Passwordless\Helper\Joomla;
+use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Form\FormField;
-use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Layout\FileLayout;
 use Joomla\CMS\User\User;
 use Joomla\CMS\User\UserFactoryInterface;
 
-defined('_JEXEC') or die;
 
-class JFormFieldPasswordless extends FormField
+class PasswordlessField extends FormField
 {
 	/**
 	 * Element name
@@ -44,12 +47,11 @@ class JFormFieldPasswordless extends FormField
 
 		$credentialRepository = new \Joomla\Plugin\System\Passwordless\Credential\CredentialsRepository();
 
-		HTMLHelper::_('script', 'plg_system_passwordless/dist/passwordless.js', [
-			'relative'  => true,
-			'framework' => false,
-		], [
-			'defer' => true,
-		]);
+		/** @var CMSApplication $app */
+		$app = Factory::getApplication();
+		$wam = $app->getDocument()->getWebAssetManager();
+		$wam->getRegistry()->addExtensionRegistryFile('plg_system_passwordless');
+		$wam->usePreset('plg_system_passwordless.manage');
 
 		$layoutFile  = new FileLayout('akeeba.passwordless.manage', JPATH_PLUGINS . '/system/passwordless/layout');
 		$currentUser = Factory::getApplication()->getIdentity() ?? new User();

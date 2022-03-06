@@ -15,6 +15,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\UserHelper;
+use Joomla\Event\Event;
 use Joomla\Plugin\System\Passwordless\Credential\Authentication;
 use Joomla\Plugin\System\Passwordless\Credential\CredentialsRepository;
 
@@ -28,16 +29,17 @@ use Joomla\Plugin\System\Passwordless\Credential\CredentialsRepository;
  */
 trait AjaxHandlerChallenge
 {
+	use EventReturnAware;
+
 	/**
-	 * Returns the public key set for the user and a unique challenge in a Public Key Credential Request encoded as
-	 * JSON.
+	 * Returns the JSON-encoded Public Key Credential Request
 	 *
-	 * @return   string  A JSON-encoded object or JSON-encoded false if the username is invalid or no credentials stored
+	 * Result: A JSON-encoded object or JSON-encoded false if the username is invalid or no credentials stored
 	 *
 	 * @throws   Exception
 	 * @since    1.0.0
 	 */
-	public function onAjaxPasswordlessChallenge()
+	public function onAjaxPasswordlessChallenge(Event $event): void
 	{
 		// Initialize objects
 		$input        = $this->app->input;
@@ -95,29 +97,35 @@ trait AjaxHandlerChallenge
 
 		if (!$rememberUser && empty($user_id))
 		{
-			return json_encode([
+			$this->returnFromEvent($event, json_encode([
 				'error' => Text::_('PLG_SYSTEM_PASSWORDLESS_ERR_EMPTY_USERNAME'),
-			], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+			], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+
+			return;
 		}
 
 		if ($rememberUser && empty($username) && empty($user_id))
 		{
-			return json_encode([
+			$this->returnFromEvent($event, json_encode([
 				'error' => Text::_('PLG_SYSTEM_PASSWORDLESS_ERR_EMPTY_USERNAME_FIRST_TIME'),
-			], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+			], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+
+			return;
 		}
 
 		if (!empty($username) && empty($user_id))
 		{
-			return json_encode([
+			$this->returnFromEvent($event, json_encode([
 				'error' => Text::_('PLG_SYSTEM_PASSWORDLESS_ERR_INVALID_USERNAME'),
-			], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+			], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+
+			return;
 		}
 
 		$user = Factory::getUser($user_id);
 		$publicKeyCredentialRequestOptions = Authentication::getPubkeyRequestOptions($user);
 
 		// Return the JSON encoded data to the caller
-		return json_encode($publicKeyCredentialRequestOptions, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+		$this->returnFromEvent($event, json_encode($publicKeyCredentialRequestOptions, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
 	}
 }

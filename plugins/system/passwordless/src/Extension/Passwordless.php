@@ -13,6 +13,7 @@ use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\Database\DatabaseDriver;
 use Joomla\Event\DispatcherInterface;
+use Joomla\Event\Event;
 use Joomla\Event\SubscriberInterface;
 use Joomla\Plugin\System\Passwordless\Extension\Traits\AjaxHandler;
 use Joomla\Plugin\System\Passwordless\Extension\Traits\AjaxHandlerChallenge;
@@ -21,6 +22,7 @@ use Joomla\Plugin\System\Passwordless\Extension\Traits\AjaxHandlerDelete;
 use Joomla\Plugin\System\Passwordless\Extension\Traits\AjaxHandlerLogin;
 use Joomla\Plugin\System\Passwordless\Extension\Traits\AjaxHandlerSaveLabel;
 use Joomla\Plugin\System\Passwordless\Extension\Traits\ButtonsInModules;
+use Joomla\Plugin\System\Passwordless\Extension\Traits\EventReturnAware;
 use Joomla\Plugin\System\Passwordless\Extension\Traits\UserDeletion;
 use Joomla\Plugin\System\Passwordless\Extension\Traits\UserHandleCookie;
 use Joomla\Plugin\System\Passwordless\Extension\Traits\UserProfileFields;
@@ -62,6 +64,8 @@ class Passwordless extends CMSPlugin implements SubscriberInterface
 	 * @since  1.0.0
 	 */
 	protected $autoloadLanguage = true;
+
+	use EventReturnAware;
 
 	// AJAX request handlers
 	use AjaxHandler;
@@ -135,7 +139,7 @@ class Passwordless extends CMSPlugin implements SubscriberInterface
 		];
 	}
 
-	public function onAfterInitialise()
+	public function onAfterInitialise(Event $event): void
 	{
 		try
 		{

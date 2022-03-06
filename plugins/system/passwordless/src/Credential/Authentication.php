@@ -319,8 +319,8 @@ abstract class Authentication
 		 * @see https://webauthn-doc.spomky-labs.com/deep-into-the-framework/attestation-and-metadata-statement
 		 */
 
-		// Add the Joomla logger to the Server object
-		$server->setLogger(Log::createDelegatedLogger());
+		// Add the Joomla logger to the Server object -- NO! This causes deprecated notices because... Joomla :(
+		// $server->setLogger(Log::createDelegatedLogger());
 
 		// Ed25519 is only available with libsodium
 		if (!function_exists('sodium_crypto_sign_seed_keypair'))
