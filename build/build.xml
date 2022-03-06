@@ -13,6 +13,10 @@
 
 	</target>
 
+	<target name="composer-install">
+		<!-- Nope. Because of the use of Rector we need to do this VERY sporadically. -->
+	</target>
+
 	<!--
 	====================================================================================================
 	Tasks - Documentation
