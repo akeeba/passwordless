@@ -1,27 +1,29 @@
 <?php
 /**
  * @package   AkeebaPasswordlessLogin
- * @copyright Copyright (c)2018-2021 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2018-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
-namespace Akeeba\Passwordless\PluginTraits;
+namespace Joomla\Plugin\System\Passwordless\Extension\Traits;
 
 // Protect from unauthorized access
 defined('_JEXEC') or die();
 
-use Akeeba\Passwordless\Exception\AjaxNonCmsAppException;
-use Akeeba\Passwordless\Helper\Joomla;
 use Exception;
 use Joomla\CMS\Application\CMSApplication;
+use Joomla\CMS\Event\GenericEvent;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Uri\Uri;
+use Joomla\Plugin\System\Passwordless\Exception\AjaxNonCmsAppException;
 use RuntimeException;
 
 /**
  * Allows the plugin to handle AJAX requests in the backend of the site, where com_ajax is not available when we are not
  * logged in.
+ *
+ * @since 1.0.0
  */
 trait AjaxHandler
 {
@@ -33,26 +35,19 @@ trait AjaxHandler
 	 * @return  void
 	 *
 	 * @throws  Exception
+	 * @since   1.0.0
 	 */
-	public function onAfterInitialiseAjax(): void
+	private function onAfterInitialiseAjax(): void
 	{
-		// At this stage we can safely load the language
-		$this->loadLanguage();
+		// Only applies when it's the administrator application with no user logged in
+		$user = $this->app->getIdentity();
 
-		// Make sure this is the backend of the site...
-		if (!Joomla::isAdminPage())
+		if (!$this->app->isClient('administrator') || empty($user) || !$user->guest)
 		{
 			return;
 		}
 
-		// ...and we are not already logged in...
-		if (!Joomla::getUser()->guest)
-		{
-			return;
-		}
-
-		$app   = Joomla::getApplication();
-		$input = $app->input;
+		$input = $this->app->input;
 
 		// ...and this is a request to com_ajax...
 		if ($input->getCmd('option', '') != 'com_ajax')
@@ -87,7 +82,8 @@ trait AjaxHandler
 		 * not do that, instead going through the plugin event with a negligible performance impact in the order of a
 		 * millisecond or less. This is orders of magnitude less than the roundtrip time of the AJAX request.
 		 */
-		Joomla::runPlugins('onAjaxPasswordless', []);
+		$event = new GenericEvent('onAjaxPasswordless', []);
+		$this->app->getDispatcher()->dispatch($event->getName(), $event);
 	}
 
 	/**
@@ -99,31 +95,28 @@ trait AjaxHandler
 	 * @return  void
 	 *
 	 * @throws  Exception
-	 *
 	 * @since   1.0.0
 	 */
 	public function onAjaxPasswordless(): void
 	{
-		/** @var CMSApplication $app */
-		$app   = Joomla::getApplication();
-		$input = $app->input;
-
-		// Get the return URL from the session
-		$returnURL = Joomla::getSessionVar('returnUrl', Uri::base(), 'plg_system_passwordless');
-		$result    = null;
-
 		try
 		{
-			Joomla::log('system', "Received AJAX callback.");
+			Log::add(Log::INFO, 'plg_system_passwordless', 'Received AJAX callback.');
 
-			if (!Joomla::isCmsApplication($app))
+			if (!($this->app instanceof CMSApplication))
 			{
 				throw new AjaxNonCmsAppException();
 			}
 
-			$input    = $app->input;
+			$input = $this->app->input;
+
+			// Get the return URL from the session
+			$returnURL = $this->app->getSession()->get('plg_system_passwordless.returnUrl', Uri::base());
+			$result    = null;
+
+			$input    = $this->app->input;
 			$akaction = $input->getCmd('akaction');
-			$token    = Joomla::getToken();
+			$token    = $this->app->getFormToken();
 
 			if ($input->getInt($token, 0) != 1)
 			{
@@ -138,34 +131,28 @@ trait AjaxHandler
 
 			// Call the plugin event onAjaxPasswordlessSomething where Something is the akaction param.
 			$eventName = 'onAjaxPasswordless' . ucfirst($akaction);
+			$event     = new GenericEvent($eventName, []);
+			$result    = $this->app->getDispatcher()->dispatch($eventName, $event);
+			$results   = !isset($result['result']) || \is_null($result['result']) ? [] : $result['result'];
+			$result    = null;
 
-			$results = Joomla::runPlugins($eventName, [], $app);
-			$result  = null;
-
-			foreach ($results as $r)
-			{
-				if (is_null($r))
-				{
-					continue;
-				}
-
-				$result = $r;
-
-				break;
-			}
+			$result = array_reduce($results, function ($carry, $result) {
+				return $carry ?? $result;
+			}, null);
 		}
 		catch (AjaxNonCmsAppException $e)
 		{
-			Joomla::log('system', "This is not a CMS application", Log::NOTICE);
+			Log::add(Log::NOTICE, 'plg_system_passwordless', 'This is not a CMS application');
 
 			$result = null;
 		}
 		catch (Exception $e)
 		{
-			Joomla::log('system', "Callback failure, redirecting to $returnURL.");
-			Joomla::setSessionVar('returnUrl', null, 'plg_system_passwordless');
-			$app->enqueueMessage($e->getMessage(), 'error');
-			$app->redirect($returnURL);
+			Log::add(Log::INFO, 'plg_system_passwordless', sprintf('Callback failure, redirecting to %s.', $returnURL));
+
+			$this->app->getSession()->set('plg_system_passwordless.returnUrl', null);
+			$this->app->enqueueMessage($e->getMessage(), 'error');
+			$this->app->redirect($returnURL);
 
 			return;
 		}
@@ -176,19 +163,19 @@ trait AjaxHandler
 			{
 				default:
 				case 'json':
-					Joomla::log('system', "Callback complete, returning JSON.");
+					Log::add(Log::INFO, 'plg_system_passwordless', 'Callback complete, returning JSON.');
 					echo json_encode($result);
 
 					break;
 
 				case 'jsonhash':
-					Joomla::log('system', "Callback complete, returning JSON inside ### markers.");
+					Log::add(Log::INFO, 'plg_system_passwordless', 'Callback complete, returning JSON inside ### markers.');
 					echo '###' . json_encode($result) . '###';
 
 					break;
 
 				case 'raw':
-					Joomla::log('system', "Callback complete, returning raw response.");
+					Log::add(Log::INFO, 'plg_system_passwordless', 'Callback complete, returning raw response.');
 					echo $result;
 
 					break;
@@ -198,32 +185,32 @@ trait AjaxHandler
 
 					if (isset($result['message']))
 					{
-						$type = isset($result['type']) ? $result['type'] : 'info';
-						$app->enqueueMessage($result['message'], $type);
+						$type = $result['type'] ?? 'info';
+						$this->app->enqueueMessage($result['message'], $type);
 
 						$modifiers = " and setting a system message of type $type";
 					}
 
 					if (isset($result['url']))
 					{
-						Joomla::log('system', "Callback complete, performing redirection to {$result['url']}{$modifiers}.");
-						$app->redirect($result['url']);
+						Log::add(Log::INFO, 'plg_system_passwordless', sprintf('Callback complete, performing redirection to %s%s.', $result['url'], $modifiers));
+						$this->app->redirect($result['url']);
 					}
 
 
-					Joomla::log('system', "Callback complete, performing redirection to {$result}{$modifiers}.");
-					$app->redirect($result);
+					Log::add(Log::INFO, 'plg_system_passwordless', sprintf('Callback complete, performing redirection to %s%s.', $result, $modifiers));
+					$this->app->redirect($result);
 
 					return;
 					break;
 			}
 
-			$app->close(200);
+			$this->app->close(200);
 		}
 
-		Joomla::log('system', "Null response from AJAX callback, redirecting to $returnURL");
-		Joomla::setSessionVar('returnUrl', null, 'plg_system_passwordless');
+		Log::add(Log::INFO, 'plg_system_passwordless', sprintf('Null response from AJAX callback, redirecting to %s', $returnURL));
 
-		$app->redirect($returnURL);
+		$this->app->getSession()->set('plg_system_passwordless.returnUrl', null);
+		$this->app->redirect($returnURL);
 	}
 }

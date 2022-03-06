@@ -1,0 +1,4 @@
+Passwordless Login 1.0.0
+--------------------------------------------------------------------------------
++ Support for platform authenticators (Windows Hello, TouchID/FaceID, Android biometrics, ...)
++ Remembers the last logged in user so you don't have to type in the username all the time

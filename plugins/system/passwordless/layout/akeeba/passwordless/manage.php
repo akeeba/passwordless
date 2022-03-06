@@ -5,14 +5,13 @@
  * @license   GNU General Public License version 3, or later
  */
 
-use Akeeba\Passwordless\Helper\CredentialsCreation;
-use Akeeba\Passwordless\Helper\Joomla;
-use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Layout\FileLayout;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\User;
 use Joomla\CMS\User\UserHelper;
+use Joomla\Plugin\System\Passwordless\Credential\Authentication;
 
 /**
  * Passwordless Login management interface
@@ -31,30 +30,15 @@ use Joomla\CMS\User\UserHelper;
  * @var   string     $error       Any error messages
  */
 
-/**
- * Note about the use of short echo tags.
- *
- * Starting with PHP 5.4.0, short echo tags are always recognized and parsed regardless of the short_open_tag setting
- * in your php.ini. Since we only support *much* newer versions of PHP we can use this construct instead of regular
- * echos to keep the code easier to read.
- */
-
 // Extract the data. Do not remove until the unset() line.
 extract(array_merge([
-	'user'        => Joomla::getUser(),
+	'user'        => Factory::getApplication()->getIdentity() ?? new User(),
 	'allow_add'   => false,
 	'credentials' => [],
 	'error'       => '',
 ], $displayData));
 
-if (version_compare(JVERSION, '3.999.999', 'le'))
-{
-	HTMLHelper::_('stylesheet', 'plg_system_passwordless/backend.css', [
-		'relative' => true,
-	]);
-}
-
-// Ensure the GMP Extension is loaded in PHP - as this is required by third party library
+// Ensure the GMP or BCmath extension (or a polyfill) is loaded in PHP - this is required by the third party library.
 $hasGMP    = function_exists('gmp_intval') !== false;
 $hasBcMath = function_exists('bccomp') !== false;
 
@@ -63,7 +47,6 @@ if (!$hasBcMath && !$hasBcMath)
 	$error     = Text::_('PLG_SYSTEM_PASSWORDLESS_ERR_WEBAUTHN_REQUIRES_GMP_OR_BCMATCH');
 	$allow_add = false;
 }
-
 
 /**
  * Why not push these configuration variables directly to JavaScript?
@@ -74,8 +57,8 @@ if (!$hasBcMath && !$hasBcMath)
  * that problem.
  */
 $randomId    = 'akpwl_' . UserHelper::genRandomPassword(32);
-$publicKey   = $allow_add ? base64_encode(CredentialsCreation::createPublicKey($user)) : '{}';
-$postbackURL = base64_encode(rtrim(Uri::base(), '/') . '/index.php?' . Joomla::getToken() . '=1');
+$publicKey   = $allow_add ? base64_encode(Authentication::createPublicKey($user)) : '{}';
+$postbackURL = base64_encode(rtrim(Uri::base(), '/') . '/index.php?' . Factory::getApplication()->getFormToken() . '=1');
 ?>
 <div class="akpwl" id="plg_system_passwordless-management-interface">
     <span id="<?= $randomId ?>"
@@ -89,7 +72,7 @@ $postbackURL = base64_encode(rtrim(Uri::base(), '/') . '/index.php?' . Joomla::g
 		</div>
 	<?php endif; ?>
 
-	<table class="akpwl-table--striped table table-striped">
+	<table class="table table-striped">
 		<thead>
 		<tr>
 			<th scope="col">
@@ -109,12 +92,12 @@ $postbackURL = base64_encode(rtrim(Uri::base(), '/') . '/index.php?' . Joomla::g
 				</td>
 				<td>
 					<button data-random-id="<?php echo $randomId; ?>"
-							class="plg_system_passwordless-manage-edit akpwl-btn--teal btn btn-primary btn-sm">
+							class="plg_system_passwordless-manage-edit btn btn-primary btn-sm">
 						<span class="icon-edit icon-white" aria-hidden="true"></span>
 						<?= Text::_('PLG_SYSTEM_PASSWORDLESS_MANAGE_BTN_EDIT_LABEL') ?>
 					</button>
 					<button data-random-id="<?php echo $randomId; ?>"
-							class="plg_system_passwordless-manage-delete akpwl-btn--red btn btn-danger btn-sm">
+							class="plg_system_passwordless-manage-delete btn btn-danger btn-sm">
 						<span class="icon-minus-sign icon-white" aria-hidden="true"></span>
 						<?= Text::_('PLG_SYSTEM_PASSWORDLESS_MANAGE_BTN_DELETE_LABEL') ?>
 					</button>
@@ -136,7 +119,7 @@ $postbackURL = base64_encode(rtrim(Uri::base(), '/') . '/index.php?' . Joomla::g
 			<button
 					type="button"
 					id="plg_system_passwordless-manage-add"
-					class="akpwl-btn--green--block btn btn-success"
+					class="btn btn-success"
 					data-random-id="<?php echo $randomId; ?>">
 				<span class="icon-plus icon-white" aria-hidden="true"></span>
 				<?php echo Text::_('PLG_SYSTEM_PASSWORDLESS_MANAGE_BTN_ADD_LABEL') ?>

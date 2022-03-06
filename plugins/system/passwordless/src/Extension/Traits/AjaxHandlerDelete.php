@@ -1,23 +1,25 @@
 <?php
 /**
  * @package   AkeebaPasswordlessLogin
- * @copyright Copyright (c)2018-2021 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2018-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
-namespace Akeeba\Passwordless\PluginTraits;
+namespace Joomla\Plugin\System\Passwordless\Extension\Traits;
 
 // Protect from unauthorized access
 defined('_JEXEC') or die();
 
-use Akeeba\Passwordless\CredentialRepository;
-use Akeeba\Passwordless\Helper\Joomla;
 use Exception;
+use Joomla\CMS\User\User;
+use Joomla\Plugin\System\Passwordless\Credential\Repository;
 
 /**
  * Ajax handler for akaction=savelabel
  *
  * Deletes a security key
+ *
+ * @since 1.0.0
  */
 trait AjaxHandlerDelete
 {
@@ -32,8 +34,8 @@ trait AjaxHandlerDelete
 	public function onAjaxPasswordlessDelete(): bool
 	{
 		// Initialize objects
-		$input      = Joomla::getApplication()->input;
-		$repository = new CredentialRepository();
+		$input      = $this->app->input;
+		$repository = new Repository();
 
 		// Retrieve data from the request
 		$credential_id = $input->getBase64('credential_id', '');
@@ -54,8 +56,9 @@ trait AjaxHandlerDelete
 		// Make sure I am editing my own key
 		try
 		{
+			$user              = $this->app->getIdentity() ?? new User();
 			$credential_handle = $repository->getUserHandleFor($credential_id);
-			$my_handle         = $repository->getHandleFromUserId(Joomla::getUser()->id);
+			$my_handle         = $repository->getHandleFromUserId($user->id);
 		}
 		catch (Exception $e)
 		{

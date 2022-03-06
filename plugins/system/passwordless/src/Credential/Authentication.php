@@ -1,33 +1,39 @@
 <?php
 /**
  * @package   AkeebaPasswordlessLogin
- * @copyright Copyright (c)2018-2021 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2018-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
-namespace Akeeba\Passwordless\Helper;
+namespace Joomla\Plugin\System\Passwordless\Credential;
 
 // Protect from unauthorized access
 defined('_JEXEC') or die();
 
-use Akeeba\Passwordless\CredentialRepository;
 use CBOR\Decoder;
 use CBOR\OtherObject\OtherObjectManager;
 use CBOR\Tag\TagObjectManager;
+use Cose\Algorithm\Mac\HS256;
+use Cose\Algorithm\Mac\HS384;
+use Cose\Algorithm\Mac\HS512;
 use Cose\Algorithm\Manager;
 use Cose\Algorithm\Signature\ECDSA;
 use Cose\Algorithm\Signature\EdDSA;
 use Cose\Algorithm\Signature\RSA;
 use Cose\Algorithms;
 use Exception;
+use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Crypt\Crypt;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\User;
+use Joomla\Session\Session;
+use Laminas\Diactoros\RequestFactory;
 use Laminas\Diactoros\ServerRequestFactory;
 use RuntimeException;
 use Webauthn\AttestationStatement\AndroidKeyAttestationStatementSupport;
+use Webauthn\AttestationStatement\AndroidSafetyNetAttestationStatementSupport;
 use Webauthn\AttestationStatement\AttestationObjectLoader;
 use Webauthn\AttestationStatement\AttestationStatementSupportManager;
 use Webauthn\AttestationStatement\FidoU2FAttestationStatementSupport;
@@ -47,66 +53,40 @@ use Webauthn\PublicKeyCredentialRpEntity;
 use Webauthn\PublicKeyCredentialSource;
 use Webauthn\PublicKeyCredentialUserEntity;
 use Webauthn\TokenBinding\TokenBindingNotSupportedHandler;
+use const Joomla\Plugin\System\Passwordless\Helper\JPATH_BASE;
 
 /**
  * Helper class to aid in credentials creation (link an authenticator to a user account)
  *
  * @since   1.0.0
  */
-abstract class CredentialsCreation
+abstract class Authentication
 {
-	public const AUTHENTICATOR_U2F = 1;
-
-	public const AUTHENTICATOR_FIDO2 = 2;
-
-	public const AUTHENTICATOR_TPM = 3;
-
 	/**
 	 * Create a public key for credentials creation. The result is a JSON string which can be used in Javascript code
 	 * with navigator.credentials.create().
 	 *
-	 * There are three authenticator types for which a Public Key can be created with this method:
-	 *
-	 * * **U2F** (`AUTHENTICATOR_U2F`). This is the legacy and most compatible method. It instructs the browser to use
-	 *   CTAP1 and is compatible with both FIDO1 and FIDO2 keys. The downside is that the resulting key is not stored
-	 *   on the authenticator (it is NOT resident), therefore you MUST provide your username to log in with WebAuthn.
-	 *   This is the default if nothing else is specified.
-	 * * **FIDO2** (`AUTHENTICATOR_FIDO2`). This is the newer and recommended method, as long as the user has a
-	 *   compatible authenticator. It uses CTAP2 which is currently only available for FIDO2 keys. It requests that the
-	 *   resulting key is resident, i.e. stored with the authenticator. This means that you DO NOT need to provide your
-	 *   username when logging in with WebAuthn. The downside is that security keys have a finite storage (typically
-	 *   around 20 or so credentials) and resetting them resets not just the stored credentials but ALSO their U2F
-	 *   support...
-	 * * **TPM** (`AUTHENTICATOR_TPM`). This is a specialization of the FIDO2 type. It requests that CTAP2 is used to
-	 *   create a resident key and that the only acceptable authenticator type is platform-specific. Practically, this
-	 *   will only work with Touch ID / Face ID (iOS / iPadOS / macOS), fingerprint login (Android) and Windows Hello
-	 *   (Windows) but only with the very few browsers which actually support platform-specific authenticators – your
-	 *   best bet is Google Chrome.
-	 *
-	 * Unfortunately, feature detection is not possible at the client side before making the request to link an
-	 * authenticator. Therefore you need to call this method with all three authenticator options and let the user
-	 * decide which one to use based on the available platform and hardware at hand.
-	 *
-	 * @param   User  $user               The Joomla user to create the public key for
-	 * @param   int   $authenticatorType  The authenticator type you'd like to create a public key for (see above).
+	 * @param   User  $user  The Joomla user to create the public key for
 	 *
 	 * @return  string
 	 *
 	 * @since   1.0.0
 	 */
-	public static function createPublicKey(User $user, int $authenticatorType = self::AUTHENTICATOR_U2F): string
+	public static function createPublicKey(User $user): string
 	{
 		try
 		{
-			$siteName = Joomla::getConfig()->get('sitename');
+			$app = Factory::getApplication();
 		}
 		catch (Exception $e)
 		{
-			$siteName = 'Joomla! Site';
+			return '';
 		}
 
+		$siteName = $app->get('sitename');
+
 		// Credentials repository
-		$repository = new CredentialRepository();
+		$repository = new Repository();
 
 		// Relaying Party -- Our site
 		$rpEntity = new PublicKeyCredentialRpEntity(
@@ -148,6 +128,10 @@ abstract class CredentialsCreation
 			new PublicKeyCredentialParameters('public-key', Algorithms::COSE_ALGORITHM_DIRECT_HKDF_SHA_256),
 			// Shared secret w/ AES-MAC 256-bit key
 			new PublicKeyCredentialParameters('public-key', Algorithms::COSE_ALGORITHM_DIRECT_HKDF_AES_256),
+			// RSASSA-PKCS1-v1_5 (RFC8017 article 8.1) fallback, only used by Windows Hello
+			new PublicKeyCredentialParameters('public-key', Algorithms::COSE_ALGORITHM_RS512),
+			new PublicKeyCredentialParameters('public-key', Algorithms::COSE_ALGORITHM_RS384),
+			new PublicKeyCredentialParameters('public-key', Algorithms::COSE_ALGORITHM_RS256),
 		];
 
 		// If libsodium is enabled prefer Edwards-curve Digital Signature Algorithm (EdDSA)
@@ -169,13 +153,10 @@ abstract class CredentialsCreation
 			$excludedPublicKeyDescriptors[] = new PublicKeyCredentialDescriptor($record->getType(), $record->getCredentialPublicKey());
 		}
 
-		$requireResidentKey      = $authenticatorType == self::AUTHENTICATOR_U2F ? false : true;
-		$authenticatorAttachment = $authenticatorType == self::AUTHENTICATOR_TPM ? AuthenticatorSelectionCriteria::AUTHENTICATOR_ATTACHMENT_PLATFORM : AuthenticatorSelectionCriteria::AUTHENTICATOR_ATTACHMENT_NO_PREFERENCE;
-
 		// Authenticator Selection Criteria (we used default values)
 		$authenticatorSelectionCriteria = new AuthenticatorSelectionCriteria(
-			$authenticatorAttachment,
-			$requireResidentKey,
+			AuthenticatorSelectionCriteria::AUTHENTICATOR_ATTACHMENT_NO_PREFERENCE,
+			false,
 			AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_PREFERRED
 		);
 
@@ -199,8 +180,10 @@ abstract class CredentialsCreation
 		);
 
 		// Save data in the session
-		Joomla::setSessionVar('publicKeyCredentialCreationOptions', base64_encode(serialize($publicKeyCredentialCreationOptions)), 'plg_system_passwordless');
-		Joomla::setSessionVar('registration_user_id', $user->id, 'plg_system_passwordless');
+		/** @var Session $session */
+		$session = $app->getSession();
+		$session->set('plg_system_passwordless.publicKeyCredentialCreationOptions', base64_encode(serialize($publicKeyCredentialCreationOptions)));
+		$session->set('plg_system_passwordless.registration_user_id', $user->id);
 
 		return json_encode($publicKeyCredentialCreationOptions, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 	}
@@ -219,8 +202,12 @@ abstract class CredentialsCreation
 	 */
 	public static function validateAuthenticationData(string $data): ?PublicKeyCredentialSource
 	{
+		/** @var CMSApplication $app */
+		$app     = Factory::getApplication();
+		$session = $app->getSession();
+
 		// Retrieve the PublicKeyCredentialCreationOptions object created earlier and perform sanity checks
-		$encodedOptions = Joomla::getSessionVar('publicKeyCredentialCreationOptions', null, 'plg_system_passwordless');
+		$encodedOptions = $session->get('plg_system_passwordless.publicKeyCredentialCreationOptions', null);
 
 		if (empty($encodedOptions))
 		{
@@ -242,19 +229,9 @@ abstract class CredentialsCreation
 		}
 
 		// Retrieve the stored user ID and make sure it's the same one in the request.
-		$storedUserId = Joomla::getSessionVar('registration_user_id', 0, 'plg_system_passwordless');
-
-		try
-		{
-			$myUser = Joomla::getUser();
-		}
-		catch (Exception $e)
-		{
-			$dummyUserId = 0;
-			$myUser      = Joomla::getUser($dummyUserId);
-		}
-
-		$myUserId = $myUser->id;
+		$storedUserId = $session->get('plg_system_passwordless.registration_user_id', 0);
+		$myUser       = $app->getIdentity() ?? new User();
+		$myUserId     = $myUser->id;
 
 		if (($myUser->guest) || ($myUserId != $storedUserId))
 		{
@@ -263,12 +240,22 @@ abstract class CredentialsCreation
 
 		// Cose Algorithm Manager
 		$coseAlgorithmManager = new Manager();
-		$coseAlgorithmManager->add(new ECDSA\ES256());
+		if (function_exists('sodium_crypto_sign_seed_keypair'))
+		{
+			$coseAlgorithmManager->add(new EdDSA\EdDSA());
+		}
 		$coseAlgorithmManager->add(new ECDSA\ES512());
-		$coseAlgorithmManager->add(new EdDSA\EdDSA());
-		$coseAlgorithmManager->add(new RSA\RS1());
-		$coseAlgorithmManager->add(new RSA\RS256());
+		$coseAlgorithmManager->add(new ECDSA\ES384());
+		$coseAlgorithmManager->add(new ECDSA\ES256());
+		$coseAlgorithmManager->add(new RSA\PS512());
+		$coseAlgorithmManager->add(new RSA\PS384());
+		$coseAlgorithmManager->add(new RSA\PS256());
+		$coseAlgorithmManager->add(new HS512());
+		$coseAlgorithmManager->add(new HS384());
+		$coseAlgorithmManager->add(new HS256());
 		$coseAlgorithmManager->add(new RSA\RS512());
+		$coseAlgorithmManager->add(new RSA\RS384());
+		$coseAlgorithmManager->add(new RSA\RS256());
 
 		// Create a CBOR Decoder object
 		$otherObjectManager = new OtherObjectManager();
@@ -282,7 +269,14 @@ abstract class CredentialsCreation
 		$attestationStatementSupportManager = new AttestationStatementSupportManager();
 		$attestationStatementSupportManager->add(new NoneAttestationStatementSupport());
 		$attestationStatementSupportManager->add(new FidoU2FAttestationStatementSupport($decoder));
-		//$attestationStatementSupportManager->add(new AndroidSafetyNetAttestationStatementSupport(HttpFactory::getHttp(), 'GOOGLE_SAFETYNET_API_KEY', new RequestFactory()));
+		try
+		{
+			$attestationStatementSupportManager->add(new AndroidSafetyNetAttestationStatementSupport(\Joomla\CMS\Http\HttpFactory::getHttp(), 'GOOGLE_SAFETYNET_API_KEY', new RequestFactory()));
+		}
+		catch (\Throwable $e)
+		{
+			// Suck it.
+		}
 		$attestationStatementSupportManager->add(new AndroidKeyAttestationStatementSupport($decoder));
 		$attestationStatementSupportManager->add(new TPMAttestationStatementSupport());
 		$attestationStatementSupportManager->add(new PackedAttestationStatementSupport($decoder, $coseAlgorithmManager));
@@ -294,7 +288,7 @@ abstract class CredentialsCreation
 		$publicKeyCredentialLoader = new PublicKeyCredentialLoader($attestationObjectLoader, $decoder);
 
 		// Credential Repository
-		$credentialRepository = new CredentialRepository();
+		$credentialRepository = new Repository();
 
 		// Extension output checker handler
 		$extensionOutputCheckerHandler = new ExtensionOutputCheckerHandler();

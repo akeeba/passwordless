@@ -31,8 +31,8 @@
 # Built packages
 /release
 
-# Dependencies
-/plugins/system/passwordless/vendor
+# Composer
+/vendor
 
 # Node.js modules (used to install Babel)
 /node_modules

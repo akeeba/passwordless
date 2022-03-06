@@ -1,23 +1,20 @@
 <?php
 /**
  * @package   AkeebaPasswordlessLogin
- * @copyright Copyright (c)2018-2021 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2018-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
-namespace Akeeba\Passwordless\PluginTraits;
+namespace Joomla\Plugin\System\Passwordless\Extension\Traits;
 
 // Protect from unauthorized access
 defined('_JEXEC') or die();
 
-use Akeeba\Passwordless\CredentialRepository;
-use Akeeba\Passwordless\Helper\Joomla;
 use Exception;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\UserHelper;
-use Throwable;
-use Webauthn\AuthenticationExtensions\AuthenticationExtension;
+use Joomla\Plugin\System\Passwordless\Credential\Repository;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\PublicKeyCredentialRequestOptions;
 use Webauthn\PublicKeyCredentialSource;
@@ -28,6 +25,8 @@ use Webauthn\PublicKeyCredentialUserEntity;
  *
  * Generates the public key and challenge which is used by the browser when logging in with Webauthn. This is the bit
  * which prevents tampering with the login process and replay attacks.
+ *
+ * @since 1.0.0
  */
 trait AjaxHandlerChallenge
 {
@@ -38,19 +37,19 @@ trait AjaxHandlerChallenge
 	 * @return   string  A JSON-encoded object or JSON-encoded false if the username is invalid or no credentials stored
 	 *
 	 * @throws   Exception
+	 * @since    1.0.0
 	 */
 	public function onAjaxPasswordlessChallenge()
 	{
 		// Initialize objects
-		$input = Joomla::getApplication()->input;
-
+		$input        = $this->app->input;
 		$rememberUser = $this->params->get('rememberUser', 1) == 1;
 
 		// Retrieve data from the request
-		$username   = $input->getUsername('username', '');
-		$returnUrl  = base64_encode(Joomla::getSessionVar('returnUrl', Uri::current(), 'plg_system_passwordless'));
-		$returnUrl  = $input->getBase64('returnUrl', $returnUrl);
-		$returnUrl  = base64_decode($returnUrl);
+		$username  = $input->getUsername('username', '');
+		$returnUrl = base64_encode($this->app->getSession()->get('plg_system_passwordless.returnUrl', Uri::current()));
+		$returnUrl = $input->getBase64('returnUrl', $returnUrl);
+		$returnUrl = base64_decode($returnUrl);
 
 		/**
 		 * For security reasons, if you type in a username we need to remove the user handle cookie.
@@ -71,7 +70,7 @@ trait AjaxHandlerChallenge
 		}
 
 		// Get the return URL
-		Joomla::setSessionVar('returnUrl', $returnUrl, 'plg_system_passwordless');
+		$this->app->getSession()->set('plg_system_passwordless.returnUrl', $returnUrl);
 
 		// Get the user_id from the username, if a username was specified at all
 		try
@@ -91,7 +90,7 @@ trait AjaxHandlerChallenge
 
 			if (!empty($userHandle))
 			{
-				$repository = new CredentialRepository();
+				$repository = new Repository();
 				$user_id    = $repository->getUserIdFromHandle($userHandle) ?? 0;
 			}
 		}
@@ -99,21 +98,21 @@ trait AjaxHandlerChallenge
 		if (!$rememberUser && empty($user_id))
 		{
 			return json_encode([
-				'error' => Text::_('PLG_SYSTEM_PASSWORDLESS_ERR_EMPTY_USERNAME')
+				'error' => Text::_('PLG_SYSTEM_PASSWORDLESS_ERR_EMPTY_USERNAME'),
 			], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 		}
 
 		if ($rememberUser && empty($username) && empty($user_id))
 		{
 			return json_encode([
-				'error' => Text::_('PLG_SYSTEM_PASSWORDLESS_ERR_EMPTY_USERNAME_FIRST_TIME')
+				'error' => Text::_('PLG_SYSTEM_PASSWORDLESS_ERR_EMPTY_USERNAME_FIRST_TIME'),
 			], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 		}
 
 		if (!empty($username) && empty($user_id))
 		{
 			return json_encode([
-				'error' => Text::_('PLG_SYSTEM_PASSWORDLESS_ERR_INVALID_USERNAME')
+				'error' => Text::_('PLG_SYSTEM_PASSWORDLESS_ERR_INVALID_USERNAME'),
 			], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 		}
 
@@ -133,61 +132,51 @@ trait AjaxHandlerChallenge
 		);
 
 		// Save in session. This is used during the verification stage to prevent replay attacks.
-		Joomla::setSessionVar('publicKeyCredentialRequestOptions', base64_encode(serialize($publicKeyCredentialRequestOptions)), 'plg_system_passwordless');
+		$this->app->getSession()->set('plg_system_passwordless.publicKeyCredentialRequestOptions', base64_encode(serialize($publicKeyCredentialRequestOptions)));
 
 		// Return the JSON encoded data to the caller
 		return json_encode($publicKeyCredentialRequestOptions, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 	}
 
 	/**
-	 * @param   int  $user_id
+	 * Return the PK descriptors for the user's already registered authenticators
 	 *
-	 * @return array
+	 * @param   int  $user_id  The user's ID
+	 *
+	 * @return  array
+	 * @since   1.0.0
 	 */
 	private function getRegisteredPublicKeyCredentialDescriptors(int $user_id): array
 	{
-		$registeredPublicKeyCredentialDescriptors = [];
-
 		if (empty($user_id))
 		{
-			return $registeredPublicKeyCredentialDescriptors;
+			return [];
 		}
 
 		// Load the saved credentials into an array of PublicKeyCredentialDescriptor objects
 		try
 		{
-			$repository  = new CredentialRepository();
+			$repository  = new Repository();
 			$userHandle  = $repository->getHandleFromUserId($user_id);
 			$userEntity  = new PublicKeyCredentialUserEntity('', $userHandle, '');
 			$credentials = $repository->findAllForUserEntity($userEntity);
 		}
 		catch (Exception $e)
 		{
-			return $registeredPublicKeyCredentialDescriptors;
+			return [];
 		}
 
 		// No stored credentials?
 		if (empty($credentials))
 		{
-			return $registeredPublicKeyCredentialDescriptors;
+			return [];
 		}
 
-		/** @var PublicKeyCredentialSource $record */
-		foreach ($credentials as $record)
-		{
-			try
-			{
-				$registeredPublicKeyCredentialDescriptors[] = $record->getPublicKeyCredentialDescriptor();
-			}
-			catch (Throwable $e)
-			{
-				continue;
-			}
-		}
+		$this->app->getSession()->set('plg_system_passwordless.userHandle', $userHandle);
+		$this->app->getSession()->set('plg_system_passwordless.userId', $user_id);
 
-		Joomla::setSessionVar('userHandle', $userHandle, 'plg_system_passwordless');
-		Joomla::setSessionVar('userId', $user_id, 'plg_system_passwordless');
-
-		return $registeredPublicKeyCredentialDescriptors;
+		return array_map(function(PublicKeyCredentialSource $record) {
+			return $record->getPublicKeyCredentialDescriptor();
+		}, $credentials);
 	}
 }

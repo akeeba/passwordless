@@ -1,17 +1,17 @@
 <?php
 /**
  * @package   AkeebaPasswordlessLogin
- * @copyright Copyright (c)2018-2021 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2018-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
-namespace Akeeba\Passwordless\PluginTraits;
+namespace Joomla\Plugin\System\Passwordless\Extension\Traits;
 
 // Protect from unauthorized access
 defined('_JEXEC') or die();
 
-use Akeeba\Passwordless\Helper\Joomla;
 use Exception;
+use Joomla\CMS\Log\Log;
 use Joomla\Utilities\ArrayHelper;
 
 trait UserDeletion
@@ -21,13 +21,11 @@ trait UserDeletion
 	 *
 	 * This method is called after user data is deleted from the database.
 	 *
-	 * @param   array   $user     Holds the user data
-	 * @param   bool    $success  True if user was successfully stored in the database
-	 * @param   string  $msg      Message
+	 * @param   array        $user     Holds the user data
+	 * @param   bool         $success  True if user was successfully stored in the database
+	 * @param   string|null  $msg      Message
 	 *
 	 * @return  bool
-	 *
-	 * @throws  Exception
 	 *
 	 * @since   1.0.0
 	 */
@@ -42,15 +40,21 @@ trait UserDeletion
 
 		if ($userId)
 		{
-			Joomla::log('system', "Removing Akeeba Passwordless Login information for deleted user #{$userId}");
+			Log::add(Log::INFO, 'plg_system_passwordless', sprintf('Removing Akeeba Passwordless Login information for deleted user #%s', $userId));
 
-			$db = Joomla::getDbo();
-
+			$db    = $this->db;
 			$query = $db->getQuery(true)
 				->delete($db->qn('#__passwordless_credentials'))
-				->where($db->qn('user_id').' = '.$db->q($userId));
+				->where($db->qn('user_id') . ' = ' . $db->q($userId));
 
-			$db->setQuery($query)->execute();
+			try
+			{
+				$db->setQuery($query)->execute();
+			}
+			catch (Exception $e)
+			{
+				// Suck it.
+			}
 		}
 
 		return true;

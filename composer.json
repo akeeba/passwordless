@@ -10,14 +10,8 @@
       "role": "Lead Developer"
     }
   ],
-  "config": {
-    "vendor-dir": "plugins/system/passwordless/vendor"
-  },
   "require": {
-    "php": "^7.2",
-    "ext-json": "*",
-    "ramsey/uuid": "^3.8.0",
-    "web-auth/webauthn-lib": "^2.0.0",
-    "laminas/laminas-diactoros": "^2.3"
+    "php": "^7.2|^8.0",
+    "ext-json": "*"
   }
 }

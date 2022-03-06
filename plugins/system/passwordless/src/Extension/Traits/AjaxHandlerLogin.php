@@ -1,36 +1,41 @@
 <?php
 /**
  * @package   AkeebaPasswordlessLogin
- * @copyright Copyright (c)2018-2021 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2018-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
-namespace Akeeba\Passwordless\PluginTraits;
+namespace Joomla\Plugin\System\Passwordless\Extension\Traits;
 
 // Protect from unauthorized access
 defined('_JEXEC') or die();
 
-use Akeeba\Passwordless\CredentialRepository;
-use Akeeba\Passwordless\Helper\Joomla;
 use CBOR\Decoder;
 use CBOR\OtherObject\OtherObjectManager;
 use CBOR\Tag\TagObjectManager;
+use Cose\Algorithm\Mac\HS256;
+use Cose\Algorithm\Mac\HS384;
+use Cose\Algorithm\Mac\HS512;
 use Cose\Algorithm\Manager;
 use Cose\Algorithm\Signature\ECDSA;
 use Cose\Algorithm\Signature\EdDSA;
 use Cose\Algorithm\Signature\RSA;
 use Exception;
-use JLoader;
-use Joomla\CMS\Application\BaseApplication;
 use Joomla\CMS\Authentication\Authentication;
 use Joomla\CMS\Authentication\AuthenticationResponse;
+use Joomla\CMS\Event\GenericEvent;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Uri\Uri;
+use Joomla\CMS\User\UserFactoryInterface;
+use Joomla\Plugin\System\Passwordless\Credential\Repository;
+use Laminas\Diactoros\RequestFactory;
+use Laminas\Diactoros\ServerRequestFactory;
 use RuntimeException;
 use Webauthn\AttestationStatement\AndroidKeyAttestationStatementSupport;
+use Webauthn\AttestationStatement\AndroidSafetyNetAttestationStatementSupport;
 use Webauthn\AttestationStatement\AttestationObjectLoader;
 use Webauthn\AttestationStatement\AttestationStatementSupportManager;
 use Webauthn\AttestationStatement\FidoU2FAttestationStatementSupport;
@@ -43,7 +48,6 @@ use Webauthn\AuthenticatorAssertionResponseValidator;
 use Webauthn\PublicKeyCredentialLoader;
 use Webauthn\PublicKeyCredentialRequestOptions;
 use Webauthn\TokenBinding\TokenBindingNotSupportedHandler;
-use Zend\Diactoros\ServerRequestFactory;
 
 /**
  * Ajax handler for akaction=login
@@ -64,14 +68,14 @@ trait AjaxHandlerLogin
 	 */
 	public function onAjaxPasswordlessLogin(): void
 	{
-		$returnUrl = Joomla::getSessionVar('returnUrl', Uri::base(), 'plg_system_passwordless');
-		$userId    = Joomla::getSessionVar('userId', 0, 'plg_system_passwordless');
+		$returnUrl = $this->app->getSession()->get('plg_system_passwordless.returnUrl', Uri::base());
+		$userId    = $this->app->getSession()->get('plg_system_passwordless.userId', 0);
 
 		try
 		{
 			// Validate the authenticator response and get the user handle
 			$userHandle           = $this->getUserHandleFromResponse();
-			$credentialRepository = new CredentialRepository();
+			$credentialRepository = new Repository();
 
 			if (is_null($userHandle))
 			{
@@ -97,7 +101,7 @@ trait AjaxHandlerLogin
 			}
 
 			// Make sure the user exists
-			$user = Joomla::getUser($userId);
+			$user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($userId);
 
 			if ($user->id != $userId)
 			{
@@ -105,22 +109,22 @@ trait AjaxHandlerLogin
 			}
 
 			// Login the user
-			Joomla::log('system', "Logging in the user", Log::INFO);
+			Log::add(Log::INFO, 'plg_system_passwordless', 'Logging in the user');
 			$this->loginUser((int) $userId);
 		}
 		catch (\Throwable $e)
 		{
-			Joomla::setSessionVar('publicKeyCredentialRequestOptions', null, 'plg_system_passwordless');
-			Joomla::setSessionVar('userHandle', null, 'plg_system_passwordless');
+			$this->app->getSession()->set('plg_system_passwordless.publicKeyCredentialRequestOptions', null);
+			$this->app->getSession()->set('plg_system_passwordless.userHandle', null);
 
 			$response                = $this->getAuthenticationResponseObject();
 			$response->status        = Authentication::STATUS_UNKNOWN;
 			$response->error_message = $e->getMessage();
 
-			Joomla::log('system', sprintf("Received login failure. Message: %s", $e->getMessage()), Log::ERROR);
+			Log::add(Log::ERROR, 'plg_system_passwordless', sprintf('Received login failure. Message: %s', $e->getMessage()));
 
 			// This also enqueues the login failure message for display after redirection. Look for JLog in that method.
-			$this->processLoginFailure($response, null, 'system');
+			$this->processLoginFailure($response);
 		}
 		finally
 		{
@@ -130,42 +134,32 @@ trait AjaxHandlerLogin
 			 */
 
 			// Remove temporary information for security reasons
-			Joomla::setSessionVar('publicKeyCredentialRequestOptions', null, 'plg_system_passwordless');
-			Joomla::setSessionVar('userHandle', null, 'plg_system_passwordless');
-			Joomla::setSessionVar('returnUrl', null, 'plg_system_passwordless');
-			Joomla::setSessionVar('userId', null, 'plg_system_passwordless');
+			$this->app->getSession()->set('plg_system_passwordless.publicKeyCredentialRequestOptions', null);
+			$this->app->getSession()->set('plg_system_passwordless.userHandle', null);
+			$this->app->getSession()->set('plg_system_passwordless.returnUrl', null);
+			$this->app->getSession()->set('plg_system_passwordless.userId', null);
 
 			// Redirect back to the page we were before.
-			Joomla::getApplication()->redirect($returnUrl);
+			$this->app->redirect($returnUrl);
 		}
 	}
 
 	/**
 	 * Logs in a user to the site, bypassing the authentication plugins.
 	 *
-	 * @param   int              $userId  The user ID to log in
-	 * @param   BaseApplication  $app     The application we are running in. Skip to auto-detect (recommended).
+	 * @param   int  $userId  The user ID to log in
 	 *
-	 * @throws  Exception
-	 *
+	 * @throws Exception
 	 * @since   1.0.0
 	 */
-	private function loginUser(int $userId, BaseApplication $app = null): void
+	private function loginUser(int $userId): void
 	{
 		// Trick the class auto-loader into loading the necessary classes
-		JLoader::import('joomla.user.authentication');
-		JLoader::import('joomla.plugin.helper');
-		JLoader::import('joomla.user.helper');
 		class_exists('Joomla\\CMS\\Authentication\\Authentication', true);
 
 		// Fake a successful login message
-		if (!is_object($app))
-		{
-			$app = Joomla::getApplication();
-		}
-
-		$isAdmin = $app->isClient('administrator');
-		$user    = Joomla::getUser($userId);
+		$isAdmin = $this->app->isClient('administrator');
+		$user    = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($userId);
 
 		// Does the user account have a pending activation?
 		if (!empty($user->activation))
@@ -212,33 +206,37 @@ trait AjaxHandlerLogin
 			'action'   => 'core.login.site',
 		];
 
-		if (Joomla::isAdminPage())
+		if ($isAdmin)
 		{
 			$options['action'] = 'core.login.admin';
 		}
 
 		// Run the user plugins. They CAN block login by returning boolean false and setting $response->error_message.
 		PluginHelper::importPlugin('user');
-		$results = Joomla::runPlugins('onUserLogin', [(array) $response, $options], $app);
+		$event   = new GenericEvent('onUserLogin', [(array) $response, $options]);
+		$result  = $this->app->getDispatcher()->dispatch($event->getName(), $event);
+		$results = !isset($result['result']) || \is_null($result['result']) ? [] : $result['result'];
 
 		// If there is no boolean FALSE result from any plugin the login is successful.
-		if (in_array(false, $results, true) == false)
+		if (in_array(false, $results, true) === false)
 		{
 			// Set the user in the session, letting Joomla! know that we are logged in.
-			Factory::getApplication()->getSession()->set('user', $user);
+			$this->app->getSession()->set('user', $user);
 
 			// Trigger the onUserAfterLogin event
 			$options['user']         = $user;
 			$options['responseType'] = $response->type;
 
 			// The user is successfully logged in. Run the after login events
-			Joomla::runPlugins('onUserAfterLogin', [$options], $app);
+			$event = new GenericEvent('onUserAfterLogin', [$options]);
+			$this->app->getDispatcher()->dispatch($event->getName(), $event);
 
 			return;
 		}
 
 		// If we are here the plugins marked a login failure. Trigger the onUserLoginFailure Event.
-		Joomla::runPlugins('onUserLoginFailure', [(array) $response], $app);
+		$event = new GenericEvent('onUserLoginFailure', [(array) $response]);
+		$this->app->getDispatcher()->dispatch($event->getName(), $event);
 
 		// Log the failure
 		Log::add($response->error_message, Log::WARNING, 'jerror');
@@ -257,7 +255,6 @@ trait AjaxHandlerLogin
 	private function getAuthenticationResponseObject(): AuthenticationResponse
 	{
 		// Force the class auto-loader to load the JAuthentication class
-		JLoader::import('joomla.user.authentication');
 		class_exists('Joomla\\CMS\\Authentication\\Authentication', true);
 
 		return new AuthenticationResponse();
@@ -266,44 +263,36 @@ trait AjaxHandlerLogin
 	/**
 	 * Have Joomla! process a login failure
 	 *
-	 * @param   AuthenticationResponse  $response    The Joomla! auth response object
-	 * @param   BaseApplication         $app         The application we are running in. Skip to auto-detect
-	 *                                               (recommended).
-	 * @param   string                  $logContext  Logging context (plugin name). Default: system.
+	 * @param   AuthenticationResponse  $response  The Joomla! auth response object
 	 *
 	 * @return  bool
 	 *
-	 * @throws  Exception
-	 *
 	 * @since   1.0.0
 	 */
-	private function processLoginFailure(AuthenticationResponse $response, BaseApplication $app = null, string $logContext = 'system')
+	private function processLoginFailure(AuthenticationResponse $response)
 	{
 		// Import the user plugin group.
 		PluginHelper::importPlugin('user');
 
-		if (!is_object($app))
-		{
-			$app = Joomla::getApplication();
-		}
-
 		// Trigger onUserLoginFailure Event.
-		Joomla::log($logContext, "Calling onUserLoginFailure plugin event");
-		Joomla::runPlugins('onUserLoginFailure', [(array) $response], $app);
+		Log::add(Log::INFO, 'plg_system_passwordless', "Calling onUserLoginFailure plugin event");
+
+		$event = new GenericEvent('onUserLoginFailure', [(array) $response]);
+		$this->app->getDispatcher()->dispatch($event->getName(), $event);
 
 		// If status is success, any error will have been raised by the user plugin
 		$expectedStatus = Authentication::STATUS_SUCCESS;
 
 		if ($response->status !== $expectedStatus)
 		{
-			Joomla::log($logContext, "The login failure has been logged in Joomla's error log");
+			Log::add(Log::INFO, 'plg_system_passwordless', 'The login failure has been logged in Joomla\'s error log');
 
 			// Everything logged in the 'jerror' category ends up being enqueued in the application message queue.
 			Log::add($response->error_message, Log::WARNING, 'jerror');
 		}
 		else
 		{
-			Joomla::log($logContext, "The login failure was caused by a third party user plugin but it did not return any further information. Good luck figuring this one out...", Log::WARNING);
+			Log::add(Log::WARNING, 'plg_system_passwordless', 'The login failure was caused by a third party user plugin but it did not return any further information. Good luck figuring this one out...');
 		}
 
 		return false;
@@ -321,8 +310,8 @@ trait AjaxHandlerLogin
 	private function getUserHandleFromResponse(): ?string
 	{
 		// Initialize objects
-		$input                = Joomla::getApplication()->input;
-		$credentialRepository = new CredentialRepository();
+		$input                = $this->app->input;
+		$credentialRepository = new Repository();
 
 		// Retrieve data from the request and session
 		$data = $input->getBase64('data', '');
@@ -337,12 +326,22 @@ trait AjaxHandlerLogin
 
 		// Cose Algorithm Manager
 		$coseAlgorithmManager = new Manager();
-		$coseAlgorithmManager->add(new ECDSA\ES256());
+		if (function_exists('sodium_crypto_sign_seed_keypair'))
+		{
+			$coseAlgorithmManager->add(new EdDSA\EdDSA());
+		}
 		$coseAlgorithmManager->add(new ECDSA\ES512());
-		$coseAlgorithmManager->add(new EdDSA\EdDSA());
-		$coseAlgorithmManager->add(new RSA\RS1());
-		$coseAlgorithmManager->add(new RSA\RS256());
+		$coseAlgorithmManager->add(new ECDSA\ES384());
+		$coseAlgorithmManager->add(new ECDSA\ES256());
+		$coseAlgorithmManager->add(new RSA\PS512());
+		$coseAlgorithmManager->add(new RSA\PS384());
+		$coseAlgorithmManager->add(new RSA\PS256());
+		$coseAlgorithmManager->add(new HS512());
+		$coseAlgorithmManager->add(new HS384());
+		$coseAlgorithmManager->add(new HS256());
 		$coseAlgorithmManager->add(new RSA\RS512());
+		$coseAlgorithmManager->add(new RSA\RS384());
+		$coseAlgorithmManager->add(new RSA\RS256());
 
 		// Create a CBOR Decoder object
 		$otherObjectManager = new OtherObjectManager();
@@ -353,7 +352,14 @@ trait AjaxHandlerLogin
 		$attestationStatementSupportManager = new AttestationStatementSupportManager();
 		$attestationStatementSupportManager->add(new NoneAttestationStatementSupport());
 		$attestationStatementSupportManager->add(new FidoU2FAttestationStatementSupport($decoder));
-		//$attestationStatementSupportManager->add(new AndroidSafetyNetAttestationStatementSupport(HttpFactory::getHttp(), 'GOOGLE_SAFETYNET_API_KEY', new RequestFactory()));
+		try
+		{
+			$attestationStatementSupportManager->add(new AndroidSafetyNetAttestationStatementSupport(\Joomla\CMS\Http\HttpFactory::getHttp(), 'GOOGLE_SAFETYNET_API_KEY', new RequestFactory()));
+		}
+		catch (\Throwable $e)
+		{
+			// Suck it.
+		}
 		$attestationStatementSupportManager->add(new AndroidKeyAttestationStatementSupport($decoder));
 		$attestationStatementSupportManager->add(new TPMAttestationStatementSupport());
 		$attestationStatementSupportManager->add(new PackedAttestationStatementSupport($decoder, $coseAlgorithmManager));
@@ -420,7 +426,7 @@ trait AjaxHandlerLogin
 
 		/** @var AuthenticatorAssertionResponse $authenticatorAssertionResponse */
 		$authenticatorAssertionResponse = $publicKeyCredential->getResponse();
-		$userHandle                     = Joomla::getSessionVar('userHandle', null, 'plg_system_passwordless');
+		$userHandle                     = $this->app->getSession()->get('plg_system_passwordless.userHandle', null);
 		$userHandle                     = empty($userHandle) ? null : $userHandle;
 
 		$authenticatorAssertionResponseValidator->check(
@@ -454,7 +460,7 @@ trait AjaxHandlerLogin
 	 */
 	private function getPKCredentialRequestOptions(): PublicKeyCredentialRequestOptions
 	{
-		$encodedOptions = Joomla::getSessionVar('publicKeyCredentialRequestOptions', null, 'plg_system_passwordless');
+		$encodedOptions = $this->app->getSession()->get('plg_system_passwordless.publicKeyCredentialRequestOptions', null);
 
 		if (empty($encodedOptions))
 		{

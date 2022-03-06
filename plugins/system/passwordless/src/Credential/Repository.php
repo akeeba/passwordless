@@ -1,19 +1,21 @@
 <?php
 /**
  * @package   AkeebaPasswordlessLogin
- * @copyright Copyright (c)2018-2021 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2018-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
-namespace Akeeba\Passwordless;
+namespace Joomla\Plugin\System\Passwordless\Credential;
 
+use DateTimeZone;
 use Exception;
-use FOFEncryptAes;
 use InvalidArgumentException;
+use Joomla\CMS\Date\Date;
 use Joomla\CMS\Encrypt\Aes as JoomlaAes;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
-use Akeeba\Passwordless\Helper\Joomla;
+use Joomla\CMS\User\User;
+use Joomla\Database\DatabaseDriver;
 use JsonException;
 use RuntimeException;
 use Throwable;
@@ -29,12 +31,12 @@ defined('_JEXEC') or die();
  *
  * @since   1.0.0
  */
-class CredentialRepository implements PublicKeyCredentialSourceRepository
+class Repository implements PublicKeyCredentialSourceRepository
 {
 	/**
 	 * Returns a PublicKeyCredentialSource object given the public key credential ID
 	 *
-	 * @param string $publicKeyCredentialId
+	 * @param   string  $publicKeyCredentialId
 	 *
 	 * @return  PublicKeyCredentialSource|null
 	 *
@@ -42,7 +44,7 @@ class CredentialRepository implements PublicKeyCredentialSourceRepository
 	 */
 	public function findOneByCredentialId(string $publicKeyCredentialId): ?PublicKeyCredentialSource
 	{
-		$db           = Joomla::getDbo();
+		$db           = self::getDbo();
 		$credentialId = base64_encode($publicKeyCredentialId);
 		$query        = $db->getQuery(true)
 			->select($db->qn('credential'))
@@ -78,7 +80,7 @@ class CredentialRepository implements PublicKeyCredentialSourceRepository
 	 */
 	public function findAllForUserEntity(PublicKeyCredentialUserEntity $publicKeyCredentialUserEntity): array
 	{
-		$db         = Joomla::getDbo();
+		$db         = self::getDbo();
 		$userHandle = $publicKeyCredentialUserEntity->getId();
 		$query      = $db->getQuery(true)
 			->select('*')
@@ -128,7 +130,7 @@ class CredentialRepository implements PublicKeyCredentialSourceRepository
 	/**
 	 * Add or update an attested credential for a given user.
 	 *
-	 * @param PublicKeyCredentialSource $publicKeyCredentialSource The public key credential source to store
+	 * @param   PublicKeyCredentialSource  $publicKeyCredentialSource  The public key credential source to store
 	 *
 	 * @return  void
 	 *
@@ -138,15 +140,15 @@ class CredentialRepository implements PublicKeyCredentialSourceRepository
 	{
 		// Default values for saving a new credential source
 		$credentialId = base64_encode($publicKeyCredentialSource->getPublicKeyCredentialId());
-		$user         = Joomla::getUser();
+		$user         = Factory::getApplication()->getIdentity() ?? new User();
 		$o            = (object) [
 			'id'         => $credentialId,
 			'user_id'    => $this->getHandleFromUserId($user->id),
-			'label'      => Text::sprintf('PLG_SYSTEM_PASSWORDLESS_LBL_DEFAULT_AUTHENTICATOR_LABEL', Joomla::formatDate('now')),
+			'label'      => Text::sprintf('PLG_SYSTEM_PASSWORDLESS_LBL_DEFAULT_AUTHENTICATOR_LABEL', self::formatDate('now')),
 			'credential' => json_encode($publicKeyCredentialSource),
 		];
 		$update       = false;
-		$db           = Joomla::getDbo();
+		$db           = self::getDbo();
 
 		// Try to find an existing record
 		try
@@ -205,7 +207,7 @@ class CredentialRepository implements PublicKeyCredentialSourceRepository
 	/**
 	 * Get all credential information for a given user ID. This is meant to only be used for displaying records.
 	 *
-	 * @param int $user_id The user ID
+	 * @param   int  $user_id  The user ID
 	 *
 	 * @return  array
 	 *
@@ -214,7 +216,7 @@ class CredentialRepository implements PublicKeyCredentialSourceRepository
 	public function getAll(int $user_id): array
 	{
 
-		$db         = Joomla::getDbo();
+		$db         = self::getDbo();
 		$userHandle = $this->getHandleFromUserId($user_id);
 		$query      = $db->getQuery(true)
 			->select('*')
@@ -241,7 +243,7 @@ class CredentialRepository implements PublicKeyCredentialSourceRepository
 	/**
 	 * Do we have stored credentials under the specified Credential ID?
 	 *
-	 * @param string $credentialId
+	 * @param   string  $credentialId
 	 *
 	 * @return  bool
 	 *
@@ -249,7 +251,7 @@ class CredentialRepository implements PublicKeyCredentialSourceRepository
 	 */
 	public function has(string $credentialId): bool
 	{
-		$db           = Joomla::getDbo();
+		$db           = self::getDbo();
 		$credentialId = base64_encode($credentialId);
 		$query        = $db->getQuery(true)
 			->select('COUNT(*)')
@@ -271,8 +273,8 @@ class CredentialRepository implements PublicKeyCredentialSourceRepository
 	/**
 	 * Update the human readable label of a credential
 	 *
-	 * @param string $credentialId The credential ID
-	 * @param string $label        The human readable label to set
+	 * @param   string  $credentialId  The credential ID
+	 * @param   string  $label         The human readable label to set
 	 *
 	 * @return  void
 	 *
@@ -280,7 +282,7 @@ class CredentialRepository implements PublicKeyCredentialSourceRepository
 	 */
 	public function setLabel(string $credentialId, string $label): void
 	{
-		$db           = Joomla::getDbo();
+		$db           = self::getDbo();
 		$credentialId = base64_encode($credentialId);
 		$o            = (object) [
 			'id'    => $credentialId,
@@ -293,7 +295,7 @@ class CredentialRepository implements PublicKeyCredentialSourceRepository
 	/**
 	 * Remove stored credentials
 	 *
-	 * @param string $credentialId The credentials ID to remove
+	 * @param   string  $credentialId  The credentials ID to remove
 	 *
 	 * @return  void
 	 *
@@ -306,7 +308,7 @@ class CredentialRepository implements PublicKeyCredentialSourceRepository
 			return;
 		}
 
-		$db           = Joomla::getDbo();
+		$db           = self::getDbo();
 		$credentialId = base64_encode($credentialId);
 		$query        = $db->getQuery(true)
 			->delete($db->qn('#__passwordless_credentials'))
@@ -322,7 +324,7 @@ class CredentialRepository implements PublicKeyCredentialSourceRepository
 	 * acceptable to have a salted hash with a salt private to our server, e.g. Joomla's secret. The only immutable
 	 * information in Joomla is the user ID so that's what we will be using.
 	 *
-	 * @param string $credentialId
+	 * @param   string  $credentialId
 	 *
 	 * @return  string
 	 *
@@ -345,7 +347,7 @@ class CredentialRepository implements PublicKeyCredentialSourceRepository
 	 * secret as the key. Using it instead of SHA-512 is on purpose! WebAuthn only allows user handles up to 64 bytes
 	 * long.
 	 *
-	 * @param int $id The user ID to convert
+	 * @param   int  $id  The user ID to convert
 	 *
 	 * @return  string  The user handle (HMAC-SHA-256 of the user ID)
 	 *
@@ -386,7 +388,7 @@ class CredentialRepository implements PublicKeyCredentialSourceRepository
 			return null;
 		}
 
-		$db    = Joomla::getDbo();
+		$db = self::getDbo();
 
 		// Check that the userHandle does exist in the database
 		$query = $db->getQuery(true)
@@ -459,7 +461,7 @@ class CredentialRepository implements PublicKeyCredentialSourceRepository
 	/**
 	 * Encrypt the credential source before saving it to the database
 	 *
-	 * @param string $credential The unencrypted, JSON-encoded credential source
+	 * @param   string  $credential  The unencrypted, JSON-encoded credential source
 	 *
 	 * @return  string  The encrypted credential source, base64 encoded
 	 *
@@ -474,14 +476,7 @@ class CredentialRepository implements PublicKeyCredentialSourceRepository
 			return $credential;
 		}
 
-		if (version_compare(JVERSION, '3.999.999', 'le'))
-		{
-			$aes = new FOFEncryptAes($key, 256);
-		}
-		else
-		{
-			$aes = new JoomlaAes($key, 256);
-		}
+		$aes = new JoomlaAes($key, 256);
 
 		return trim($aes->encryptString($credential));
 	}
@@ -489,7 +484,7 @@ class CredentialRepository implements PublicKeyCredentialSourceRepository
 	/**
 	 * Decrypt the credential source if it was already encrypted in the database
 	 *
-	 * @param string $credential The encrypted credential source, base64 encoded
+	 * @param   string  $credential  The encrypted credential source, base64 encoded
 	 *
 	 * @return  string  The decrypted, JSON-encoded credential source
 	 *
@@ -510,14 +505,7 @@ class CredentialRepository implements PublicKeyCredentialSourceRepository
 			return $credential;
 		}
 
-		if (version_compare(JVERSION, '3.999.999', 'le'))
-		{
-			$aes = new FOFEncryptAes($key, 256);
-		}
-		else
-		{
-			$aes = new JoomlaAes($key, 256);
-		}
+		$aes = new JoomlaAes($key, 256);
 
 		return trim($aes->decryptString($credential));
 	}
@@ -533,7 +521,7 @@ class CredentialRepository implements PublicKeyCredentialSourceRepository
 	{
 		try
 		{
-			$secret = Joomla::getConfig()->get('secret', '');
+			$secret = Factory::getApplication()->get('secret', '');
 		}
 		catch (Exception $e)
 		{
@@ -542,4 +530,79 @@ class CredentialRepository implements PublicKeyCredentialSourceRepository
 
 		return $secret;
 	}
+
+	/**
+	 * Get the database driver object
+	 *
+	 * @return  DatabaseDriver
+	 *
+	 * @since   1.0.0
+	 */
+	private static function getDbo(): DatabaseDriver
+	{
+		return Factory::getContainer()->get('DatabaseDriver');
+	}
+
+	/**
+	 * Format a date for display.
+	 *
+	 * The $tzAware parameter defines whether the formatted date will be timezone-aware. If set to false the formatted
+	 * date will be rendered in the UTC timezone. If set to true the code will automatically try to use the logged in
+	 * user's timezone or, if none is set, the site's default timezone (Server Timezone). If set to a positive integer
+	 * the same thing will happen but for the specified user ID instead of the currently logged in user.
+	 *
+	 * @param   string|\DateTime  $date     The date to format
+	 * @param   string|null       $format   The format string, default is Joomla's DATE_FORMAT_LC6 (usually "Y-m-d
+	 *                                      H:i:s")
+	 * @param   bool              $tzAware  Should the format be timezone aware? See notes above.
+	 *
+	 * @return  string
+	 */
+	private static function formatDate($date, ?string $format = null, bool $tzAware = true): string
+	{
+		$utcTimeZone = new DateTimeZone('UTC');
+		$jDate       = new Date($date, $utcTimeZone);
+
+		// Which timezone should I use?
+		$tz = null;
+
+		if ($tzAware !== false)
+		{
+			$userId = is_bool($tzAware) ? null : (int) $tzAware;
+
+			try
+			{
+				$tzDefault = Factory::getApplication()->get('offset');
+			}
+			catch (\Exception $e)
+			{
+				$tzDefault = 'GMT';
+			}
+
+			$user = Factory::getUser($userId);
+			$tz   = $user->getParam('timezone', $tzDefault);
+		}
+
+		if (!empty($tz))
+		{
+			try
+			{
+				$userTimeZone = new DateTimeZone($tz);
+
+				$jDate->setTimezone($userTimeZone);
+			}
+			catch (\Exception $e)
+			{
+				// Nothing. Fall back to UTC.
+			}
+		}
+
+		if (empty($format))
+		{
+			$format = Text::_('DATE_FORMAT_LC6');
+		}
+
+		return $jDate->format($format, true);
+	}
+
 }

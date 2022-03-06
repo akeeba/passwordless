@@ -1,0 +1,45 @@
+{
+	"$schema": "https://developer.joomla.org/schemas/json-schema/web_assets.json",
+	"name": "plg_system_passwordless",
+	"version": "1.0.0",
+	"description": "Akeeba Passwordless Authentication",
+	"license": "GPL-3.0-or-later",
+	"assets": [
+		{
+			"name": "plg_system_passwordless.backend",
+			"description": "Administration CSS",
+			"type": "style",
+			"uri": "plg_system_passwordless/backend.css"
+		},
+
+		{
+			"name": "plg_system_passwordless.button",
+			"description": "Login button CSS",
+			"type": "style",
+			"uri": "plg_system_passwordless/button.css"
+		},
+
+		{
+			"name": "plg_system_passwordless.login",
+			"description": "Login JavaScript",
+			"type": "script",
+			"uri": "plg_system_passwordless/dist/passwordless.js",
+			"dependencies": [
+				"core"
+			],
+			"attributes": {
+				"defer": true
+			}
+		},
+
+		{
+			"name": "plg_system_passwordless.login",
+			"type": "preset",
+			"dependencies": [
+				"plg_system_passwordless.button#style",
+				"plg_system_passwordless.login#script"
+			]
+		}
+
+	]
+}

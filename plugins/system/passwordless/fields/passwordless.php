@@ -7,9 +7,13 @@
 
 // Prevent direct access
 use Akeeba\Passwordless\Helper\Joomla;
+use Joomla\CMS\Factory;
 use Joomla\CMS\Form\FormField;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Layout\FileLayout;
+use Joomla\CMS\User\User;
+use Joomla\CMS\User\UserFactoryInterface;
 
 defined('_JEXEC') or die;
 
@@ -38,18 +42,21 @@ class JFormFieldPasswordless extends FormField
 		Text::script('PLG_SYSTEM_PASSWORDLESS_ERR_LABEL_NOT_SAVED', true);
 		Text::script('PLG_SYSTEM_PASSWORDLESS_ERR_NOT_DELETED', true);
 
-		$credentialRepository = new \Akeeba\Passwordless\CredentialRepository();
+		$credentialRepository = new \Joomla\Plugin\System\Passwordless\Credential\Repository();
 
 		HTMLHelper::_('script', 'plg_system_passwordless/dist/passwordless.js', [
 			'relative'  => true,
 			'framework' => false,
 		], [
-			'defer' => true
+			'defer' => true,
 		]);
 
-		return Joomla::renderLayout('akeeba.passwordless.manage', [
-			'user'        => Joomla::getUser($user_id),
-			'allow_add'   => $user_id == Joomla::getUser()->id,
+		$layoutFile  = new FileLayout('akeeba.passwordless.manage', JPATH_PLUGINS . '/system/passwordless/layout');
+		$currentUser = Factory::getApplication()->getIdentity() ?? new User();
+
+		return $layoutFile->render([
+			'user'        => Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($user_id),
+			'allow_add'   => $user_id == $currentUser->id,
 			'credentials' => $credentialRepository->getAll($user_id),
 		]);
 	}
