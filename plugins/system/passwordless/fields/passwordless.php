@@ -42,7 +42,7 @@ class JFormFieldPasswordless extends FormField
 		Text::script('PLG_SYSTEM_PASSWORDLESS_ERR_LABEL_NOT_SAVED', true);
 		Text::script('PLG_SYSTEM_PASSWORDLESS_ERR_NOT_DELETED', true);
 
-		$credentialRepository = new \Joomla\Plugin\System\Passwordless\Credential\Repository();
+		$credentialRepository = new \Joomla\Plugin\System\Passwordless\Credential\CredentialsRepository();
 
 		HTMLHelper::_('script', 'plg_system_passwordless/dist/passwordless.js', [
 			'relative'  => true,

@@ -57,7 +57,7 @@ if (!$hasBcMath && !$hasBcMath)
  * that problem.
  */
 $randomId    = 'akpwl_' . UserHelper::genRandomPassword(32);
-$publicKey   = $allow_add ? base64_encode(Authentication::createPublicKey($user)) : '{}';
+$publicKey   = base64_encode($allow_add ? json_encode(Authentication::getPubKeyCreationOptions($user), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) : '{}');
 $postbackURL = base64_encode(rtrim(Uri::base(), '/') . '/index.php?' . Factory::getApplication()->getFormToken() . '=1');
 ?>
 <div class="akpwl" id="plg_system_passwordless-management-interface">

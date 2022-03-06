@@ -10,16 +10,6 @@ namespace Joomla\Plugin\System\Passwordless\Extension\Traits;
 // Protect from unauthorized access
 defined('_JEXEC') or die();
 
-use CBOR\Decoder;
-use CBOR\OtherObject\OtherObjectManager;
-use CBOR\Tag\TagObjectManager;
-use Cose\Algorithm\Mac\HS256;
-use Cose\Algorithm\Mac\HS384;
-use Cose\Algorithm\Mac\HS512;
-use Cose\Algorithm\Manager;
-use Cose\Algorithm\Signature\ECDSA;
-use Cose\Algorithm\Signature\EdDSA;
-use Cose\Algorithm\Signature\RSA;
 use Exception;
 use Joomla\CMS\Authentication\Authentication;
 use Joomla\CMS\Authentication\AuthenticationResponse;
@@ -30,24 +20,9 @@ use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\UserFactoryInterface;
-use Joomla\Plugin\System\Passwordless\Credential\Repository;
-use Laminas\Diactoros\RequestFactory;
-use Laminas\Diactoros\ServerRequestFactory;
+use Joomla\Plugin\System\Passwordless\Credential\Authentication as CredentialsAuthentication;
+use Joomla\Plugin\System\Passwordless\Credential\CredentialsRepository;
 use RuntimeException;
-use Webauthn\AttestationStatement\AndroidKeyAttestationStatementSupport;
-use Webauthn\AttestationStatement\AndroidSafetyNetAttestationStatementSupport;
-use Webauthn\AttestationStatement\AttestationObjectLoader;
-use Webauthn\AttestationStatement\AttestationStatementSupportManager;
-use Webauthn\AttestationStatement\FidoU2FAttestationStatementSupport;
-use Webauthn\AttestationStatement\NoneAttestationStatementSupport;
-use Webauthn\AttestationStatement\PackedAttestationStatementSupport;
-use Webauthn\AttestationStatement\TPMAttestationStatementSupport;
-use Webauthn\AuthenticationExtensions\ExtensionOutputCheckerHandler;
-use Webauthn\AuthenticatorAssertionResponse;
-use Webauthn\AuthenticatorAssertionResponseValidator;
-use Webauthn\PublicKeyCredentialLoader;
-use Webauthn\PublicKeyCredentialRequestOptions;
-use Webauthn\TokenBinding\TokenBindingNotSupportedHandler;
 
 /**
  * Ajax handler for akaction=login
@@ -75,7 +50,7 @@ trait AjaxHandlerLogin
 		{
 			// Validate the authenticator response and get the user handle
 			$userHandle           = $this->getUserHandleFromResponse();
-			$credentialRepository = new Repository();
+			$credentialRepository = new CredentialsRepository();
 
 			if (is_null($userHandle))
 			{
@@ -309,179 +284,11 @@ trait AjaxHandlerLogin
 	 */
 	private function getUserHandleFromResponse(): ?string
 	{
-		// Initialize objects
-		$input                = $this->app->input;
-		$credentialRepository = new Repository();
-
 		// Retrieve data from the request and session
-		$data = $input->getBase64('data', '');
-		$data = base64_decode($data);
-
-		if (empty($data))
-		{
-			throw new RuntimeException(Text::_('PLG_SYSTEM_PASSWORDLESS_ERR_CREATE_INVALID_LOGIN_REQUEST'));
-		}
-
-		$publicKeyCredentialRequestOptions = $this->getPKCredentialRequestOptions();
-
-		// Cose Algorithm Manager
-		$coseAlgorithmManager = new Manager();
-		if (function_exists('sodium_crypto_sign_seed_keypair'))
-		{
-			$coseAlgorithmManager->add(new EdDSA\EdDSA());
-		}
-		$coseAlgorithmManager->add(new ECDSA\ES512());
-		$coseAlgorithmManager->add(new ECDSA\ES384());
-		$coseAlgorithmManager->add(new ECDSA\ES256());
-		$coseAlgorithmManager->add(new RSA\PS512());
-		$coseAlgorithmManager->add(new RSA\PS384());
-		$coseAlgorithmManager->add(new RSA\PS256());
-		$coseAlgorithmManager->add(new HS512());
-		$coseAlgorithmManager->add(new HS384());
-		$coseAlgorithmManager->add(new HS256());
-		$coseAlgorithmManager->add(new RSA\RS512());
-		$coseAlgorithmManager->add(new RSA\RS384());
-		$coseAlgorithmManager->add(new RSA\RS256());
-
-		// Create a CBOR Decoder object
-		$otherObjectManager = new OtherObjectManager();
-		$tagObjectManager   = new TagObjectManager();
-		$decoder            = new Decoder($tagObjectManager, $otherObjectManager);
-
-		// Attestation Statement Support Manager
-		$attestationStatementSupportManager = new AttestationStatementSupportManager();
-		$attestationStatementSupportManager->add(new NoneAttestationStatementSupport());
-		$attestationStatementSupportManager->add(new FidoU2FAttestationStatementSupport($decoder));
-		try
-		{
-			$attestationStatementSupportManager->add(new AndroidSafetyNetAttestationStatementSupport(\Joomla\CMS\Http\HttpFactory::getHttp(), 'GOOGLE_SAFETYNET_API_KEY', new RequestFactory()));
-		}
-		catch (\Throwable $e)
-		{
-			// Suck it.
-		}
-		$attestationStatementSupportManager->add(new AndroidKeyAttestationStatementSupport($decoder));
-		$attestationStatementSupportManager->add(new TPMAttestationStatementSupport());
-		$attestationStatementSupportManager->add(new PackedAttestationStatementSupport($decoder, $coseAlgorithmManager));
-
-		// Attestation Object Loader
-		$attestationObjectLoader = new AttestationObjectLoader($attestationStatementSupportManager, $decoder);
-
-		// Public Key Credential Loader
-		$publicKeyCredentialLoader = new PublicKeyCredentialLoader($attestationObjectLoader, $decoder);
-
-		// The token binding handler
-		$tokenBindingHandler = new TokenBindingNotSupportedHandler();
-
-		// Extension Output Checker Handler
-		$extensionOutputCheckerHandler = new ExtensionOutputCheckerHandler();
-
-		// Authenticator Assertion Response Validator
-		$authenticatorAssertionResponseValidator = new AuthenticatorAssertionResponseValidator(
-			$credentialRepository,
-			$decoder,
-			$tokenBindingHandler,
-			$extensionOutputCheckerHandler,
-			$coseAlgorithmManager
+		$pubKeyCredentialSource = CredentialsAuthentication::validateAssertionResponse(
+			$this->app->input->getBase64('data', '')
 		);
 
-		// We init the Symfony Request object
-		$request = ServerRequestFactory::fromGlobals();
-
-		// Load the data
-		$publicKeyCredential = $publicKeyCredentialLoader->load($data);
-		$response            = $publicKeyCredential->getResponse();
-
-		// Check if the response is an Authenticator Assertion Response
-		if (!$response instanceof AuthenticatorAssertionResponse)
-		{
-			throw new \RuntimeException('Not an authenticator assertion response');
-		}
-
-		/**
-		 * Check the response against the attestation request
-		 *
-		 * Yes, we can accept the user handle (stored in the session after evaluating the username the client used when
-		 * trying to log in, if any). Even if a smart alec tries to use another user's username with their resident
-		 * credential there are TWO ways we prevent them from logging into the site.
-		 *
-		 * First, client-side. When a username is provided we transmit a list of allowed credentials for WebAuthn
-		 * authentication. Therefore the browser will reject the impersonator's security key.
-		 *
-		 * Second, server-side. Even if a browser bug (or a maliciously modified browser) allows the authentication to
-		 * proceed with a disallowed key we have three sets of user handles: the one in the session (based on the
-		 * username provided), the one from the browser's Authenticator Assertion Response and the one from the
-		 * credential stored server-side at registration time. ALL THREE MUST MATCH for the check() method to succeed.
-		 * In any impersonation scenario only two will match; the server-side user handle will always belong to the
-		 * real user.
-		 *
-		 * Can this be beaten? Not plausibly. The user handle is an HMAC-SHA-256 of the numeric user ID with the site's
-		 * secret key. They secret key is private. Even if the malicious user could somehow divine it and construct a
-		 * malicious browser and authenticator they STILL can't beat the system because at registration time we store
-		 * the user handle of the currently logged in user with the credentials. This is NOT under the control of the
-		 * malicious user (unless he can already write to the site's database in which case the site is already hacked
-		 * and we're discussing if you can compromise a site you have already compromised to which the answer is always
-		 * yes, of course, by definition).
-		 */
-
-		/** @var AuthenticatorAssertionResponse $authenticatorAssertionResponse */
-		$authenticatorAssertionResponse = $publicKeyCredential->getResponse();
-		$userHandle                     = $this->app->getSession()->get('plg_system_passwordless.userHandle', null);
-		$userHandle                     = empty($userHandle) ? null : $userHandle;
-
-		$authenticatorAssertionResponseValidator->check(
-			$publicKeyCredential->getRawId(),
-			$authenticatorAssertionResponse,
-			$publicKeyCredentialRequestOptions,
-			$request,
-			$userHandle
-		);
-
-		/**
-		 * At this point we're satisfied that the response user handle (if any), the session user handle (if any) and
-		 * the server-side stored credential's user handle match. Moreover, we have established that at least one of
-		 * the response and session user handles is non-empty.
-		 *
-		 * Therefore we need to return the non-empty user handle back, whichever it is. By definition, whichever it is,
-		 * it is valid, matches the stored credential and we can take it to the bank (log the respective user in)!
-		 */
-		$responseUserHandle = $authenticatorAssertionResponse->getUserHandle();
-
-		return empty($responseUserHandle) ? $userHandle : $responseUserHandle;
-	}
-
-	/**
-	 * Retrieve the public key credential request options saved in the session. If they do not exist or are corrupt it
-	 * is a hacking attempt and we politely tell the hacker to go away.
-	 *
-	 * @return  PublicKeyCredentialRequestOptions
-	 *
-	 * @since   1.0.0
-	 */
-	private function getPKCredentialRequestOptions(): PublicKeyCredentialRequestOptions
-	{
-		$encodedOptions = $this->app->getSession()->get('plg_system_passwordless.publicKeyCredentialRequestOptions', null);
-
-		if (empty($encodedOptions))
-		{
-			throw new RuntimeException(Text::_('PLG_SYSTEM_PASSWORDLESS_ERR_CREATE_INVALID_LOGIN_REQUEST'));
-		}
-
-		try
-		{
-			$publicKeyCredentialCreationOptions = unserialize(base64_decode($encodedOptions));
-		}
-		catch (Exception $e)
-		{
-			throw new RuntimeException(Text::_('PLG_SYSTEM_PASSWORDLESS_ERR_CREATE_INVALID_LOGIN_REQUEST'));
-		}
-
-		if (!is_object($publicKeyCredentialCreationOptions) ||
-			!($publicKeyCredentialCreationOptions instanceof PublicKeyCredentialRequestOptions))
-		{
-			throw new RuntimeException(Text::_('PLG_SYSTEM_PASSWORDLESS_ERR_CREATE_INVALID_LOGIN_REQUEST'));
-		}
-
-		return $publicKeyCredentialCreationOptions;
+		return $pubKeyCredentialSource ? $pubKeyCredentialSource->getUserHandle() : null;
 	}
 }

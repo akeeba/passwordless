@@ -12,7 +12,7 @@ defined('_JEXEC') or die();
 
 use Exception;
 use Joomla\CMS\User\User;
-use Joomla\Plugin\System\Passwordless\Credential\Repository;
+use Joomla\Plugin\System\Passwordless\Credential\CredentialsRepository;
 
 /**
  * Ajax handler for akaction=savelabel
@@ -36,7 +36,7 @@ trait AjaxHandlerSaveLabel
 	{
 		// Initialize objects
 		$input      = $this->app->input;
-		$repository = new Repository();
+		$repository = new CredentialsRepository();
 
 		// Retrieve data from the request
 		$credential_id = $input->getBase64('credential_id', '');

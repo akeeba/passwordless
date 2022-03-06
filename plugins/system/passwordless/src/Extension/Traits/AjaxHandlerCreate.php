@@ -17,9 +17,9 @@ use Joomla\CMS\Layout\FileLayout;
 use Joomla\CMS\User\User;
 use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\Plugin\System\Passwordless\Credential\Authentication;
-use Joomla\Plugin\System\Passwordless\Credential\Repository;
+use Joomla\Plugin\System\Passwordless\Credential\CredentialsRepository;
 use RuntimeException;
-use Webauthn\PublicKeyCredentialSource;
+use Akeeba\Passwordless\Webauthn\PublicKeyCredentialSource;
 
 /**
  * Ajax handler for akaction=create
@@ -65,7 +65,7 @@ trait AjaxHandlerCreate
 		}
 
 		// Get the credentials repository object. It's outside the try-catch because I also need it to display the GUI.
-		$credentialRepository = new Repository();
+		$credentialRepository = new CredentialsRepository();
 
 		// Try to validate the browser data. If there's an error I won't save anything and pass the message to the GUI.
 		try
@@ -75,7 +75,7 @@ trait AjaxHandlerCreate
 			// Retrieve the data sent by the device
 			$data = $input->get('data', '', 'raw');
 
-			$publicKeyCredentialSource = Authentication::validateAuthenticationData($data);
+			$publicKeyCredentialSource = Authentication::validateAttestationResponse($data);
 
 			if (!is_object($publicKeyCredentialSource) || !($publicKeyCredentialSource instanceof PublicKeyCredentialSource))
 			{

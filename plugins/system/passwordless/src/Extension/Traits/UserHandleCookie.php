@@ -12,9 +12,9 @@ defined('_JEXEC') or die();
 
 use Exception;
 use Joomla\CMS\User\User;
-use Joomla\Plugin\System\Passwordless\Credential\Repository;
+use Joomla\Plugin\System\Passwordless\Credential\CredentialsRepository;
 use Throwable;
-use Webauthn\PublicKeyCredentialUserEntity;
+use Akeeba\Passwordless\Webauthn\PublicKeyCredentialUserEntity;
 
 trait UserHandleCookie
 {
@@ -66,7 +66,7 @@ trait UserHandleCookie
 		// Set cookie
 		try
 		{
-			$repository = new Repository();
+			$repository = new CredentialsRepository();
 			$userHandle = $repository->getHandleFromUserId($user->id);
 		}
 		catch (Exception $e)
@@ -144,7 +144,7 @@ trait UserHandleCookie
 
 		try
 		{
-			$repository  = new Repository();
+			$repository  = new CredentialsRepository();
 			$userHandle  = $repository->getHandleFromUserId($user->id);
 			$userEntity  = new PublicKeyCredentialUserEntity('', $userHandle, '');
 			$credentials = $repository->findAllForUserEntity($userEntity);

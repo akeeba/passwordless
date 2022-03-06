@@ -19,9 +19,9 @@ use Joomla\Database\DatabaseDriver;
 use JsonException;
 use RuntimeException;
 use Throwable;
-use Webauthn\PublicKeyCredentialSource;
-use Webauthn\PublicKeyCredentialSourceRepository;
-use Webauthn\PublicKeyCredentialUserEntity;
+use Akeeba\Passwordless\Webauthn\PublicKeyCredentialSource;
+use Akeeba\Passwordless\Webauthn\PublicKeyCredentialSourceRepository;
+use Akeeba\Passwordless\Webauthn\PublicKeyCredentialUserEntity;
 
 // Protect from unauthorized access
 defined('_JEXEC') or die();
@@ -31,7 +31,7 @@ defined('_JEXEC') or die();
  *
  * @since   1.0.0
  */
-class Repository implements PublicKeyCredentialSourceRepository
+class CredentialsRepository implements PublicKeyCredentialSourceRepository
 {
 	/**
 	 * Returns a PublicKeyCredentialSource object given the public key credential ID

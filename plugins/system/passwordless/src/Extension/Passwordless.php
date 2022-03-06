@@ -119,6 +119,8 @@ class Passwordless extends CMSPlugin implements SubscriberInterface
 			return [];
 		}
 
+		require_once __DIR__ . '/../../vendor/autoload.php';
+
 		return [
 			'onAfterInitialise'           => 'onAfterInitialise',
 			'onAjaxPasswordless'          => 'onAjaxPasswordless',

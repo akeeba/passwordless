@@ -11,14 +11,12 @@ namespace Joomla\Plugin\System\Passwordless\Extension\Traits;
 defined('_JEXEC') or die();
 
 use Exception;
+use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\UserHelper;
-use Joomla\Plugin\System\Passwordless\Credential\Repository;
-use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
-use Webauthn\PublicKeyCredentialRequestOptions;
-use Webauthn\PublicKeyCredentialSource;
-use Webauthn\PublicKeyCredentialUserEntity;
+use Joomla\Plugin\System\Passwordless\Credential\Authentication;
+use Joomla\Plugin\System\Passwordless\Credential\CredentialsRepository;
 
 /**
  * Ajax handler for akaction=challenge
@@ -90,7 +88,7 @@ trait AjaxHandlerChallenge
 
 			if (!empty($userHandle))
 			{
-				$repository = new Repository();
+				$repository = new CredentialsRepository();
 				$user_id    = $repository->getUserIdFromHandle($userHandle) ?? 0;
 			}
 		}
@@ -116,67 +114,10 @@ trait AjaxHandlerChallenge
 			], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 		}
 
-		$registeredPublicKeyCredentialDescriptors = $this->getRegisteredPublicKeyCredentialDescriptors($user_id);
-
-		// Extensions
-		$extensions = new AuthenticationExtensionsClientInputs();
-
-		// Public Key Credential Request Options
-		$publicKeyCredentialRequestOptions = new PublicKeyCredentialRequestOptions(
-			random_bytes(32),
-			60000,
-			Uri::getInstance()->toString(['host']),
-			$registeredPublicKeyCredentialDescriptors,
-			PublicKeyCredentialRequestOptions::USER_VERIFICATION_REQUIREMENT_PREFERRED,
-			$extensions
-		);
-
-		// Save in session. This is used during the verification stage to prevent replay attacks.
-		$this->app->getSession()->set('plg_system_passwordless.publicKeyCredentialRequestOptions', base64_encode(serialize($publicKeyCredentialRequestOptions)));
+		$user = Factory::getUser($user_id);
+		$publicKeyCredentialRequestOptions = Authentication::getPubkeyRequestOptions($user);
 
 		// Return the JSON encoded data to the caller
 		return json_encode($publicKeyCredentialRequestOptions, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-	}
-
-	/**
-	 * Return the PK descriptors for the user's already registered authenticators
-	 *
-	 * @param   int  $user_id  The user's ID
-	 *
-	 * @return  array
-	 * @since   1.0.0
-	 */
-	private function getRegisteredPublicKeyCredentialDescriptors(int $user_id): array
-	{
-		if (empty($user_id))
-		{
-			return [];
-		}
-
-		// Load the saved credentials into an array of PublicKeyCredentialDescriptor objects
-		try
-		{
-			$repository  = new Repository();
-			$userHandle  = $repository->getHandleFromUserId($user_id);
-			$userEntity  = new PublicKeyCredentialUserEntity('', $userHandle, '');
-			$credentials = $repository->findAllForUserEntity($userEntity);
-		}
-		catch (Exception $e)
-		{
-			return [];
-		}
-
-		// No stored credentials?
-		if (empty($credentials))
-		{
-			return [];
-		}
-
-		$this->app->getSession()->set('plg_system_passwordless.userHandle', $userHandle);
-		$this->app->getSession()->set('plg_system_passwordless.userId', $user_id);
-
-		return array_map(function(PublicKeyCredentialSource $record) {
-			return $record->getPublicKeyCredentialDescriptor();
-		}, $credentials);
 	}
 }
