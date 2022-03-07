@@ -1,16 +1,17 @@
 <?php
 $renamedNamespaces = [
-	'Assert'        => 'Akeeba\Passwordless\Assert',
+//	'Assert'        => 'Akeeba\Passwordless\Assert',
+//	'FG'            => 'Akeeba\Passwordless\FG',
+//	'Base64Url'     => 'Akeeba\Passwordless\Base64Url',
+//	'Symfony'       => 'Akeeba\Passwordless\Symfony',
+
 	'Brick'         => 'Akeeba\Passwordless\Brick',
-	'FG'            => 'Akeeba\Passwordless\FG',
 	'League'        => 'Akeeba\Passwordless\League',
 	'ParagonIE'     => 'Akeeba\Passwordless\ParagonIE',
 	'bcmath_compat' => 'Akeeba\Passwordless\bcmath_compat',
 	'phpseclib3'    => 'Akeeba\Passwordless\phpseclib3',
 	'Ramsey'        => 'Akeeba\Passwordless\Ramsey',
-	'Base64Url'     => 'Akeeba\Passwordless\Base64Url',
 	'CBOR'          => 'Akeeba\Passwordless\CBOR',
-	'Symfony'       => 'Akeeba\Passwordless\Symfony',
 	'Safe'          => 'Akeeba\Passwordless\Safe',
 	'Cose'          => 'Akeeba\Passwordless\Cose',
 	'Webauthn'      => 'Akeeba\Passwordless\Webauthn',

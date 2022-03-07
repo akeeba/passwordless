@@ -24,7 +24,9 @@
     ],
     "post-update-cmd": [
       "rector",
-      "php modify_composer.php"
+      "php modify_composer.php",
+      "rm -rf plugins/system/passwordless/vendor",
+      "cp -r vendor plugins/system/passwordless/"
     ]
   }
 }
