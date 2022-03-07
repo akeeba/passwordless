@@ -20,6 +20,7 @@ use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\UserFactoryInterface;
+use Joomla\Event\Event;
 use Joomla\Plugin\System\Passwordless\Credential\Authentication as CredentialsAuthentication;
 use Joomla\Plugin\System\Passwordless\Credential\CredentialsRepository;
 use RuntimeException;

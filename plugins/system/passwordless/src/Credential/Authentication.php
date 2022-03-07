@@ -10,40 +10,45 @@ namespace Joomla\Plugin\System\Passwordless\Credential;
 // Protect from unauthorized access
 defined('_JEXEC') or die();
 
-use Akeeba\Passwordless\Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
-use Akeeba\Passwordless\Webauthn\AuthenticatorSelectionCriteria;
 use Akeeba\Passwordless\Webauthn\PublicKeyCredentialCreationOptions;
-use Akeeba\Passwordless\Webauthn\PublicKeyCredentialDescriptor;
 use Akeeba\Passwordless\Webauthn\PublicKeyCredentialRequestOptions;
-use Akeeba\Passwordless\Webauthn\PublicKeyCredentialRpEntity;
 use Akeeba\Passwordless\Webauthn\PublicKeyCredentialSource;
-use Akeeba\Passwordless\Webauthn\PublicKeyCredentialUserEntity;
-use Akeeba\Passwordless\Webauthn\Server;
 use Exception;
 use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
-use Joomla\CMS\Log\Log;
-use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\User;
+use Joomla\Plugin\System\Passwordless\Credential\Authentication\AuthenticationInterface;
+use Joomla\Plugin\System\Passwordless\Credential\Authentication\WebAuthnServer;
 use Joomla\Session\Session;
-use Laminas\Diactoros\ServerRequestFactory;
+use Joomla\Session\SessionInterface;
 use RuntimeException;
 
 /**
  * Helper class to aid in credentials creation (link an authenticator to a user account)
+ *
+ * I have built it on the adapter pattern to let me test different backend implementations whenever I upgrade the
+ * WebAuthn library without getting terminally lost in the details. Only one adapter is ever user.
  *
  * @since   1.0.0
  */
 abstract class Authentication
 {
 	/**
-	 * The credentials repository
+	 * The authentication helper adapter object
 	 *
-	 * @var   CredentialsRepository
+	 * @var   AuthenticationInterface|null
 	 * @since 1.0.0
 	 */
-	private static $credentialsRepository;
+	private static $adapter;
+
+	/**
+	 * The authentication helper adapter class name we will use
+	 *
+	 * @var   string
+	 * @since 1.0.0
+	 */
+	private static $preferredAdapterClass = WebAuthnServer::class;
 
 	/**
 	 * Generate the public key creation options.
@@ -52,7 +57,7 @@ abstract class Authentication
 	 *
 	 * The PK creation options and the user ID are stored in the session.
 	 *
-	 * @param   User  $user  The Joomla user to create the public key for
+	 * @param   User   $user   The Joomla user to create the public key for
 	 *
 	 * @return  PublicKeyCredentialCreationOptions
 	 *
@@ -61,18 +66,7 @@ abstract class Authentication
 	 */
 	public static function getPubKeyCreationOptions(User $user): PublicKeyCredentialCreationOptions
 	{
-		$server                             = self::getWebauthnServer();
-		$publicKeyCredentialCreationOptions = $server->generatePublicKeyCredentialCreationOptions(
-			self::getUserEntity($user),
-			PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_NONE,
-			self::getPubKeyDescriptorsForUser($user),
-			new AuthenticatorSelectionCriteria(
-				AuthenticatorSelectionCriteria::AUTHENTICATOR_ATTACHMENT_NO_PREFERENCE,
-				false,
-				AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_PREFERRED
-			),
-			new AuthenticationExtensionsClientInputs()
-		);
+		$publicKeyCredentialCreationOptions = (self::getAdapter())->getPubKeyCreationOptions($user);
 
 		// Save data in the session
 		$app = Factory::getApplication();
@@ -89,7 +83,7 @@ abstract class Authentication
 	 *
 	 * This is used in the first step of the assertion (login) flow.
 	 *
-	 * @param   User  $user
+	 * @param   User   $user
 	 *
 	 * @return  PublicKeyCredentialRequestOptions
 	 *
@@ -98,12 +92,7 @@ abstract class Authentication
 	 */
 	public static function getPubkeyRequestOptions(User $user): PublicKeyCredentialRequestOptions
 	{
-		$server = self::getWebauthnServer();
-
-		$publicKeyCredentialRequestOptions = $server->generatePublicKeyCredentialRequestOptions(
-			PublicKeyCredentialRequestOptions::USER_VERIFICATION_REQUIREMENT_PREFERRED,
-			self::getPubKeyDescriptorsForUser($user)
-		);
+		$publicKeyCredentialRequestOptions = (self::getAdapter())->getPubkeyRequestOptions($user);
 
 		// Save in session. This is used during the verification stage to prevent replay attacks.
 		Factory::getApplication()->getSession()
@@ -112,8 +101,34 @@ abstract class Authentication
 		return $publicKeyCredentialRequestOptions;
 	}
 
+	/**
+	 * Validate the authenticator assertion.
+	 *
+	 * This is used in the second step of the assertion (login) flow. The server verifies that the assertion generated
+	 * by the authenticator has not been tampered with.
+	 *
+	 * @param   string   $data
+	 *
+	 * @return  PublicKeyCredentialSource
+	 *
+	 * @throws  Exception
+	 * @since   1.0.0
+	 */
 	public static function validateAssertionResponse(string $data): PublicKeyCredentialSource
 	{
+		/** @var SessionInterface $session */
+		$session = Factory::getApplication()->getSession();
+
+		// Make sure the public key credential request options in the session are valid
+		$encodedPkOptions                  = $session->get('plg_system_passwordless.publicKeyCredentialRequestOptions', null);
+		$serializedOptions                 = base64_decode($encodedPkOptions);
+		$publicKeyCredentialRequestOptions = unserialize($serializedOptions);
+
+		if (!is_object($publicKeyCredentialRequestOptions) || empty($publicKeyCredentialRequestOptions) || !($publicKeyCredentialRequestOptions instanceof PublicKeyCredentialRequestOptions))
+		{
+			throw new RuntimeException(Text::_('PLG_SYSTEM_PASSWORDLESS_ERR_CREATE_INVALID_LOGIN_REQUEST'));
+		}
+
 		$data = base64_decode($data);
 
 		if (empty($data))
@@ -121,15 +136,7 @@ abstract class Authentication
 			throw new RuntimeException(Text::_('PLG_SYSTEM_PASSWORDLESS_ERR_CREATE_INVALID_LOGIN_REQUEST'));
 		}
 
-		$server                 = self::getWebauthnServer();
-		$pubKeyCredentialSource = $server->loadAndCheckAssertionResponse(
-			$data,
-			self::getPKCredentialRequestOptions(),
-			Factory::getApplication()->getSession()->get('plg_system_passwordless.userHandle', null) ?: null,
-			ServerRequestFactory::fromGlobals()
-		);
-
-		return $pubKeyCredentialSource;
+		return (self::getAdapter())->validateAssertionResponse($data, $publicKeyCredentialRequestOptions);
 	}
 
 	/**
@@ -141,7 +148,7 @@ abstract class Authentication
 	 * An exception will be returned on error. Also, under very rare conditions, you may receive NULL instead of
 	 * a PublicKeyCredentialSource object which means that something was off in the returned data from the browser.
 	 *
-	 * @param   string  $data  The base64-encoded data returned by the browser during the attestation ceremony.
+	 * @param   string   $data   The base64-encoded data returned by the browser during the attestation ceremony.
 	 *
 	 * @return  PublicKeyCredentialSource|null
 	 *
@@ -187,248 +194,18 @@ abstract class Authentication
 			throw new RuntimeException(Text::_('PLG_SYSTEM_PASSWORDLESS_ERR_CREATE_INVALID_USER'));
 		}
 
-		$server = self::getWebauthnServer();
-
-		// We init the PSR-7 request object using Diactoros
-		$request = ServerRequestFactory::fromGlobals();
-
-		$publicKeyCredentialSource = $server->loadAndCheckAttestationResponse(base64_decode($data), $publicKeyCredentialCreationOptions, $request);
-
-		return $publicKeyCredentialSource;
+		return (self::getAdapter())->validateAttestationResponse($data, $publicKeyCredentialCreationOptions);
 	}
 
-	/**
-	 * Get the user's avatar (through Gravatar)
-	 *
-	 * @param   User  $user  The Joomla user object
-	 * @param   int   $size  The dimensions of the image to fetch (default: 64 pixels)
-	 *
-	 * @return  string  The URL to the user's avatar
-	 *
-	 * @since   1.0.0
-	 */
-	private static function getAvatar(User $user, int $size = 64)
+	private static function getAdapter(): AuthenticationInterface
 	{
-		$scheme    = Uri::getInstance()->getScheme();
-		$subdomain = ($scheme == 'https') ? 'secure' : 'www';
-
-		return sprintf('%s://%s.gravatar.com/avatar/%s.jpg?s=%u&d=mm', $scheme, $subdomain, md5($user->email), $size);
-	}
-
-	/**
-	 * Try to find the site's favicon in the site's root, images, media, templates or current template directory.
-	 *
-	 * @return  string|null
-	 *
-	 * @since   1.0.0
-	 */
-	private static function getSiteIcon(): ?string
-	{
-		$filenames = [
-			'apple-touch-icon.png',
-			'apple_touch_icon.png',
-			'favicon.ico',
-			'favicon.png',
-			'favicon.gif',
-			'favicon.bmp',
-			'favicon.jpg',
-			'favicon.svg',
-		];
-
-		try
+		if (!empty(self::$adapter))
 		{
-			$paths = [
-				'/',
-				'/images/',
-				'/media/',
-				'/templates/',
-				'/templates/' . Factory::getApplication()->getTemplate(),
-			];
-		}
-		catch (Exception $e)
-		{
-			return null;
+			return self::$adapter;
 		}
 
-		foreach ($paths as $path)
-		{
-			foreach ($filenames as $filename)
-			{
-				$relFile  = $path . $filename;
-				$filePath = JPATH_BASE . $relFile;
+		self::$adapter = new self::$preferredAdapterClass;
 
-				if (is_file($filePath))
-				{
-					break 2;
-				}
-
-				$relFile = null;
-			}
-		}
-
-		if (is_null($relFile))
-		{
-			return null;
-		}
-
-		return rtrim(Uri::base(), '/') . '/' . ltrim($relFile, '/');
-	}
-
-	/**
-	 * Get the WebAuthn server oject
-	 *
-	 * @return  Server
-	 *
-	 * @throws  Exception
-	 * @since   1.0.0
-	 */
-	private static function getWebauthnServer(): Server
-	{
-		$app      = Factory::getApplication();
-		$siteName = $app->get('sitename');
-
-		// Credentials repository
-		$repository = self::getCredentialsRepository();
-
-		// Relaying Party -- Our site
-		$rpEntity = new PublicKeyCredentialRpEntity(
-			$siteName,
-			Uri::getInstance()->toString(['host']),
-			self::getSiteIcon()
-		);
-
-		$server = new Server($rpEntity, $repository);
-
-		/**
-		 * =============================================================================================================
-		 * Note about the metadata repository.
-		 * =============================================================================================================
-		 *
-		 * We do not need to implement an MDS repo since we are not asking for the attestation metadata in this plugin.
-		 * If you need to use this plugin in a high security environment you need to fork this plugin and do two things:
-		 *
-		 * 1. Change ATTESTATION_CONVEYANCE_PREFERENCE_NONE to ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT or
-		 *    ATTESTATION_CONVEYANCE_PREFERENCE_INDIRECT in the getPubKeyCreationOptions() method.
-		 * 2. Implement your own Metadata Statement (MDS) repository and set it here, e.g.
-		 *    ```php
-		 *    $server->setMetadataStatementRepository(new MyMDSRepository());
-		 *    ```
-		 * The implementation of the MDS repository is considered out-of-scope since you'd need the MDS from the
-		 * manufacturer(s) of your authenticator.
-		 *
-		 * @see https://webauthn-doc.spomky-labs.com/deep-into-the-framework/attestation-and-metadata-statement
-		 */
-
-		// Add the Joomla logger to the Server object -- NO! This causes deprecated notices because... Joomla :(
-		// $server->setLogger(Log::createDelegatedLogger());
-
-		// Ed25519 is only available with libsodium
-		if (!function_exists('sodium_crypto_sign_seed_keypair'))
-		{
-			$server->setSelectedAlgorithms(['RS256', 'RS512', 'PS256', 'PS512', 'ES256', 'ES512']);
-		}
-
-		return $server;
-	}
-
-	/**
-	 * Get the credentials repository
-	 *
-	 * @return  CredentialsRepository
-	 *
-	 * @since   1.0.0
-	 */
-	private static function getCredentialsRepository(): CredentialsRepository
-	{
-		if (self::$credentialsRepository !== null)
-		{
-			return self::$credentialsRepository;
-		}
-
-		self::$credentialsRepository = new CredentialsRepository();
-
-		return self::$credentialsRepository;
-	}
-
-	/**
-	 * Returns a User Entity object given a Joomla user
-	 *
-	 * @param   User  $user
-	 *
-	 * @return  PublicKeyCredentialUserEntity
-	 *
-	 * @since   1.0.0
-	 */
-	private static function getUserEntity(User $user): PublicKeyCredentialUserEntity
-	{
-		$repository = self::getCredentialsRepository();
-
-		return new PublicKeyCredentialUserEntity(
-			$user->username,
-			$repository->getHandleFromUserId($user->id),
-			$user->name,
-			self::getAvatar($user, 64)
-		);
-	}
-
-	/**
-	 * Returns an array of the PK credential descriptors (registered authenticators) for the given user.
-	 *
-	 * @param   User  $user
-	 *
-	 * @return  PublicKeyCredentialDescriptor[]
-	 *
-	 * @since   1.0.0
-	 */
-	private static function getPubKeyDescriptorsForUser(User $user): array
-	{
-		$userEntity  = self::getUserEntity($user);
-		$repository  = self::getCredentialsRepository();
-		$descriptors = [];
-		$records     = $repository->findAllForUserEntity($userEntity);
-
-		foreach ($records as $record)
-		{
-			$descriptors[] = new PublicKeyCredentialDescriptor($record->getType(), $record->getCredentialPublicKey());
-		}
-
-		return $descriptors;
-	}
-
-	/**
-	 * Retrieve the public key credential request options saved in the session.
-	 *
-	 * If they do not exist or are corrupt it is a hacking attempt and we politely tell the attacker to go away.
-	 *
-	 * @return  PublicKeyCredentialRequestOptions
-	 *
-	 * @throws  Exception
-	 * @since   1.0.0
-	 */
-	private static function getPKCredentialRequestOptions(): PublicKeyCredentialRequestOptions
-	{
-		$encodedOptions = Factory::getApplication()->getSession()->get('plg_system_passwordless.publicKeyCredentialRequestOptions', null);
-
-		if (empty($encodedOptions))
-		{
-			throw new RuntimeException(Text::_('PLG_SYSTEM_PASSWORDLESS_ERR_CREATE_INVALID_LOGIN_REQUEST'));
-		}
-
-		try
-		{
-			$publicKeyCredentialCreationOptions = unserialize(base64_decode($encodedOptions));
-		}
-		catch (Exception $e)
-		{
-			throw new RuntimeException(Text::_('PLG_SYSTEM_PASSWORDLESS_ERR_CREATE_INVALID_LOGIN_REQUEST'));
-		}
-
-		if (!is_object($publicKeyCredentialCreationOptions) ||
-			!($publicKeyCredentialCreationOptions instanceof PublicKeyCredentialRequestOptions))
-		{
-			throw new RuntimeException(Text::_('PLG_SYSTEM_PASSWORDLESS_ERR_CREATE_INVALID_LOGIN_REQUEST'));
-		}
-
-		return $publicKeyCredentialCreationOptions;
+		return self::$adapter;
 	}
 }
