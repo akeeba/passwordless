@@ -33,7 +33,7 @@ use Laminas\Diactoros\ServerRequestFactory;
  *
  * @since  1.0.0
  */
-final class WebAuthnServer extends AbstractAuthentication
+final class ServerObject extends AbstractAuthentication
 {
 	/** @inheritdoc */
 	public function getPubKeyCreationOptions(User $user): PublicKeyCredentialCreationOptions

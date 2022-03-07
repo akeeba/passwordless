@@ -15,9 +15,6 @@
 
 namespace Joomla\Plugin\System\Passwordless\Credential\Authentication;
 
-use Akeeba\Passwordless\CBOR\Decoder;
-use Akeeba\Passwordless\CBOR\OtherObject\OtherObjectManager;
-use Akeeba\Passwordless\CBOR\Tag\TagObjectManager;
 use Akeeba\Passwordless\Cose\Algorithm\Manager;
 use Akeeba\Passwordless\Cose\Algorithm\Signature\ECDSA;
 use Akeeba\Passwordless\Cose\Algorithm\Signature\EdDSA;
@@ -100,6 +97,10 @@ class HardWay extends AbstractAuthentication
 			new PublicKeyCredentialParameters('public-key', Algorithms::COSE_ALGORITHM_DIRECT_HKDF_SHA_256),
 			// Shared secret w/ AES-MAC 256-bit key
 			new PublicKeyCredentialParameters('public-key', Algorithms::COSE_ALGORITHM_DIRECT_HKDF_AES_256),
+			// For Windows Hello
+			new PublicKeyCredentialParameters('public-key', Algorithms::COSE_ALGORITHM_RS512),
+			new PublicKeyCredentialParameters('public-key', Algorithms::COSE_ALGORITHM_RS384),
+			new PublicKeyCredentialParameters('public-key', Algorithms::COSE_ALGORITHM_RS256),
 		];
 
 		// If libsodium is enabled prefer Edwards-curve Digital Signature Algorithm (EdDSA)
@@ -152,16 +153,19 @@ class HardWay extends AbstractAuthentication
 		// Cose Algorithm Manager
 		$coseAlgorithmManager = new Manager();
 		$coseAlgorithmManager->add(new ECDSA\ES256());
+		$coseAlgorithmManager->add(new ECDSA\ES256K());
+		$coseAlgorithmManager->add(new ECDSA\ES384());
 		$coseAlgorithmManager->add(new ECDSA\ES512());
-		$coseAlgorithmManager->add(new EdDSA\EdDSA());
+		$coseAlgorithmManager->add(new EdDSA\Ed25519());
+		$coseAlgorithmManager->add(new EdDSA\Ed256());
+		$coseAlgorithmManager->add(new EdDSA\Ed512());
+		$coseAlgorithmManager->add(new RSA\PS256());
+		$coseAlgorithmManager->add(new RSA\PS384());
+		$coseAlgorithmManager->add(new RSA\PS512());
 		$coseAlgorithmManager->add(new RSA\RS1());
 		$coseAlgorithmManager->add(new RSA\RS256());
+		$coseAlgorithmManager->add(new RSA\RS384());
 		$coseAlgorithmManager->add(new RSA\RS512());
-
-		// Create a CBOR Decoder object
-		$otherObjectManager = new OtherObjectManager();
-		$tagObjectManager   = new TagObjectManager();
-		$decoder            = new Decoder($tagObjectManager, $otherObjectManager);
 
 		// The token binding handler
 		$tokenBindingHandler = new TokenBindingNotSupportedHandler();
@@ -179,7 +183,6 @@ class HardWay extends AbstractAuthentication
 
 		// Public Key Credential Loader
 		$publicKeyCredentialLoader = new PublicKeyCredentialLoader($attestationObjectLoader);
-
 
 		// Credential Repository
 		$credentialRepository = $this->getCredentialsRepository();
@@ -209,9 +212,6 @@ class HardWay extends AbstractAuthentication
 		{
 			throw new RuntimeException('Not an authenticator attestation response');
 		}
-
-		// Check the response against the request
-		$authenticatorAttestationResponseValidator->check($response, $publicKeyCredentialCreationOptions, $request);
 
 		/**
 		 * Everything is OK here. You can get the Public Key Credential Source. This object should be persisted using

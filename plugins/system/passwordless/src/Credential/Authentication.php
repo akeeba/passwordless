@@ -19,7 +19,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\User\User;
 use Joomla\Plugin\System\Passwordless\Credential\Authentication\AuthenticationInterface;
-use Joomla\Plugin\System\Passwordless\Credential\Authentication\WebAuthnServer;
+use Joomla\Plugin\System\Passwordless\Credential\Authentication\ServerObject;
 use Joomla\Session\Session;
 use Joomla\Session\SessionInterface;
 use RuntimeException;
@@ -48,7 +48,7 @@ abstract class Authentication
 	 * @var   string
 	 * @since 1.0.0
 	 */
-	private static $preferredAdapterClass = WebAuthnServer::class;
+	private static $preferredAdapterClass = ServerObject::class;
 
 	/**
 	 * Generate the public key creation options.
