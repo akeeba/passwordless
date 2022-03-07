@@ -14,6 +14,7 @@ use Exception;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Uri\Uri;
+use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\CMS\User\UserHelper;
 use Joomla\Event\Event;
 use Joomla\Plugin\System\Passwordless\Credential\Authentication;
@@ -122,7 +123,8 @@ trait AjaxHandlerChallenge
 			return;
 		}
 
-		$user = Factory::getUser($user_id);
+
+		$user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($user_id);
 		$publicKeyCredentialRequestOptions = Authentication::getPubkeyRequestOptions($user);
 
 		// Return the JSON encoded data to the caller

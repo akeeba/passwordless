@@ -101,7 +101,7 @@ abstract class Authentication
 		$server = self::getWebauthnServer();
 
 		$publicKeyCredentialRequestOptions = $server->generatePublicKeyCredentialRequestOptions(
-			\Akeeba\Passwordless\Webauthn\PublicKeyCredentialRequestOptions::USER_VERIFICATION_REQUIREMENT_PREFERRED,
+			PublicKeyCredentialRequestOptions::USER_VERIFICATION_REQUIREMENT_PREFERRED,
 			self::getPubKeyDescriptorsForUser($user)
 		);
 

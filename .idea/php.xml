@@ -2,7 +2,8 @@
 <project version="4">
   <component name="PhpIncludePathManager">
     <include_path>
-      <path value="$PROJECT_DIR$/../../master/joomla4" />
+      <path value="$PROJECT_DIR$/../../master/joomla4---" />
+      <path value="$USER_HOME$/Sites/boot4" />
       <path value="$PROJECT_DIR$/../../dionysopoulos/joomlatypehints/generated_hints" />
       <path value="$PROJECT_DIR$/plugins/system/passwordless/vendor" />
       <path value="$PROJECT_DIR$/plugins/system/passwordless/vendor/ramsey/uuid" />
@@ -41,6 +42,7 @@
       <path value="$PROJECT_DIR$/vendor/league/uri" />
       <path value="$PROJECT_DIR$/vendor/psr/http-factory" />
       <path value="$PROJECT_DIR$/vendor/brick/math" />
+      <path value="$USER_HOME$/Sites/boot4/configuration.php" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="7.4" />
