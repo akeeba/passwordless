@@ -118,12 +118,15 @@ class Passwordless extends CMSPlugin implements SubscriberInterface
 			return [];
 		}
 
+		if ($app->isClient('site') || $app->isClient('administrator') || $app->isClient('cli'))
+		{
+			require_once __DIR__ . '/../../vendor/autoload.php';
+		}
+
 		if (!$app->isClient('site') && !$app->isClient('administrator'))
 		{
 			return [];
 		}
-
-		require_once __DIR__ . '/../../vendor/autoload.php';
 
 		return [
 			'onAfterInitialise'           => 'onAfterInitialise',

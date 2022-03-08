@@ -176,7 +176,7 @@ abstract class AbstractAuthentication implements AuthenticationInterface
 
 		foreach ($records as $record)
 		{
-			$descriptors[] = new PublicKeyCredentialDescriptor($record->getType(), $record->getCredentialPublicKey());
+			$descriptors[] = $record->getPublicKeyCredentialDescriptor();
 		}
 
 		return $descriptors;

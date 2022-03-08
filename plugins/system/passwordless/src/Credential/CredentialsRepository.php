@@ -112,6 +112,12 @@ class CredentialsRepository implements PublicKeyCredentialSourceRepository
 				return null;
 			}
 
+			// Authenticators from old versions will have the wrong class namespace recorded; fix it.
+			if (isset($data['trustPath']) && isset($data['trustPath']['type']) && substr($data['trustPath']['type'], 0, 9) === 'Webauthn\\')
+			{
+				$data['trustPath']['type'] = 'Akeeba\\Passwordless\\' . $data['trustPath']['type'];
+			}
+
 			try
 			{
 				return PublicKeyCredentialSource::createFromArray($data);
