@@ -61,7 +61,7 @@ zip -r ../../../release/plg_system_passwordless.zip *
 popd
 ```
 
-If you have modified the `plugins/system/passwordless/media/js/passwordless.js` file you will need to run
+If you have modified the `plugins/system/passwordless/media/js/login.es6` file you will need to run
 ```shell script
 npm run build
 ```

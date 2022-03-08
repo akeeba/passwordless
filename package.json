@@ -1,12 +1,13 @@
 {
 	"name": "akeeba-passwordless",
-	"scripts": {
-		"build": "babel plugins/system/passwordless/media/js/passwordless.js --out-dir plugins/system/passwordless/media/js/dist --source-maps"
-	},
 	"devDependencies": {
 		"@babel/cli": "^7.17.6",
-		"@babel/core": "^7.17.5",
+		"@babel/core": "^7.11.6",
 		"@babel/polyfill": "^7.10.4",
-		"@babel/preset-env": "^7.16.11"
+		"@babel/preset-env": "^7.11.5",
+		"babel-preset-minify": "^0.5.1"
+	},
+	"dependencies": {
+		"core-js": "^3.9.1"
 	}
 }

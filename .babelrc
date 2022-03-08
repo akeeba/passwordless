@@ -1,7 +1,26 @@
 {
-	"compact": true,
+	"compact": false,
 	"comments": false,
 	"presets": [
-		"@babel/preset-env"
+		[
+			"@babel/preset-env",
+			{
+				"useBuiltIns": "entry",
+				"corejs": {
+					"version": "3.9",
+					"proposals": true
+				}
+			}
+		],
+		[
+			"minify",
+			{
+				"builtIns": false,
+				"removeConsole": true
+			}
+		]
+	],
+	"ignore": [
+		"plugins/system/passwordless/media/js/*.min.js"
 	]
 }

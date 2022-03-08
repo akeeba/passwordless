@@ -22,22 +22,22 @@
       <envs />
     </TaskOptions>
     <TaskOptions isEnabled="true">
-      <option name="arguments" value="$FilePathRelativeToProjectRoot$ --out-dir $FileDirRelativeToProjectRoot$/dist --source-maps" />
+      <option name="arguments" value="$FilePathRelativeToProjectRoot$ -o $FileDirRelativeToProjectRoot$/$FileNameWithoutExtension$.min.js --source-maps" />
       <option name="checkSyntaxErrors" value="true" />
       <option name="description" />
       <option name="exitCodeBehavior" value="ERROR" />
-      <option name="fileExtension" value="js" />
+      <option name="fileExtension" value="es6" />
       <option name="immediateSync" value="false" />
-      <option name="name" value="Babel" />
-      <option name="output" value="$FileDirRelativeToProjectRoot$/dist/$FileNameWithoutExtension$.js:$FileDirRelativeToProjectRoot$/dist/$FileNameWithoutExtension$.js.map" />
+      <option name="name" value="Babel, minify" />
+      <option name="output" value="$FileDirRelativeToProjectRoot$/$FileNameWithoutExtension$.min.js:$FileDirRelativeToProjectRoot$/$FileNameWithoutExtension$.min.js.map" />
       <option name="outputFilters">
         <array />
       </option>
       <option name="outputFromStdout" value="false" />
       <option name="program" value="$ProjectFileDir$/node_modules/.bin/babel" />
       <option name="runOnExternalChanges" value="true" />
-      <option name="scopeName" value="Project Files" />
-      <option name="trackOnlyRoot" value="true" />
+      <option name="scopeName" value="ES6" />
+      <option name="trackOnlyRoot" value="false" />
       <option name="workingDir" value="$ContentRoot$" />
       <envs />
     </TaskOptions>

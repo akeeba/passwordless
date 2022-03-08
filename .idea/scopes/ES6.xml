@@ -1,0 +1,3 @@
+<component name="DependencyValidationManager">
+  <scope name="ES6" pattern="file:plugins/system/passwordless/media/js/*.es6" />
+</component>

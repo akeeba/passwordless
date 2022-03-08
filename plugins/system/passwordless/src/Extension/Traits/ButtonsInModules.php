@@ -64,14 +64,13 @@ trait ButtonsInModules
 
 		$this->returnFromEvent($event, [
 			[
-				'label'                 => 'PLG_SYSTEM_PASSWORDLESS_LOGIN_LABEL',
-				'tooltip'               => 'PLG_SYSTEM_PASSWORDLESS_LOGIN_DESC',
-				'id'                    => $randomId,
-				'data-passwordless-url' => $uri->toString(),
-				'data-webauthn-form'    => $form,
-				//'image'                 => 'plg_system_passwordless/webauthn-black.png',
-				'class'                 => 'plg_system_passwordless_login_button',
-				'svg'                   => $image,
+				'label'                  => 'PLG_SYSTEM_PASSWORDLESS_LOGIN_LABEL',
+				'tooltip'                => 'PLG_SYSTEM_PASSWORDLESS_LOGIN_DESC',
+				'id'                     => $randomId,
+				'data-passwordless-form' => $form,
+				'data-passwordless-url'  => $uri->toString(),
+				'svg'                    => $image,
+				'class'                  => 'plg_system_passwordless_login_button',
 			],
 		]);
 	}
