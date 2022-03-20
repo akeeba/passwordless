@@ -7,10 +7,90 @@
 	Build customization
 	====================================================================================================
 	-->
+	<patternset id="plg_system_passwordless">
+		<include name="**" />
+
+		<exclude name="media/css/*.scss" />
+		<exclude name="media/css/*.map" />
+
+		<exclude name="media/js/*.es6" />
+		<exclude name="media/js/*.map" />
+
+		<exclude name="media/vendor/beberlei/assert/.github/**" />
+		<exclude name="media/vendor/beberlei/assert/composer.json" />
+
+		<exclude name="media/vendor/brick/math/CHANGELOG.md" />
+		<exclude name="media/vendor/brick/math/composer.json" />
+		<exclude name="media/vendor/brick/math/SECURITY.md" />
+
+		<exclude name="media/vendor/fgrosse/phpasn1/.github/**" />
+		<exclude name="media/vendor/fgrosse/phpasn1/CHANGELOG.md" />
+		<exclude name="media/vendor/fgrosse/phpasn1/composer.json" />
+		<exclude name="media/vendor/fgrosse/phpasn1/README.md" />
+
+		<exclude name="media/vendor/leage/uri/test_files/**" />
+		<exclude name="media/vendor/leage/uri/.php-cs-fixer.php" />
+		<exclude name="media/vendor/leage/uri/composer.json" />
+
+		<exclude name="media/vendor/leage/uri-interfaces/composer.json" />
+
+		<exclude name="media/vendor/psr/http-client/CHANGELOG.md" />
+		<exclude name="media/vendor/psr/http-client/composer.json" />
+		<exclude name="media/vendor/psr/http-client/README.md" />
+
+		<exclude name="media/vendor/psr/http-factory/.gitignore" />
+		<exclude name="media/vendor/psr/http-factory/.pullapprove.yml" />
+		<exclude name="media/vendor/psr/http-factory/composer.json" />
+		<exclude name="media/vendor/psr/http-factory/README.md" />
+
+		<exclude name="media/vendor/psr/http-message/CHANGELOG.md" />
+		<exclude name="media/vendor/psr/http-message/composer.json" />
+		<exclude name="media/vendor/psr/http-message/README.md" />
+
+		<exclude name="media/vendor/psr/log/composer.json" />
+		<exclude name="media/vendor/psr/log/README.md" />
+
+		<exclude name="media/vendor/ramsey/collection/bin/**" />
+		<exclude name="media/vendor/ramsey/collection/composer.json" />
+		<exclude name="media/vendor/ramsey/collection/README.md" />
+		<exclude name="media/vendor/ramsey/collection/SECURITY.md" />
+
+		<exclude name="media/vendor/ramsey/uuid/composer.json" />
+		<exclude name="media/vendor/ramsey/uuid/README.md" />
+
+		<exclude name="media/vendor/spomky-labs/base64url/.github/**" />
+		<exclude name="media/vendor/spomky-labs/base64url/composer.json" />
+
+		<exclude name="media/vendor/spomky-labs/cbor-php/composer.json" />
+
+		<exclude name="media/vendor/symfony/polyfill-ctype/composer.json" />
+		<exclude name="media/vendor/symfony/polyfill-ctype/README.md" />
+
+		<exclude name="media/vendor/symfony/polyfill-php80/composer.json" />
+		<exclude name="media/vendor/symfony/polyfill-php80/README.md" />
+
+		<exclude name="media/vendor/symfony/polyfill-php81/composer.json" />
+		<exclude name="media/vendor/symfony/polyfill-php81/README.md" />
+
+		<exclude name="media/vendor/symfony/process/CHANGELOG.md" />
+		<exclude name="media/vendor/symfony/process/composer.json" />
+		<exclude name="media/vendor/symfony/process/README.md" />
+
+		<exclude name="media/vendor/thecodingmachine/safe/composer.json" />
+		<exclude name="media/vendor/thecodingmachine/safe/README.md" />
+		<exclude name="media/vendor/thecodingmachine/safe/rector-migrate-0.7.php" />
+
+		<exclude name="media/vendor/web-auth/cose-lib/composer.json" />
+		<exclude name="media/vendor/web-auth/cose-lib/LICENSE" />
+
+		<exclude name="media/vendor/web-auth/metadata-service/composer.json" />
+		<exclude name="media/vendor/web-auth/metadata-service/LICENSE" />
+		<exclude name="media/vendor/web-auth/webauthn-lib/composer.json" />
+		<exclude name="media/vendor/web-auth/webauthn-lib/LICENSE" />
+	</patternset>
+
 	<target name="package-pkg" description="Installation package" depends="new-release, setup-properties, package-plugins">
-
 		<!-- Dependencies are enough -->
-
 	</target>
 
 	<target name="composer-install">
