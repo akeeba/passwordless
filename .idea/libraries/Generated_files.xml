@@ -3,12 +3,11 @@
     <properties>
       <sourceFilesUrls>
         <item url="file://$PROJECT_DIR$/plugins/system/passwordless/media/js/manage.min.js" />
-        <item url="file://$PROJECT_DIR$/plugins/system/passwordless/media/js/passwordless.min.js" />
       </sourceFilesUrls>
     </properties>
     <CLASSES>
-      <root url="file://$PROJECT_DIR$/plugins/system/passwordless/media/js/manage.min.js" />
       <root url="file://$PROJECT_DIR$/plugins/system/passwordless/media/js/login.min.js" />
+      <root url="file://$PROJECT_DIR$/plugins/system/passwordless/media/js/manage.min.js" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

@@ -74,6 +74,11 @@ trait UserProfileFields
 			$id = isset($data->id) ? $data->id : null;
 		}
 
+		if (empty($id))
+		{
+			return;
+		}
+
 		$user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($id);
 
 		// Make sure the loaded user is the correct one
