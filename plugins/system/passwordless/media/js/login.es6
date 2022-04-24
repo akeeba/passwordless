@@ -280,8 +280,7 @@ window.akeeba.Passwordless = window.akeeba.Passwordless || {};
 				console.log(jsonData);
 
 				const paths = Joomla.getOptions('system.paths');
-				Passwordless.handleLoginChallenge(jsonData, `${paths ? `${paths.base}/index.php` : window.location.pathname}?${Joomla.getOptions(
-					'csrf.token')}=1`);
+				Passwordless.handleLoginChallenge(jsonData);
 			},
 			onError: (xhr) => {
 				Passwordless.handleLoginError(`${xhr.status} ${xhr.statusText}`);
