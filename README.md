@@ -20,7 +20,7 @@ Check out the Releases section of this GitHub repository.
 
 ## Minimum requirements
 
-Joomla 4.0.
+Joomla 4.
 
 For PHP minimum version requirement please consult [the composer.json file](composer.json).
 
