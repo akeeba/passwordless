@@ -1,5 +1,3 @@
 Improve favicon detection
 
-Do not pass the form token in the URLs sent to the frontend, the code can use Joomla.options instead.
-
 Refactor JS similar to what's used in plg_system_webauthn for finding the username and return URL

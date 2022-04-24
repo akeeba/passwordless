@@ -139,10 +139,8 @@ window.akeeba.Passwordless = window.akeeba.Passwordless || {};
 	 * internal page which handles the login server-side.
 	 *
 	 * @param {  Object}  publicKey     Public key request options, returned from the server
-	 * @param   {String}  callbackUrl  The URL we will use to post back to the server. Must include
-	 *   the anti-CSRF token.
 	 */
-	Passwordless.handleLoginChallenge = (publicKey, callbackUrl) => {
+	Passwordless.handleLoginChallenge = (publicKey) => {
 		const arrayToBase64String = (a) => btoa(String.fromCharCode(...a));
 
 		const base64url2base64 = (input) => {
@@ -200,8 +198,9 @@ window.akeeba.Passwordless = window.akeeba.Passwordless || {};
 				};
 
 				// Send the response to your server
-				window.location = `${callbackUrl}&option=com_ajax&group=system&plugin=passwordless&`
-					+ `format=raw&akaction=login&encoding=redirect&data=${
+				const paths = Joomla.getOptions('system.paths');
+				window.location = `${paths ? `${paths.base}/index.php` : window.location.pathname}?${Joomla.getOptions('csrf.token')}=1&option=com_ajax&group=system&plugin=passwordless`
+					+ `&format=raw&akaction=login&encoding=redirect&data=${
 						btoa(JSON.stringify(publicKeyCredential))}`;
 			})
 			.catch((error) => {
@@ -215,13 +214,11 @@ window.akeeba.Passwordless = window.akeeba.Passwordless || {};
 	 * for the user.
 	 *
 	 * @param   {string}   formId       The login form's or login module's HTML ID
-	 * @param   {string}   callbackUrl  The URL we will use to post back to the server. Must include
-	 *   the anti-CSRF token.
 	 *
 	 * @returns {boolean}  Always FALSE to prevent BUTTON elements from reloading the page.
 	 */
 	// eslint-disable-next-line no-unused-vars
-	Passwordless.login = (formId, callbackUrl) => {
+	Passwordless.login = (formId) => {
 		const elFormContainer = document.getElementById(formId);
 		const elUsername = Passwordless.lookForField(elFormContainer, 'input[name=username]');
 		const elReturn = Passwordless.lookForField(elFormContainer, 'input[name=return]');
@@ -250,8 +247,11 @@ window.akeeba.Passwordless = window.akeeba.Passwordless || {};
 			"returnUrl": returnUrl
 		};
 
+		const paths = Joomla.getOptions('system.paths');
+
 		Joomla.request({
-			url:    callbackUrl,
+			url:    `${paths ? `${paths.base}/index.php` : window.location.pathname}?${Joomla.getOptions(
+				'csrf.token')}=1`,
 			method: "POST",
 			data:   Passwordless.interpolateParameters(postBackData),
 			onSuccess(rawResponse)
@@ -279,7 +279,9 @@ window.akeeba.Passwordless = window.akeeba.Passwordless || {};
 
 				console.log(jsonData);
 
-				Passwordless.handleLoginChallenge(jsonData, callbackUrl);
+				const paths = Joomla.getOptions('system.paths');
+				Passwordless.handleLoginChallenge(jsonData, `${paths ? `${paths.base}/index.php` : window.location.pathname}?${Joomla.getOptions(
+					'csrf.token')}=1`);
 			},
 			onError: (xhr) => {
 				Passwordless.handleLoginError(`${xhr.status} ${xhr.statusText}`);
@@ -301,8 +303,7 @@ window.akeeba.Passwordless = window.akeeba.Passwordless || {};
 					const currentTarget = e.currentTarget;
 
 					Passwordless.login(
-						currentTarget.getAttribute("data-passwordless-form"),
-						currentTarget.getAttribute("data-passwordless-url")
+						currentTarget.getAttribute("data-passwordless-form")
 					);
 				});
 			});

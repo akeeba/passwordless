@@ -93,7 +93,8 @@ window.akeeba.Passwordless = window.akeeba.Passwordless || {};
 		}
 
 		const publicKey = JSON.parse(atob(elStore.dataset.public_key));
-		const postURL   = atob(elStore.dataset.postback_url);
+		const paths     = Joomla.getOptions('system.paths');
+		const postURL   = `${paths ? `${paths.base}/index.php` : window.location.pathname}`;
 
 		const arrayToBase64String = (a) => btoa(String.fromCharCode(...a));
 		const base64url2base64 = (input) => {
@@ -150,6 +151,7 @@ window.akeeba.Passwordless = window.akeeba.Passwordless || {};
 					encoding: "raw",
 					data:     btoa(JSON.stringify(publicKeyCredential)),
 				};
+				postBackData[Joomla.getOptions('csrf.token')] = 1;
 
 				Joomla.request({
 					url:    postURL,
@@ -200,7 +202,8 @@ window.akeeba.Passwordless = window.akeeba.Passwordless || {};
 			return false;
 		}
 
-		const postURL = atob(elStore.dataset.postback_url);
+		const paths   = Joomla.getOptions('system.paths');
+		const postURL = `${paths ? `${paths.base}/index.php` : window.location.pathname}`;
 
 		// Find the UI elements
 		const elTR         = that.parentElement.parentElement;
@@ -239,6 +242,7 @@ window.akeeba.Passwordless = window.akeeba.Passwordless || {};
 					credential_id: credentialId,
 					new_label:     elNewLabel,
 				};
+				postBackData[Joomla.getOptions('csrf.token')] = 1;
 
 				Joomla.request({
 					url:     postURL,
@@ -321,7 +325,8 @@ window.akeeba.Passwordless = window.akeeba.Passwordless || {};
 			return false;
 		}
 
-		const postURL = atob(elStore.dataset.postback_url);
+		const paths   = Joomla.getOptions('system.paths');
+		const postURL = `${paths ? `${paths.base}/index.php` : window.location.pathname}`;
 
 		// Find the UI elements
 		const elTR         = that.parentElement.parentElement;
@@ -345,6 +350,7 @@ window.akeeba.Passwordless = window.akeeba.Passwordless || {};
 			akaction:      "delete",
 			credential_id: credentialId,
 		};
+		postBackData[Joomla.getOptions('csrf.token')] = 1;
 
 		Joomla.request({
 			url:     postURL,

@@ -49,9 +49,6 @@ trait ButtonsInModules
 		$this->addLoginCSSAndJavascript();
 
 		$randomId = 'akpwl-login-' . UserHelper::genRandomPassword(12) . '-' . UserHelper::genRandomPassword(8);
-		$uri      = new Uri(Uri::base() . 'index.php');
-
-		$uri->setVar($this->app->getFormToken(), '1');
 
 		// Get local path to image
 		$image = HTMLHelper::_('image', 'plg_system_passwordless/webauthn.svg', '', '', true, true);
@@ -68,7 +65,6 @@ trait ButtonsInModules
 				'tooltip'                => 'PLG_SYSTEM_PASSWORDLESS_LOGIN_DESC',
 				'id'                     => $randomId,
 				'data-passwordless-form' => $form,
-				'data-passwordless-url'  => $uri->toString(),
 				'svg'                    => $image,
 				'class'                  => 'plg_system_passwordless_login_button',
 			],

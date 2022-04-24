@@ -58,12 +58,10 @@ if (!$hasBcMath && !$hasBcMath)
  */
 $randomId    = 'akpwl_' . UserHelper::genRandomPassword(32);
 $publicKey   = base64_encode($allow_add ? json_encode(Authentication::getPubKeyCreationOptions($user), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) : '{}');
-$postbackURL = base64_encode(rtrim(Uri::base(), '/') . '/index.php?' . Factory::getApplication()->getFormToken() . '=1');
 ?>
 <div class="akpwl" id="plg_system_passwordless-management-interface">
     <span id="<?= $randomId ?>"
 		  data-public_key="<?= $publicKey ?>"
-		  data-postback_url="<?= $postbackURL ?>"
 	></span>
 
 	<?php if (is_string($error) && !empty($error)): ?>
