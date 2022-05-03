@@ -13,20 +13,19 @@ use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\Database\DatabaseDriver;
 use Joomla\Event\DispatcherInterface;
-use Joomla\Event\Event;
 use Joomla\Event\SubscriberInterface;
-use Joomla\Plugin\System\Passwordless\Extension\Traits\AjaxHandler;
-use Joomla\Plugin\System\Passwordless\Extension\Traits\AjaxHandlerChallenge;
-use Joomla\Plugin\System\Passwordless\Extension\Traits\AjaxHandlerCreate;
-use Joomla\Plugin\System\Passwordless\Extension\Traits\AjaxHandlerDelete;
-use Joomla\Plugin\System\Passwordless\Extension\Traits\AjaxHandlerLogin;
-use Joomla\Plugin\System\Passwordless\Extension\Traits\AjaxHandlerSaveLabel;
-use Joomla\Plugin\System\Passwordless\Extension\Traits\ButtonsInModules;
-use Joomla\Plugin\System\Passwordless\Extension\Traits\EventReturnAware;
-use Joomla\Plugin\System\Passwordless\Extension\Traits\UserDeletion;
-use Joomla\Plugin\System\Passwordless\Extension\Traits\UserHandleCookie;
-use Joomla\Plugin\System\Passwordless\Extension\Traits\UserProfileFields;
-use Throwable;
+use Joomla\Plugin\System\Passwordless\Authentication;
+use Joomla\Plugin\System\Passwordless\PluginTraits\AdditionalLoginButtons;
+use Joomla\Plugin\System\Passwordless\PluginTraits\AjaxHandler;
+use Joomla\Plugin\System\Passwordless\PluginTraits\AjaxHandlerChallenge;
+use Joomla\Plugin\System\Passwordless\PluginTraits\AjaxHandlerCreate;
+use Joomla\Plugin\System\Passwordless\PluginTraits\AjaxHandlerDelete;
+use Joomla\Plugin\System\Passwordless\PluginTraits\AjaxHandlerInitCreate;
+use Joomla\Plugin\System\Passwordless\PluginTraits\AjaxHandlerLogin;
+use Joomla\Plugin\System\Passwordless\PluginTraits\AjaxHandlerSaveLabel;
+use Joomla\Plugin\System\Passwordless\PluginTraits\EventReturnAware;
+use Joomla\Plugin\System\Passwordless\PluginTraits\UserDeletion;
+use Joomla\Plugin\System\Passwordless\PluginTraits\UserProfileFields;
 
 // Protect from unauthorized access
 defined('_JEXEC') or die();
@@ -65,18 +64,32 @@ class Passwordless extends CMSPlugin implements SubscriberInterface
 	 */
 	protected $autoloadLanguage = true;
 
-	use EventReturnAware;
+	/**
+	 * Should I try to detect and register legacy event listeners?
+	 *
+	 * @var    boolean
+	 * @since  2.0.0
+	 *
+	 * @deprecated
+	 */
+	protected $allowLegacyListeners = false;
+
+	/**
+	 * The WebAuthn authentication helper object
+	 *
+	 * @var   Authentication
+	 * @since 2.0.0
+	 */
+	protected $authenticationHelper;
 
 	// AJAX request handlers
 	use AjaxHandler;
+	use AjaxHandlerInitCreate;
 	use AjaxHandlerCreate;
 	use AjaxHandlerSaveLabel;
 	use AjaxHandlerDelete;
 	use AjaxHandlerChallenge;
 	use AjaxHandlerLogin;
-
-	// Cookies for user handle (truly passwordless flow)
-	use UserHandleCookie;
 
 	// Custom user profile fields
 	use UserProfileFields;
@@ -85,7 +98,10 @@ class Passwordless extends CMSPlugin implements SubscriberInterface
 	use UserDeletion;
 
 	// Add Webauthn buttons
-	use ButtonsInModules;
+	use AdditionalLoginButtons;
+
+	// Utility methods for setting the events' return values
+	use EventReturnAware;
 
 	/**
 	 * Constructor. Registers a custom logger.
@@ -95,16 +111,37 @@ class Passwordless extends CMSPlugin implements SubscriberInterface
 	 *                                          Recognized key values include 'name', 'group', 'params', 'language'
 	 *                                          (this list is not meant to be comprehensive).
 	 */
-	public function __construct($subject, array $config = [])
+	public function __construct($subject, array $config = [], Authentication $authHelper = null)
 	{
 		parent::__construct($subject, $config);
+
+		// Register a debug log file writer
+		$logLevels = Log::ERROR | Log::CRITICAL | Log::ALERT | Log::EMERGENCY;
+
+		if (\defined('JDEBUG') && JDEBUG)
+		{
+			$logLevels = Log::ALL;
+		}
 
 		Log::addLogger([
 			'text_file'         => "plg_system_passwordless.php",
 			'text_entry_format' => '{DATETIME}	{PRIORITY} {CLIENTIP}	{MESSAGE}',
-		], Log::ALL, [
-			"plg_system_passwordless",
-		]);
+		], $logLevels, ["plg_system_passwordless",]);
+
+		$this->authenticationHelper = $authHelper ?? (new Authentication);
+		$this->authenticationHelper->setAttestationSupport($this->params->get('attestationSupport', 1) == 1);
+	}
+
+	/**
+	 * Returns the Authentication helper object
+	 *
+	 * @return Authentication
+	 *
+	 * @since  2.0.0
+	 */
+	public function getAuthenticationHelper(): Authentication
+	{
+		return $this->authenticationHelper;
 	}
 
 	public static function getSubscribedEvents(): array
@@ -129,37 +166,17 @@ class Passwordless extends CMSPlugin implements SubscriberInterface
 		}
 
 		return [
-			'onAfterInitialise'           => 'onAfterInitialise',
-			'onAjaxPasswordless'          => 'onAjaxPasswordless',
-			'onAjaxPasswordlessChallenge' => 'onAjaxPasswordlessChallenge',
-			'onAjaxPasswordlessCreate'    => 'onAjaxPasswordlessCreate',
-			'onAjaxPasswordlessDelete'    => 'onAjaxPasswordlessDelete',
-			'onAjaxPasswordlessLogin'     => 'onAjaxPasswordlessLogin',
-			'onAjaxPasswordlessSavelabel' => 'onAjaxPasswordlessSavelabel',
-			'onUserLoginButtons'          => 'onUserLoginButtons',
-			'onUserAfterDelete'           => 'onUserAfterDelete',
-			'onContentPrepareForm'        => 'onContentPrepareForm',
+			'onAjaxPasswordless'           => 'onAjaxPasswordless',
+			'onAjaxPasswordlessChallenge'  => 'onAjaxPasswordlessChallenge',
+			'onAjaxPasswordlessCreate'     => 'onAjaxPasswordlessCreate',
+			'onAjaxPasswordlessDelete'     => 'onAjaxPasswordlessDelete',
+			'onAjaxPasswordlessInitcreate' => 'onAjaxPasswordlessInitcreate',
+			'onAjaxPasswordlessLogin'      => 'onAjaxPasswordlessLogin',
+			'onAjaxPasswordlessSavelabel'  => 'onAjaxPasswordlessSavelabel',
+			'onUserAfterDelete'            => 'onUserAfterDelete',
+			'onUserLoginButtons'           => 'onUserLoginButtons',
+			'onContentPrepareForm'         => 'onContentPrepareForm',
+			'onContentPrepareData'         => 'onContentPrepareData',
 		];
-	}
-
-	public function onAfterInitialise(Event $event): void
-	{
-		try
-		{
-			$this->onAfterInitialiseCookie();
-		}
-		catch (Throwable $e)
-		{
-			return;
-		}
-
-		try
-		{
-			$this->onAfterInitialiseAjax();
-		}
-		catch (Throwable $e)
-		{
-			return;
-		}
 	}
 }

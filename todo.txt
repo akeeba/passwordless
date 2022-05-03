@@ -1,1 +1,0 @@
-Refactor JS similar to what's used in plg_system_webauthn for finding the username and return URL

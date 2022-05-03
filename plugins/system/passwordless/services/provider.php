@@ -7,12 +7,22 @@
 
 defined('_JEXEC') || die;
 
+use Joomla\Application\ApplicationInterface;
+use Joomla\Application\SessionAwareWebApplicationInterface;
+use Joomla\CMS\Application\CMSApplicationInterface;
 use Joomla\CMS\Extension\PluginInterface;
+use Joomla\CMS\Factory;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\DI\Container;
 use Joomla\DI\ServiceProviderInterface;
 use Joomla\Event\DispatcherInterface;
 use Joomla\Plugin\System\Passwordless\Extension\Passwordless;
+use Joomla\Plugin\System\Passwordless\Authentication;
+use Joomla\Plugin\System\Passwordless\CredentialRepository;
+use Joomla\Plugin\System\Passwordless\MetadataRepository;
+use Joomla\Session\SessionInterface;
+use Webauthn\MetadataService\MetadataStatementRepository;
+use Webauthn\PublicKeyCredentialSourceRepository;
 
 return new class implements ServiceProviderInterface {
 	/**
@@ -29,11 +39,64 @@ return new class implements ServiceProviderInterface {
 		$container->set(
 			PluginInterface::class,
 			function (Container $container) {
+				require_once __DIR__ . '/../vendor/autoload.php';
+
 				$config  = (array) PluginHelper::getPlugin('system', 'passwordless');
 				$subject = $container->get(DispatcherInterface::class);
 
-				return new Passwordless($subject, $config);
+				$app     = $container->has(ApplicationInterface::class) ? $container->has(ApplicationInterface::class) : $this->getApplication();
+				$session = $container->has('session') ? $container->get('session') : $this->getSession($app);
+
+				$db                    = $container->get('DatabaseDriver');
+				$credentialsRepository = $container->has(PublicKeyCredentialSourceRepository::class)
+					? $container->get(PublicKeyCredentialSourceRepository::class)
+					: new CredentialRepository($db);
+				$metadataRepository    = $container->has(MetadataStatementRepository::class)
+					? $container->get(MetadataStatementRepository::class)
+					: new MetadataRepository;
+				$authenticationHelper  = $container->has(Authentication::class)
+					? $container->get(Authentication::class)
+					: new Authentication($app, $session, $credentialsRepository, $metadataRepository);
+
+				return new Passwordless($subject, $config, $authenticationHelper);
 			}
 		);
+	}
+
+	/**
+	 * Get the current CMS application interface.
+	 *
+	 * @return CMSApplicationInterface|null
+	 *
+	 * @since  2.0.0
+	 */
+	private function getApplication(): ?CMSApplicationInterface
+	{
+		try
+		{
+			$app = Factory::getApplication();
+		}
+		catch (Exception $e)
+		{
+			return null;
+		}
+
+		return ($app instanceof CMSApplicationInterface) ? $app : null;
+	}
+
+	/**
+	 * Get the current application session object
+	 *
+	 * @param   ApplicationInterface  $app  The application we are running in
+	 *
+	 * @return SessionInterface|null
+	 *
+	 * @since  2.0.0
+	 */
+	private function getSession(?ApplicationInterface $app = null): ?SessionInterface
+	{
+		$app = $app ?? $this->getApplication();
+
+		return $app instanceof SessionAwareWebApplicationInterface ? $app->getSession() : null;
 	}
 };

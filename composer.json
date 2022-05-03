@@ -10,23 +10,13 @@
       "role": "Lead Developer"
     }
   ],
+  "config": {
+    "vendor-dir": "plugins/system/passwordless/vendor"
+  },
   "require": {
     "php": "^7.4|^8.0",
+    "lcobucci/jwt": "^4.0.0",
     "ext-json": "*",
-    "web-auth/webauthn-lib": "^3.0"
-  },
-  "scripts": {
-    "post-install-cmd": [
-      "rector",
-      "php modify_composer.php",
-      "rm -rf plugins/system/passwordless/vendor",
-      "cp -r vendor plugins/system/passwordless/"
-    ],
-    "post-update-cmd": [
-      "rector",
-      "php modify_composer.php",
-      "rm -rf plugins/system/passwordless/vendor",
-      "cp -r vendor plugins/system/passwordless/"
-    ]
+    "ext-openssl": "*"
   }
 }

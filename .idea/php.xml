@@ -2,47 +2,14 @@
 <project version="4">
   <component name="PhpIncludePathManager">
     <include_path>
-      <path value="$PROJECT_DIR$/../../master/joomla4---" />
-      <path value="$USER_HOME$/Sites/boot4" />
+      <path value="$PROJECT_DIR$/../../master/joomla4" />
+      <path value="$USER_HOME$/Sites/boot4--" />
       <path value="$PROJECT_DIR$/../../dionysopoulos/joomlatypehints/generated_hints" />
-      <path value="$PROJECT_DIR$/plugins/system/passwordless/vendor" />
-      <path value="$PROJECT_DIR$/plugins/system/passwordless/vendor/ramsey/uuid" />
-      <path value="$PROJECT_DIR$/plugins/system/passwordless/vendor/fgrosse/phpasn1" />
-      <path value="$PROJECT_DIR$/plugins/system/passwordless/vendor/symfony/polyfill-ctype" />
-      <path value="$PROJECT_DIR$/plugins/system/passwordless/vendor/spomky-labs/base64url" />
-      <path value="$PROJECT_DIR$/plugins/system/passwordless/vendor/beberlei/assert" />
-      <path value="$PROJECT_DIR$/plugins/system/passwordless/vendor/composer" />
-      <path value="$PROJECT_DIR$/plugins/system/passwordless/vendor/spomky-labs/cbor-php" />
-      <path value="$PROJECT_DIR$/plugins/system/passwordless/vendor/psr/http-message" />
-      <path value="$PROJECT_DIR$/plugins/system/passwordless/vendor/web-auth/cose-lib" />
-      <path value="$PROJECT_DIR$/plugins/system/passwordless/vendor/psr/http-factory" />
-      <path value="$PROJECT_DIR$/plugins/system/passwordless/vendor/web-auth/metadata-service" />
-      <path value="$PROJECT_DIR$/plugins/system/passwordless/vendor/psr/http-client" />
-      <path value="$PROJECT_DIR$/plugins/system/passwordless/vendor/web-auth/webauthn-lib" />
-      <path value="$PROJECT_DIR$/plugins/system/passwordless/vendor/brick/math" />
       <path value="$USER_HOME$/Sites/boot4/configuration.php" />
-      <path value="$PROJECT_DIR$/vendor/symfony/process" />
-      <path value="$PROJECT_DIR$/vendor/beberlei/assert" />
-      <path value="$PROJECT_DIR$/vendor/ramsey/collection" />
-      <path value="$PROJECT_DIR$/vendor/ramsey/uuid" />
-      <path value="$PROJECT_DIR$/vendor/league/uri-interfaces" />
-      <path value="$PROJECT_DIR$/vendor/league/uri" />
-      <path value="$PROJECT_DIR$/vendor/symfony/polyfill-ctype" />
-      <path value="$PROJECT_DIR$/vendor/symfony/polyfill-php81" />
-      <path value="$PROJECT_DIR$/vendor/fgrosse/phpasn1" />
-      <path value="$PROJECT_DIR$/vendor/symfony/polyfill-php80" />
-      <path value="$PROJECT_DIR$/vendor/spomky-labs/base64url" />
-      <path value="$PROJECT_DIR$/vendor/psr/http-message" />
-      <path value="$PROJECT_DIR$/vendor/thecodingmachine/safe" />
-      <path value="$PROJECT_DIR$/vendor/web-auth/cose-lib" />
-      <path value="$PROJECT_DIR$/vendor/spomky-labs/cbor-php" />
-      <path value="$PROJECT_DIR$/vendor/psr/http-factory" />
-      <path value="$PROJECT_DIR$/vendor/brick/math" />
-      <path value="$PROJECT_DIR$/vendor/psr/http-client" />
-      <path value="$PROJECT_DIR$/vendor/psr/log" />
-      <path value="$PROJECT_DIR$/vendor/composer" />
-      <path value="$PROJECT_DIR$/vendor/web-auth/webauthn-lib" />
-      <path value="$PROJECT_DIR$/vendor/web-auth/metadata-service" />
+      <path value="$PROJECT_DIR$/plugins/system/passwordless/vendor/lcobucci/jwt" />
+      <path value="$PROJECT_DIR$/plugins/system/passwordless/vendor/stella-maris/clock" />
+      <path value="$PROJECT_DIR$/plugins/system/passwordless/vendor/composer" />
+      <path value="$PROJECT_DIR$/plugins/system/passwordless/vendor/lcobucci/clock" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="7.4" />

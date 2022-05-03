@@ -6,13 +6,6 @@
 	"license": "GPL-3.0-or-later",
 	"assets": [
 		{
-			"name": "plg_system_passwordless.backend",
-			"description": "Administration CSS",
-			"type": "style",
-			"uri": "plg_system_passwordless/backend.css"
-		},
-
-		{
 			"name": "plg_system_passwordless.manage",
 			"description": "Management JavaScript",
 			"type": "script",
@@ -36,16 +29,6 @@
 			"attributes": {
 				"defer": true
 			}
-		},
-
-		{
-			"name": "plg_system_passwordless.manage",
-			"type": "preset",
-			"dependencies": [
-				"plg_system_passwordless.backend#style",
-				"plg_system_passwordless.manage#script"
-			]
 		}
-
 	]
 }
