@@ -17,25 +17,29 @@ use Joomla\CMS\User\User;
  *
  * Generic data
  *
- * @var   FileLayout $this        The Joomla layout renderer
- * @var   array      $displayData The data in array format. DO NOT USE.
+ * @var   FileLayout $this                The Joomla layout renderer
+ * @var   array      $displayData         The data in array format. DO NOT USE.
  *
  * Layout specific data
  *
- * @var   User       $user        The Joomla user whose passwordless login we are managing
- * @var   bool       $allow_add   Are we allowed to add passwordless login methods
- * @var   array      $credentials The already stored credentials for the user
- * @var   string     $error       Any error messages
+ * @var   User       $user                The Joomla user whose passwordless login we are managing
+ * @var   bool       $allow_add           Are we allowed to add passwordless login methods
+ * @var   array      $credentials         The already stored credentials for the user
+ * @var   string     $error               Any error messages
+ * @var   array      $knownAuthenticators Metadata of known authenticator devices by AAGUID
+ * @var   bool       $attestationSupport  Is attestation support enabled?
+ * @var   bool       $allowResident       Do we allow Passkeys / resident WebAuthn credentials?
  */
 
 // Extract the data. Do not remove until the unset() line.
 extract(array_merge([
-	'user'        => Factory::getApplication()->getIdentity() ?? new User(),
-	'allow_add'   => false,
-	'credentials' => [],
-	'error'       => '',
+	'user'                => Factory::getApplication()->getIdentity() ?? new User(),
+	'allow_add'           => false,
+	'credentials'         => [],
+	'error'               => '',
 	'knownAuthenticators' => [],
 	'attestationSupport'  => true,
+	'allowResident'       => true,
 ], $displayData));
 
 // Ensure the GMP or BCmath extension (or a polyfill) is loaded in PHP - this is required by the third party library.
@@ -130,6 +134,7 @@ HTMLHelper::_('bootstrap.tooltip', '.plg_system_passwordless_tooltip');
 				<span class="icon-plus" aria-hidden="true"></span>
 				<?php echo Text::_('PLG_SYSTEM_PASSWORDLESS_MANAGE_BTN_ADD_LABEL') ?>
 			</button>
+			<?php if ($allowResident): ?>
 			<button
 					type="button"
 					id="plg_system_passwordless-manage-addresident"
@@ -139,6 +144,7 @@ HTMLHelper::_('bootstrap.tooltip', '.plg_system_passwordless_tooltip');
 				<span class="fas fa-id-card-alt" aria-hidden="true"></span>
 				<?php echo Text::_('PLG_SYSTEM_PASSWORDLESS_MANAGE_BTN_ADDRESIDENT_LABEL') ?>
 			</button>
+			<?php endif; ?>
 		</p>
 	<?php endif; ?>
 </div>

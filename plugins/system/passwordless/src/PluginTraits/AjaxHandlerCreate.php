@@ -101,6 +101,7 @@ trait AjaxHandlerCreate
 			'credentials'         => $credentialRepository->getAll($thatUser->id),
 			'knownAuthenticators' => $this->authenticationHelper->getKnownAuthenticators(),
 			'attestationSupport'  => $this->authenticationHelper->hasAttestationSupport(),
+			'allowResident'       => $this->params->get('allowResident', 1) == 1,
 		];
 
 		if (isset($error) && !empty($error))

@@ -67,6 +67,7 @@ class PasswordlessField extends FormField
 			'credentials'         => $authenticationHelper->getCredentialsRepository()->getAll($userId),
 			'knownAuthenticators' => $authenticationHelper->getKnownAuthenticators(),
 			'attestationSupport'  => $authenticationHelper->hasAttestationSupport(),
+			'allowResident'       => $plugin->params->get('allowResident', 1) == 1,
 		]);
 	}
 }
