@@ -165,7 +165,7 @@ class AppleAttestationStatementSupport implements AttestationStatementSupport
 		Assertion::notNull($publicKeyData, 'No attested public key found');
 		$publicDataStream = new StringStream($publicKeyData);
 		$coseKey          = $this->decoder->decode($publicDataStream);
-		Assertion::true($this->isNormalizable($coseKey), 'Invalid attested public key found');
+		Assertion::true(method_exists($coseKey, 'getNormalizedData'), 'Invalid attested public key found');
 		Assertion::true($publicDataStream->isEOF(), 'Invalid public key data. Presence of extra bytes.');
 		$publicDataStream->close();
 		$publicKey = Key::createFromData($coseKey->getNormalizedData());
@@ -195,24 +195,4 @@ class AppleAttestationStatementSupport implements AttestationStatementSupport
 		//'3024a1220420' corresponds to the Sequence+Explicitly Tagged Object + Octet Object
 		Assertion::eq('3024a1220420' . $nonce, bin2hex($extension), 'The client data hash is not valid');
 	}
-
-	/**
-	 * @param   CBORObject  $object
-	 *
-	 * @return  bool
-	 *
-	 * @since   2.0.0
-	 */
-	private function isNormalizable(CBORObject $object): bool
-	{
-		return
-			($object instanceof DoublePrecisionFloatObject) ||
-			($object instanceof FalseObject) ||
-			($object instanceof HalfPrecisionFloatObject) ||
-			($object instanceof NullObject) ||
-			($object instanceof SimpleObject) ||
-			($object instanceof SinglePrecisionFloatObject) ||
-			($object instanceof TrueObject);
-	}
-
 }
