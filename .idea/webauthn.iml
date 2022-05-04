@@ -12,7 +12,6 @@
       <excludeFolder url="file://$MODULE_DIR$/plugins/system/passwordless/vendor/laminas/laminas-diactoros" />
       <excludeFolder url="file://$MODULE_DIR$/plugins/system/passwordless/vendor/spomky-labs/base64url" />
       <excludeFolder url="file://$MODULE_DIR$/plugins/system/passwordless/vendor/beberlei/assert" />
-      <excludeFolder url="file://$MODULE_DIR$/plugins/system/passwordless/vendor/composer" />
       <excludeFolder url="file://$MODULE_DIR$/plugins/system/passwordless/vendor/nyholm/psr7" />
       <excludeFolder url="file://$MODULE_DIR$/plugins/system/passwordless/vendor/spomky-labs/cbor-php" />
       <excludeFolder url="file://$MODULE_DIR$/plugins/system/passwordless/vendor/psr/http-message" />
@@ -23,6 +22,20 @@
       <excludeFolder url="file://$MODULE_DIR$/plugins/system/passwordless/vendor/web-auth/webauthn-lib" />
       <excludeFolder url="file://$MODULE_DIR$/plugins/system/passwordless/vendor/brick/math" />
       <excludeFolder url="file://$MODULE_DIR$/plugins/system/passwordless/vendor/paragonie/random_compat" />
+      <excludeFolder url="file://$MODULE_DIR$/plugins/system/passwordless/vendor/lcobucci/jwt" />
+      <excludeFolder url="file://$MODULE_DIR$/plugins/system/passwordless/vendor/stella-maris/clock" />
+      <excludeFolder url="file://$MODULE_DIR$/plugins/system/passwordless/vendor/composer" />
+      <excludeFolder url="file://$MODULE_DIR$/plugins/system/passwordless/vendor/lcobucci/clock" />
+      <excludeFolder url="file://$MODULE_DIR$/plugins/system/passwordless/vendor/web-token/jwt-signature-algorithm-rsa" />
+      <excludeFolder url="file://$MODULE_DIR$/plugins/system/passwordless/vendor/web-token/jwt-signature-algorithm-hmac" />
+      <excludeFolder url="file://$MODULE_DIR$/plugins/system/passwordless/vendor/web-token/jwt-signature-algorithm-none" />
+      <excludeFolder url="file://$MODULE_DIR$/plugins/system/passwordless/vendor/web-token/jwt-signature-algorithm-experimental" />
+      <excludeFolder url="file://$MODULE_DIR$/plugins/system/passwordless/vendor/web-token/jwt-signature-algorithm-eddsa" />
+      <excludeFolder url="file://$MODULE_DIR$/plugins/system/passwordless/vendor/web-token/jwt-signature-algorithm-ecdsa" />
+      <excludeFolder url="file://$MODULE_DIR$/plugins/system/passwordless/vendor/web-token/jwt-core" />
+      <excludeFolder url="file://$MODULE_DIR$/plugins/system/passwordless/vendor/web-token/jwt-signature" />
+      <excludeFolder url="file://$MODULE_DIR$/plugins/system/passwordless/vendor/symfony/polyfill-php80" />
+      <excludeFolder url="file://$MODULE_DIR$/plugins/system/passwordless/vendor/symfony/process" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

@@ -284,6 +284,8 @@ window.akeeba.Passwordless = window.akeeba.Passwordless || {};
 							reportErrorToUser(
 								Joomla.Text._("PLG_SYSTEM_PASSWORDLESS_ERR_LABEL_NOT_SAVED"),
 							);
+
+							elCancel.click();
 						}
 					},
 					onError: (xhr) => {
@@ -291,6 +293,8 @@ window.akeeba.Passwordless = window.akeeba.Passwordless || {};
 							`${Joomla.Text._("PLG_SYSTEM_PASSWORDLESS_ERR_LABEL_NOT_SAVED")
 							} -- ${xhr.status} ${xhr.statusText}`,
 						);
+
+						elCancel.click();
 					},
 				});
 			}
@@ -379,6 +383,9 @@ window.akeeba.Passwordless = window.akeeba.Passwordless || {};
 					reportErrorToUser(
 						Joomla.Text._("PLG_SYSTEM_PASSWORDLESS_ERR_NOT_DELETED"),
 					);
+
+					elEdit.disabled   = false;
+					elDelete.disabled = false;
 
 					return;
 				}

@@ -10,6 +10,19 @@
       <path value="$PROJECT_DIR$/plugins/system/passwordless/vendor/stella-maris/clock" />
       <path value="$PROJECT_DIR$/plugins/system/passwordless/vendor/composer" />
       <path value="$PROJECT_DIR$/plugins/system/passwordless/vendor/lcobucci/clock" />
+      <path value="$PROJECT_DIR$/plugins/system/passwordless/vendor/spomky-labs/base64url" />
+      <path value="$PROJECT_DIR$/plugins/system/passwordless/vendor/web-token/jwt-signature-algorithm-rsa" />
+      <path value="$PROJECT_DIR$/plugins/system/passwordless/vendor/web-token/jwt-signature-algorithm-hmac" />
+      <path value="$PROJECT_DIR$/plugins/system/passwordless/vendor/web-token/jwt-signature-algorithm-none" />
+      <path value="$PROJECT_DIR$/plugins/system/passwordless/vendor/web-token/jwt-signature-algorithm-experimental" />
+      <path value="$PROJECT_DIR$/plugins/system/passwordless/vendor/web-token/jwt-signature-algorithm-eddsa" />
+      <path value="$PROJECT_DIR$/plugins/system/passwordless/vendor/brick/math" />
+      <path value="$PROJECT_DIR$/plugins/system/passwordless/vendor/fgrosse/phpasn1" />
+      <path value="$PROJECT_DIR$/plugins/system/passwordless/vendor/web-token/jwt-signature-algorithm-ecdsa" />
+      <path value="$PROJECT_DIR$/plugins/system/passwordless/vendor/web-token/jwt-core" />
+      <path value="$PROJECT_DIR$/plugins/system/passwordless/vendor/web-token/jwt-signature" />
+      <path value="$PROJECT_DIR$/plugins/system/passwordless/vendor/symfony/polyfill-php80" />
+      <path value="$PROJECT_DIR$/plugins/system/passwordless/vendor/symfony/process" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="7.4" />

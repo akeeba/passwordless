@@ -59,7 +59,7 @@ trait AjaxHandlerDelete
 		// Make sure I am editing my own key
 		try
 		{
-			$user              = $this->app->getIdentity() ?? new User();
+			$user             = $this->app->getIdentity() ?? new User();
 			$credentialHandle = $repository->getUserHandleFor($credentialId);
 			$myHandle         = $repository->getHandleFromUserId($user->id);
 		}

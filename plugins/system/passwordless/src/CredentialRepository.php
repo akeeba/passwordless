@@ -79,7 +79,8 @@ class CredentialRepository implements PublicKeyCredentialSourceRepository
 			return null;
 		}
 
-		$json = $this->decryptCredential($encrypted);
+		$json = $this->decryptCredential($encrypted) ?: '{}';
+		$json = str_replace('Akeeba\\\\Passwordless\\\\Webauthn\\', 'Webauthn\\', $json);
 
 		try
 		{
@@ -137,6 +138,7 @@ class CredentialRepository implements PublicKeyCredentialSourceRepository
 			try
 			{
 				$json = $this->decryptCredential($record['credential']);
+				$json = str_replace('Akeeba\\\\Passwordless\\\\Webauthn\\', 'Webauthn\\', $json);
 				$data = json_decode($json, true);
 			}
 			catch (JsonException $e)
@@ -321,6 +323,7 @@ class CredentialRepository implements PublicKeyCredentialSourceRepository
 			try
 			{
 				$json = $this->decryptCredential($record['credential']);
+				$json = str_replace('Akeeba\\\\Passwordless\\\\Webauthn\\', 'Webauthn\\', $json);
 				$data = json_decode($json, true);
 			}
 			catch (JsonException $e)
