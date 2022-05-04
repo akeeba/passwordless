@@ -120,14 +120,24 @@ HTMLHelper::_('bootstrap.tooltip', '.plg_system_passwordless_tooltip');
 	</table>
 
 	<?php if ($allow_add): ?>
-		<p class="akpwl-manage-add-container">
+		<p class="akpwl-manage-add-container d-flex">
 			<button
 					type="button"
 					id="plg_system_passwordless-manage-add"
-					class="btn btn-success w-100"
+					class="btn btn-success w-100 plg_system_passwordless_tooltip mx-2"
+					title="<?= Text::_('PLG_SYSTEM_PASSWORDLESS_MANAGE_BTN_ADD_TIP') ?>"
 			>
 				<span class="icon-plus" aria-hidden="true"></span>
 				<?php echo Text::_('PLG_SYSTEM_PASSWORDLESS_MANAGE_BTN_ADD_LABEL') ?>
+			</button>
+			<button
+					type="button"
+					id="plg_system_passwordless-manage-addresident"
+					class="btn btn-outline-success w-100 plg_system_passwordless_tooltip mx-2"
+					title="<?= Text::_('PLG_SYSTEM_PASSWORDLESS_MANAGE_BTN_ADDRESIDENT_TIP') ?>"
+			>
+				<span class="fas fa-id-card-alt" aria-hidden="true"></span>
+				<?php echo Text::_('PLG_SYSTEM_PASSWORDLESS_MANAGE_BTN_ADDRESIDENT_LABEL') ?>
 			</button>
 		</p>
 	<?php endif; ?>

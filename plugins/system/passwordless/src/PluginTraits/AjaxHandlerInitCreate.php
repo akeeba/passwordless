@@ -56,6 +56,8 @@ trait AjaxHandlerInitCreate
 		$session = $this->app->getSession();
 		$session->set('plg_system_passwordless.registration_user_id', $user->id);
 
-		$this->returnFromEvent($event, $this->authenticationHelper->getPubKeyCreationOptions($user));
+		$resident = $this->app->input->getBool('resident', false);
+
+		$this->returnFromEvent($event, $this->authenticationHelper->getPubKeyCreationOptions($user, $resident));
 	}
 }

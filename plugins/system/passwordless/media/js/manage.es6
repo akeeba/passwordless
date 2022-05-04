@@ -64,7 +64,7 @@ window.akeeba.Passwordless = window.akeeba.Passwordless || {};
 		window.scrollTo({top: 0, left: 0, behavior: 'smooth'});
 	};
 
-	Passwordless.initCreateCredentials = () => {
+	Passwordless.initCreateCredentials = (resident) => {
 		// Make sure the browser supports Webauthn
 		if (!('credentials' in navigator))
 		{
@@ -84,6 +84,7 @@ window.akeeba.Passwordless = window.akeeba.Passwordless || {};
 			format:   'json',
 			akaction: 'initcreate',
 			encoding: 'json',
+			resident: resident ? 1 : 0
 		};
 		postBackData[Joomla.getOptions('csrf.token')] = 1;
 
@@ -459,7 +460,22 @@ window.akeeba.Passwordless = window.akeeba.Passwordless || {};
 	Passwordless.addOnClick = (event) => {
 		event.preventDefault();
 
-		Passwordless.initCreateCredentials();
+		Passwordless.initCreateCredentials(false);
+
+		return false;
+	};
+
+	/**
+	 * Add New Authenticator button click handler
+	 *
+	 * @param   {MouseEvent} event  The mouse click event
+	 *
+	 * @returns {boolean} Returns false to prevent the default browser button behavior
+	 */
+	Passwordless.addPasskeyOnClick = (event) => {
+		event.preventDefault();
+
+		Passwordless.initCreateCredentials(true);
 
 		return false;
 	};
@@ -503,6 +519,13 @@ window.akeeba.Passwordless = window.akeeba.Passwordless || {};
 		if (addButton)
 		{
 			addButton.addEventListener("click", Passwordless.addOnClick);
+		}
+
+		const addPasskeyButton = document.getElementById("plg_system_passwordless-manage-addresident");
+
+		if (addPasskeyButton)
+		{
+			addPasskeyButton.addEventListener("click", Passwordless.addPasskeyOnClick);
 		}
 
 		const editLabelButtons = [].slice.call(document.querySelectorAll(".plg_system_passwordless-manage-edit"));

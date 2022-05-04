@@ -180,14 +180,15 @@ class Authentication
 	 *
 	 * The PK creation options and the user ID are stored in the session.
 	 *
-	 * @param   User  $user  The Joomla user to create the public key for
+	 * @param   User  $user      The Joomla user to create the public key for
+	 * @param   bool  $resident  Should I request a resident authenticator?
 	 *
 	 * @return  PublicKeyCredentialCreationOptions
 	 *
-	 * @throws  Exception
+	 * @throws Exception
 	 * @since   2.0.0
 	 */
-	public function getPubKeyCreationOptions(User $user): PublicKeyCredentialCreationOptions
+	public function getPubKeyCreationOptions(User $user, bool $resident = false): PublicKeyCredentialCreationOptions
 	{
 		/**
 		 * We will only ask for attestation information if our MDS is guaranteed not empty.
@@ -210,8 +211,8 @@ class Authentication
 			$this->getPubKeyDescriptorsForUser($user),
 			new AuthenticatorSelectionCriteria(
 				AuthenticatorSelectionCriteria::AUTHENTICATOR_ATTACHMENT_NO_PREFERENCE,
-				false,
-				AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_PREFERRED
+				$resident,
+				$resident ? AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_REQUIRED : AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_PREFERRED
 			),
 			new AuthenticationExtensionsClientInputs
 		);
