@@ -1,10 +1,8 @@
 <?php
 /**
- * @package         Joomla.Plugin
- * @subpackage      System.Webauthn
- *
- * @copyright   (C) 2022 Open Source Matters, Inc. <https://www.joomla.org>
- * @license         GNU General Public License version 2 or later; see LICENSE.txt
+ * @package   AkeebaPasswordlessLogin
+ * @copyright Copyright (c)2018-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @license   GNU General Public License version 3, or later
  */
 
 namespace Joomla\Plugin\System\Passwordless\Hotfix;
@@ -50,8 +48,6 @@ use Webauthn\TrustPath\CertificateTrustPath;
  * (and should not!) modify.
  *
  * @since   2.0.0
- *
- * @deprecated 5.0 We will upgrade the WebAuthn library to version 3 or later and this will go away.
  */
 final class AndroidKeyAttestationStatementSupport implements AttestationStatementSupport
 {

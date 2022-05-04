@@ -69,8 +69,6 @@ class Passwordless extends CMSPlugin implements SubscriberInterface
 	 *
 	 * @var    boolean
 	 * @since  2.0.0
-	 *
-	 * @deprecated
 	 */
 	protected $allowLegacyListeners = false;
 
