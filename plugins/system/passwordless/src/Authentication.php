@@ -236,12 +236,15 @@ class Authentication
 	 * @throws  Exception
 	 * @since   2.0.0
 	 */
-	public function getPubkeyRequestOptions(User $user): ?PublicKeyCredentialRequestOptions
+	public function getPubkeyRequestOptions(?User $user): ?PublicKeyCredentialRequestOptions
 	{
 		Log::add('Creating PK request options', Log::DEBUG, 'plg_system_passwordless');
+		$publicKeyCredentialDescriptors    = is_null($user)
+			? []
+			: $this->getPubKeyDescriptorsForUser($user);
 		$publicKeyCredentialRequestOptions = $this->getWebauthnServer()->generatePublicKeyCredentialRequestOptions(
 			PublicKeyCredentialRequestOptions::USER_VERIFICATION_REQUIREMENT_PREFERRED,
-			$this->getPubKeyDescriptorsForUser($user)
+			$publicKeyCredentialDescriptors
 		);
 
 		// Save in session. This is used during the verification stage to prevent replay attacks.
@@ -264,7 +267,7 @@ class Authentication
 	 * @throws Exception
 	 * @since   2.0.0
 	 */
-	public function validateAssertionResponse(string $data, User $user): PublicKeyCredentialSource
+	public function validateAssertionResponse(string $data, ?User $user): PublicKeyCredentialSource
 	{
 		// Make sure the public key credential request options in the session are valid
 		$encodedPkOptions                  = $this->session->get('plg_system_passwordless.publicKeyCredentialRequestOptions', null);
@@ -291,7 +294,7 @@ class Authentication
 		return $this->getWebauthnServer()->loadAndCheckAssertionResponse(
 			$data,
 			$this->getPKCredentialRequestOptions(),
-			$this->getUserEntity($user),
+			is_null($user) ? null : $this->getUserEntity($user),
 			ServerRequestFactory::fromGlobals()
 		);
 	}

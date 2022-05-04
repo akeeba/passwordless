@@ -108,7 +108,14 @@ trait AdditionalLoginButtons
 			return;
 		}
 
-		$wa = $this->app->getDocument()->getWebAssetManager();
+		$document = $this->app->getDocument();
+
+		if (!($document instanceof HtmlDocument))
+		{
+			return;
+		}
+
+		$wa       = $document->getWebAssetManager();
 		$wa->getRegistry()->addExtensionRegistryFile('plg_system_passwordless');
 		$wa->useScript('plg_system_passwordless.login');
 
@@ -116,6 +123,11 @@ trait AdditionalLoginButtons
 		Text::script('PLG_SYSTEM_PASSWORDLESS_ERR_CANNOT_FIND_USERNAME');
 		Text::script('PLG_SYSTEM_PASSWORDLESS_ERR_INVALID_USERNAME');
 		Text::script('PLG_SYSTEM_PASSWORDLESS_ERR_EMPTY_USERNAME');
+
+		// Send some plugin options to the frontend
+		$document->addScriptOptions('plg_system_passwordless', [
+			'allowResident' => $this->params->get('allowResident', 1) == 1,
+		]);
 
 		// Store the current URL as the default return URL after login (or failure)
 		$this->app->getSession()->set('plg_system_passwordless.returnUrl', Uri::current());

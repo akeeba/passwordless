@@ -22,7 +22,9 @@ use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\User;
 use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\Event\Event;
+use Joomla\Plugin\System\Passwordless\CredentialRepository;
 use RuntimeException;
+use function Sodium\add;
 
 /**
  * Ajax handler for akaction=login
@@ -41,65 +43,109 @@ trait AjaxHandlerLogin
 	 */
 	public function onAjaxPasswordlessLogin(Event $event): void
 	{
-		$session   = $this->app->getSession();
-		$returnUrl = $session->get('plg_system_passwordless.returnUrl', Uri::base());
-		$userId    = $session->get('plg_system_passwordless.userId', 0);
+		$session       = $this->app->getSession();
+		$returnUrl     = $session->get('plg_system_passwordless.returnUrl', Uri::base());
+		$userId        = $session->get('plg_system_passwordless.userId', 0);
+		$allowResident = $this->params->get('allowResident', 1) == 1;
 
 		try
 		{
 			// Validate the authenticator response and get the user handle
 			$credentialRepository = $this->authenticationHelper->getCredentialsRepository();
 
-			// If a user ID is NOT present in the session we need to get it from the user handle
-			if (empty($userId))
+			// If a user ID is NOT present in the session but we don't allow resident keys we fail.
+			if (!$allowResident && empty($userId))
 			{
 				Log::add('Cannot determine the user ID', Log::NOTICE, 'plg_system_passwordless');
 
 				throw new RuntimeException(Text::_('PLG_SYSTEM_PASSWORDLESS_ERR_CREATE_INVALID_LOGIN_REQUEST'));
 			}
 
-			// Make sure the user exists
-			$user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($userId);
-
-			if ($user->id != $userId)
+			// Login Flow 1: Login with a non-resident key
+			if (!empty($userId))
 			{
-				$message = sprintf('User #%d does not exist', $userId);
-				Log::add($message, Log::NOTICE, 'plg_system_passwordless');
+				Log::add('Regular WebAuthn credentials login flow',Log::DEBUG, 'plg_system_passwordless');
 
-				throw new RuntimeException(Text::_('PLG_SYSTEM_PASSWORDLESS_ERR_CREATE_INVALID_LOGIN_REQUEST'));
+				// Make sure the user exists
+				$user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($userId);
+
+				if ($user->id != $userId)
+				{
+					$message = sprintf('User #%d does not exist', $userId);
+					Log::add($message, Log::NOTICE, 'plg_system_passwordless');
+
+					throw new RuntimeException(Text::_('PLG_SYSTEM_PASSWORDLESS_ERR_CREATE_INVALID_LOGIN_REQUEST'));
+				}
+
+				// Validate the authenticator response and get the user handle
+				$userHandle = $this->getUserHandleFromResponse($user);
+
+				if (is_null($userHandle))
+				{
+					Log::add('Cannot retrieve the user handle from the request; the browser did not assert our request.', Log::NOTICE, 'plg_system_passwordless');
+
+					throw new RuntimeException(Text::_('PLG_SYSTEM_PASSWORDLESS_ERR_CREATE_INVALID_LOGIN_REQUEST'));
+				}
+
+				// Does the user handle match the user ID? This should never trigger by definition of the login check.
+				$validUserHandle = $credentialRepository->getHandleFromUserId($userId);
+
+				if ($userHandle != $validUserHandle)
+				{
+					$message = sprintf('Invalid user handle; expected %s, got %s', $validUserHandle, $userHandle);
+					Log::add($message, Log::NOTICE, 'plg_system_passwordless');
+
+					throw new RuntimeException(Text::_('PLG_SYSTEM_PASSWORDLESS_ERR_CREATE_INVALID_LOGIN_REQUEST'));
+				}
+
+				if ($user->id != $userId)
+				{
+					$message = sprintf('Invalid user ID; expected %d, got %d', $userId, $user->id);
+					Log::add($message, Log::NOTICE, 'plg_system_passwordless');
+
+					throw new RuntimeException(Text::_('PLG_SYSTEM_PASSWORDLESS_ERR_CREATE_INVALID_LOGIN_REQUEST'));
+				}
+
+				// Login the user
+				Log::add('Logging in the user', Log::DEBUG, 'plg_system_passwordless');
+				$this->loginUser((int) $userId);
+
+				return;
 			}
 
-			// Validate the authenticator response and get the user handle
-			$userHandle = $this->getUserHandleFromResponse($user);
+			// Login Flow 2: Login with a resident key
+			Log::add('Resident WebAuthn credentials (Passkey) login flow',Log::DEBUG, 'plg_system_passwordless');
+
+			$userHandle = $this->getUserHandleFromResponse(null);
 
 			if (is_null($userHandle))
 			{
-				Log::add('Cannot retrieve the user handle from the request; the browser did not assert our request.', Log::NOTICE, 'plg_system_passwordless');
+				Log::add('Cannot retrieve the user handle from the request; no resident key found.', Log::NOTICE, 'plg_system_passwordless');
 
-				throw new RuntimeException(Text::_('PLG_SYSTEM_PASSWORDLESS_ERR_CREATE_INVALID_LOGIN_REQUEST'));
+				throw new RuntimeException(Text::_('PLG_SYSTEM_PASSWORDLESS_ERR_EMPTY_USERNAME'));
 			}
 
-			// Does the user handle match the user ID? This should never trigger by definition of the login check.
-			$validUserHandle = $credentialRepository->getHandleFromUserId($userId);
+			// Get the user ID from the user handle
+			$repo = $this->authenticationHelper->getCredentialsRepository();
 
-			if ($userHandle != $validUserHandle)
+			if (!method_exists($repo, 'getUserIdFromHandle'))
 			{
-				$message = sprintf('Invalid user handle; expected %s, got %s', $validUserHandle, $userHandle);
-				Log::add($message, Log::NOTICE, 'plg_system_passwordless');
+				Log::add('The credentials repository provided in the plugin configuration does not allow retrieving user IDs from user handles. Falling back to default implementation.', Log::NOTICE, 'plg_system_passwordless');
 
-				throw new RuntimeException(Text::_('PLG_SYSTEM_PASSWORDLESS_ERR_CREATE_INVALID_LOGIN_REQUEST'));
+				$repo = new CredentialRepository();
 			}
 
-			// Make sure the user exists
-			$user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($userId);
+			$userId = $repo->getUserIdFromHandle($userHandle);
 
-			if ($user->id != $userId)
+			// If the user was not found show an error
+			if ($userId <= 0)
 			{
-				$message = sprintf('Invalid user ID; expected %d, got %d', $userId, $user->id);
-				Log::add($message, Log::NOTICE, 'plg_system_passwordless');
+				Log::add(sprintf('User handle %s does not correspond to a known user.', $userHandle), Log::DEBUG, 'plg_system_passwordless');
 
-				throw new RuntimeException(Text::_('PLG_SYSTEM_PASSWORDLESS_ERR_CREATE_INVALID_LOGIN_REQUEST'));
+				throw new RuntimeException(Text::_('PLG_SYSTEM_PASSWORDLESS_ERR_INVALID_USERNAME_RESIDENT'));
 			}
+
+			Log::add(sprintf('Passkey indicates user ID %d; proceeding with login', $userId), Log::DEBUG, 'plg_system_passwordless');
 
 			// Login the user
 			Log::add('Logging in the user', Log::DEBUG, 'plg_system_passwordless');
@@ -301,7 +347,7 @@ trait AjaxHandlerLogin
 	 *
 	 * @since   1.0.0
 	 */
-	private function getUserHandleFromResponse(User $user): ?string
+	private function getUserHandleFromResponse(?User $user): ?string
 	{
 		// Retrieve data from the request and session
 		$pubKeyCredentialSource = $this->authenticationHelper->validateAssertionResponse(

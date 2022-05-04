@@ -224,19 +224,21 @@ window.akeeba.Passwordless = window.akeeba.Passwordless || {};
 		const elFormContainer = document.getElementById(formId);
 		const elUsername      = Passwordless.lookForField(elFormContainer, 'input[name=username]');
 		const elReturn        = Passwordless.lookForField(elFormContainer, 'input[name=return]');
+		const pluginParams    = Joomla.getOptions('plg_system_passwordless');
+		const allowNoUsername = pluginParams['allowResident'] ?? true;
 
-		if (elUsername === null)
+		if (!allowNoUsername && elUsername === null)
 		{
 			Passwordless.handleLoginError(Joomla.Text._("PLG_SYSTEM_PASSWORDLESS_ERR_CANNOT_FIND_USERNAME"));
 
 			return false;
 		}
 
-		const username  = elUsername.value;
+		const username  = elUsername?.value ?? '';
 		const returnUrl = elReturn ? elReturn.value : null;
 
 		// Get the Public Key Credential Request Options (challenge and acceptable public keys)
-		const postBackData = {
+		const postBackData                            = {
 			option:   "com_ajax",
 			group:    "system",
 			plugin:   "passwordless",
@@ -252,7 +254,8 @@ window.akeeba.Passwordless = window.akeeba.Passwordless || {};
 		console.log(paths);
 
 		Joomla.request({
-			url:    `${paths ? `${paths.base}/index.php` : window.location.pathname}?${Joomla.getOptions('csrf.token')}=1`,
+			url:    `${paths ? `${paths.base}/index.php` : window.location.pathname}?${Joomla.getOptions(
+				'csrf.token')}=1`,
 			method: "POST",
 			data:   Passwordless.interpolateParameters(postBackData),
 			onSuccess(rawResponse)
