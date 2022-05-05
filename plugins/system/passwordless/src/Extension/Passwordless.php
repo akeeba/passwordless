@@ -24,6 +24,7 @@ use Joomla\Plugin\System\Passwordless\PluginTraits\AjaxHandlerInitCreate;
 use Joomla\Plugin\System\Passwordless\PluginTraits\AjaxHandlerLogin;
 use Joomla\Plugin\System\Passwordless\PluginTraits\AjaxHandlerSaveLabel;
 use Joomla\Plugin\System\Passwordless\PluginTraits\EventReturnAware;
+use Joomla\Plugin\System\Passwordless\PluginTraits\Migration;
 use Joomla\Plugin\System\Passwordless\PluginTraits\UserDeletion;
 use Joomla\Plugin\System\Passwordless\PluginTraits\UserLogin;
 use Joomla\Plugin\System\Passwordless\PluginTraits\UserProfileFields;
@@ -102,6 +103,9 @@ class Passwordless extends CMSPlugin implements SubscriberInterface
 	// Add Webauthn buttons
 	use AdditionalLoginButtons;
 
+	// Migrate settings from Joomla's WebAuthn
+	use Migration;
+
 	// Utility methods for setting the events' return values
 	use EventReturnAware;
 
@@ -130,20 +134,8 @@ class Passwordless extends CMSPlugin implements SubscriberInterface
 			'text_entry_format' => '{DATETIME}	{PRIORITY} {CLIENTIP}	{MESSAGE}',
 		], $logLevels, ["plg_system_passwordless",]);
 
-		$this->authenticationHelper = $authHelper ?? (new Authentication);
+		$this->authenticationHelper = $authHelper ?? (new Authentication());
 		$this->authenticationHelper->setAttestationSupport($this->params->get('attestationSupport', 1) == 1);
-	}
-
-	/**
-	 * Returns the Authentication helper object
-	 *
-	 * @return Authentication
-	 *
-	 * @since  2.0.0
-	 */
-	public function getAuthenticationHelper(): Authentication
-	{
-		return $this->authenticationHelper;
 	}
 
 	public static function getSubscribedEvents(): array
@@ -168,6 +160,7 @@ class Passwordless extends CMSPlugin implements SubscriberInterface
 		}
 
 		return [
+			'onAfterInitialise'            => 'onAfterInitialise',
 			'onAjaxPasswordless'           => 'onAjaxPasswordless',
 			'onAjaxPasswordlessChallenge'  => 'onAjaxPasswordlessChallenge',
 			'onAjaxPasswordlessCreate'     => 'onAjaxPasswordlessCreate',
@@ -183,5 +176,17 @@ class Passwordless extends CMSPlugin implements SubscriberInterface
 			'onUserLoginButtons'           => 'onUserLoginButtons',
 			'onUserLoginFailure'           => 'onUserLoginFailure',
 		];
+	}
+
+	/**
+	 * Returns the Authentication helper object
+	 *
+	 * @return Authentication
+	 *
+	 * @since  2.0.0
+	 */
+	public function getAuthenticationHelper(): Authentication
+	{
+		return $this->authenticationHelper;
 	}
 }

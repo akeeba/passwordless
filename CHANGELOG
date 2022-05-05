@@ -5,6 +5,7 @@ Passwordless Login 2.0.0
 + Support for passkeys (synchronised authenticators)
 + Support for TouchID/FaceID on newer Apple mobile devices (iOS 15.4+)
 + User-controlled option to disable logins with password
++ Migration from Joomla's WebAuthn
 
 Passwordless Login 1.0.1
 --------------------------------------------------------------------------------
