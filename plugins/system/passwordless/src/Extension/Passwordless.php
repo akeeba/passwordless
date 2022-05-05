@@ -25,6 +25,7 @@ use Joomla\Plugin\System\Passwordless\PluginTraits\AjaxHandlerLogin;
 use Joomla\Plugin\System\Passwordless\PluginTraits\AjaxHandlerSaveLabel;
 use Joomla\Plugin\System\Passwordless\PluginTraits\EventReturnAware;
 use Joomla\Plugin\System\Passwordless\PluginTraits\UserDeletion;
+use Joomla\Plugin\System\Passwordless\PluginTraits\UserLogin;
 use Joomla\Plugin\System\Passwordless\PluginTraits\UserProfileFields;
 
 // Protect from unauthorized access
@@ -94,6 +95,9 @@ class Passwordless extends CMSPlugin implements SubscriberInterface
 
 	// Handle user profile deletion
 	use UserDeletion;
+
+	// Prevent password login for passwordless users
+	use UserLogin;
 
 	// Add Webauthn buttons
 	use AdditionalLoginButtons;
@@ -171,10 +175,13 @@ class Passwordless extends CMSPlugin implements SubscriberInterface
 			'onAjaxPasswordlessInitcreate' => 'onAjaxPasswordlessInitcreate',
 			'onAjaxPasswordlessLogin'      => 'onAjaxPasswordlessLogin',
 			'onAjaxPasswordlessSavelabel'  => 'onAjaxPasswordlessSavelabel',
-			'onUserAfterDelete'            => 'onUserAfterDelete',
-			'onUserLoginButtons'           => 'onUserLoginButtons',
-			'onContentPrepareForm'         => 'onContentPrepareForm',
 			'onContentPrepareData'         => 'onContentPrepareData',
+			'onContentPrepareForm'         => 'onContentPrepareForm',
+			'onUserAfterDelete'            => 'onUserAfterDelete',
+			'onUserAfterSave'              => 'onUserAfterSave',
+			'onUserLogin'                  => 'onUserLogin',
+			'onUserLoginButtons'           => 'onUserLoginButtons',
+			'onUserLoginFailure'           => 'onUserLoginFailure',
 		];
 	}
 }

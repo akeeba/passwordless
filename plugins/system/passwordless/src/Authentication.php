@@ -120,8 +120,8 @@ class Authentication
 			$this->session = null;
 		}
 
-		$this->credentialsRepository = $credRepo ?? new CredentialRepository;
-		$this->metadataRepository    = $mdsRepo ?? new MetadataRepository;
+		$this->credentialsRepository = $credRepo ?? new CredentialRepository();
+		$this->metadataRepository    = $mdsRepo ?? new MetadataRepository();
 	}
 
 	/**
@@ -143,7 +143,7 @@ class Authentication
 
 		$return[''] = (object) [
 			'description' => Text::_('PLG_SYSTEM_PASSWORDLESS_LBL_DEFAULT_AUTHENTICATOR'),
-			'icon' => 'data:image/png;base64,' . base64_encode($image)
+			'icon'        => 'data:image/png;base64,' . base64_encode($image),
 		];
 
 		return $return;
@@ -214,7 +214,7 @@ class Authentication
 				$resident,
 				$resident ? AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_REQUIRED : AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_PREFERRED
 			),
-			new AuthenticationExtensionsClientInputs
+			new AuthenticationExtensionsClientInputs()
 		);
 
 		// Save data in the session
@@ -346,7 +346,7 @@ class Authentication
 
 		// Retrieve the stored user ID and make sure it's the same one in the request.
 		$storedUserId = $this->session->get('plg_system_passwordless.registration_user_id', 0);
-		$myUser       = $this->app->getIdentity() ?? new User;
+		$myUser       = $this->app->getIdentity() ?? new User();
 		$myUserId     = $myUser->id;
 
 		if (($myUser->guest) || ($myUserId != $storedUserId))
@@ -389,6 +389,27 @@ class Authentication
 	public function setAttestationSupport(bool $attestationSupport): void
 	{
 		$this->attestationSupport = $attestationSupport;
+	}
+
+	/**
+	 * Returns a User Entity object given a Joomla user
+	 *
+	 * @param   User  $user  The Joomla user to get the user entity for
+	 *
+	 * @return  PublicKeyCredentialUserEntity
+	 *
+	 * @since   2.0.0
+	 */
+	public function getUserEntity(User $user): PublicKeyCredentialUserEntity
+	{
+		$repository = $this->credentialsRepository;
+
+		return new PublicKeyCredentialUserEntity(
+			$user->username,
+			$repository->getHandleFromUserId($user->id),
+			$user->name,
+			$this->getAvatar($user, 64)
+		);
 	}
 
 	/**
@@ -449,27 +470,6 @@ class Authentication
 		}
 
 		return rtrim(Uri::base(), '/') . '/' . ltrim($relFile, '/');
-	}
-
-	/**
-	 * Returns a User Entity object given a Joomla user
-	 *
-	 * @param   User  $user  The Joomla user to get the user entity for
-	 *
-	 * @return  PublicKeyCredentialUserEntity
-	 *
-	 * @since   2.0.0
-	 */
-	private function getUserEntity(User $user): PublicKeyCredentialUserEntity
-	{
-		$repository = $this->credentialsRepository;
-
-		return new PublicKeyCredentialUserEntity(
-			$user->username,
-			$repository->getHandleFromUserId($user->id),
-			$user->name,
-			$this->getAvatar($user, 64)
-		);
 	}
 
 	/**

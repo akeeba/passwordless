@@ -1,3 +1,7 @@
+Passwordless Login 2.0.0
+--------------------------------------------------------------------------------
++ User-controlled option to disable logins with password
+
 Passwordless Login 1.0.1
 --------------------------------------------------------------------------------
 + Support for platform authenticators (Windows Hello, TouchID/FaceID, Android biometrics, ...)

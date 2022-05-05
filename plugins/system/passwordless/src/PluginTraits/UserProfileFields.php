@@ -19,9 +19,11 @@ use Joomla\CMS\Log\Log;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\User;
 use Joomla\CMS\User\UserFactoryInterface;
+use Joomla\Database\ParameterType;
 use Joomla\Event\Event;
 use Joomla\Plugin\System\Passwordless\Extension\Passwordless;
 use Joomla\Registry\Registry;
+use Joomla\Utilities\ArrayHelper;
 
 /**
  * Add extra fields in the User Profile page.
@@ -145,7 +147,7 @@ trait UserProfileFields
 		 * @var   string|null       $context The context for the data
 		 * @var   array|object|null $data    An object or array containing the data for the form.
 		 */
-		[$context, $data] = $event->getArguments();
+		[$context, &$data] = $event->getArguments();
 
 		if (!\in_array($context, ['com_users.profile', 'com_users.user']))
 		{
@@ -157,6 +159,134 @@ trait UserProfileFields
 		if (!HTMLHelper::isRegistered('users.passwordlessPasswordless'))
 		{
 			HTMLHelper::register('users.passwordlessPasswordless', [__CLASS__, 'renderPasswordlessProfileField']);
+		}
+
+		/**
+		 * The $data must be an object and have an id property but not a profile property (that'd be the profile already
+		 * loaded by Joomla).
+		 */
+		if (!is_object($data) || !isset($data->id) || isset($data->passwordless))
+		{
+			return;
+		}
+
+		// Get the user ID
+		$userId = (int) ($data->id ?? 0);
+
+		// Make sure we have a positive integer user ID
+		if ($userId <= 0)
+		{
+			return;
+		}
+
+		// Load the profile data from the database.
+		try
+		{
+			$profileKey = 'passwordless.%';
+			$db         = $this->db;
+			$query      = $db->getQuery(true)
+			                 ->select([
+				                 $db->quoteName('profile_key'),
+				                 $db->quoteName('profile_value'),
+			                 ])
+			                 ->from($db->quoteName('#__user_profiles'))
+			                 ->where($db->quoteName('user_id') . ' = :user_id')
+			                 ->where($db->quoteName('profile_key') . ' LIKE :profile_key')
+			                 ->order($db->quoteName('ordering'))
+			                 ->bind(':user_id', $userId, ParameterType::INTEGER)
+			                 ->bind(':profile_key', $profileKey);
+
+			$results = $db->setQuery($query)->loadAssocList('profile_key', 'profile_value');
+
+			$data->passwordless = [];
+
+			foreach ($results as $k => $v)
+			{
+				$k = str_replace('passwordless.', '', $k);
+
+				$data->passwordless[$k] = $v;
+			}
+		}
+		catch (Exception $e)
+		{
+			// We suppress any database error. It means we have no data set.
+		}
+	}
+
+	public function onUserAfterSave(Event $event)
+	{
+		[$data, $isNew, $result, $error] = $event->getArguments();
+
+		$userId = ArrayHelper::getValue($data, 'id', 0, 'int');
+
+		if (!$userId || !$result || !isset($data['passwordless']) || !count($data['passwordless']))
+		{
+			return;
+		}
+
+		$db         = $this->db;
+		$profileKey = 'passwordless.%';
+		$query      = $db->getQuery(true)
+		                 ->delete($db->quoteName('#__user_profiles'))
+		                 ->where($db->quoteName('user_id') . ' = :user_id')
+		                 ->where($db->quoteName('profile_key') . ' LIKE :profile_key')
+		                 ->bind(':user_id', $userId, ParameterType::INTEGER)
+		                 ->bind(':profile_key', $profileKey);
+
+		try
+		{
+			$db->setQuery($query)->execute();
+		}
+		catch (Exception $e)
+		{
+			return;
+		}
+
+		if (empty($data['passwordless']))
+		{
+			return;
+		}
+
+		$order = 1;
+
+		$query = $db->getQuery(true)
+		            ->insert($db->quoteName('#__user_profiles'))
+		            ->columns([
+			            $db->quoteName('user_id'),
+			            $db->quoteName('profile_key'),
+			            $db->quoteName('profile_value'),
+			            $db->quoteName('ordering'),
+		            ]);
+
+		foreach ($data['passwordless'] as $k => $v)
+		{
+			if ($k == 'passwordless')
+			{
+				continue;
+			}
+
+			$query->values(implode(',', $query->bindArray([
+				$userId,
+				'passwordless.' . $k,
+				$v,
+				$order++,
+			], [
+				ParameterType::INTEGER,
+				ParameterType::STRING,
+				ParameterType::STRING,
+				ParameterType::INTEGER,
+			])));
+		}
+
+		try
+		{
+			$db->setQuery($query)->execute();
+		}
+		catch (Exception $e)
+		{
+			echo $query;
+			echo $e->getMessage();
+			die('poutsa kavlomeni');
 		}
 	}
 
@@ -201,7 +331,6 @@ trait UserProfileFields
 
 		return $user;
 	}
-
 
 	/**
 	 * Is the current user allowed to edit the social login configuration of $user? To do so I must either be editing my

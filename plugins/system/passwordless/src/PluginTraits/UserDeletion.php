@@ -65,6 +65,24 @@ trait UserDeletion
 			{
 				// Suck it.
 			}
+
+			// Delete user profile information
+			$profileKey = 'passwordless.%';
+			$query      = $db->getQuery(true)
+			                 ->delete($db->quoteName('#__user_profiles'))
+			                 ->where($db->quoteName('user_id') . ' = :user_id')
+			                 ->where($db->quoteName('profile_key') . ' LIKE :profile_key')
+			                 ->bind(':user_id', $userId, ParameterType::INTEGER)
+			                 ->bind(':profile_key', $profileKey, ParameterType::STRING);
+
+			try
+			{
+				$db->setQuery($query)->execute();
+			}
+			catch (Exception $e)
+			{
+				// Suck it.
+			}
 		}
 
 		$this->returnFromEvent($event, true);
