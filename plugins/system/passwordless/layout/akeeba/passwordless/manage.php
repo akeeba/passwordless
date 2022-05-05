@@ -28,6 +28,7 @@ use Joomla\CMS\User\User;
  * @var   string     $error               Any error messages
  * @var   array      $knownAuthenticators Metadata of known authenticator devices by AAGUID
  * @var   bool       $attestationSupport  Is attestation support enabled?
+ * @var   bool       $showImages          Should I show maker logos next to the registered authenticators?
  * @var   bool       $allowResident       Do we allow Passkeys / resident WebAuthn credentials?
  */
 
@@ -39,6 +40,7 @@ extract(array_merge([
 	'error'               => '',
 	'knownAuthenticators' => [],
 	'attestationSupport'  => true,
+	'showImages'          => true,
 	'allowResident'       => true,
 ], $displayData));
 
@@ -73,10 +75,10 @@ HTMLHelper::_('bootstrap.tooltip', '.plg_system_passwordless_tooltip');
 		</caption>
 		<thead class="table-dark">
 		<tr>
-			<th <?php if ($attestationSupport): ?>colspan="2"<?php endif; ?> scope="col">
+			<th scope="col">
 				<?= Text::_('PLG_SYSTEM_PASSWORDLESS_MANAGE_FIELD_KEYLABEL_LABEL') ?>
 			</th>
-			<th scope="col">
+			<th scope="col" class="text-end">
 				<?= Text::_('PLG_SYSTEM_PASSWORDLESS_MANAGE_HEADER_ACTIONS_LABEL') ?>
 			</th>
 		</tr>
@@ -89,24 +91,38 @@ HTMLHelper::_('bootstrap.tooltip', '.plg_system_passwordless_tooltip');
 				$aaguid = ($method['credential'] instanceof \Webauthn\PublicKeyCredentialSource) ? $method['credential']->getAaguid() : '';
 				$aaguid = is_string($aaguid) ? $aaguid : $aaguid->toString();
 				$authMetadata = $knownAuthenticators[$aaguid] ?? $knownAuthenticators[''];
-				?>
-				<td class="text-center">
-					<img class="plg_system_passwordless_tooltip bg-secondary"
-						 style="max-width: 6em; max-height: 3em"
-						 src="<?php echo $authMetadata->icon ?>"
-						 alt="<?php echo $authMetadata->description ?>"
-						 title="<?php echo $authMetadata->description ?>">
-				</td>
-				<?php endif; ?>
+				endif; ?>
 				<th scope="row" class="plg_system_passwordless-cell">
-					<?= htmlentities($method['label']) ?>
+					<?php if ($attestationSupport): ?>
+					<div class="d-flex align-items-center ">
+						<?php if ($showImages): ?>
+						<div class="bg-secondary flex-shrink-1 me-1 border border-black rounded-3">
+							<img class="img-fluid"
+								 style="max-height: 3rem; max-width: 6rem"
+								 src="<?php echo $authMetadata->icon ?>"
+								 aria-hidden="true"
+							>
+						</div>
+						<?php endif ?>
+						<span class="plg_system_passwordless-label flex-grow-1">
+							<?= htmlentities($method['label']) ?>
+						</span>
+					</div>
+					<div class="text-muted small mt-1">
+						<?php echo $authMetadata->description ?>
+					</div>
+					<?php else: ?>
+						<span class="plg_system_passwordless-label flex-grow-1">
+							<?= htmlentities($method['label']) ?>
+						</span>
+					<?php endif; ?>
 				</th>
-				<td class="plg_system_passwordless-cell">
-					<button class="plg_system_passwordless-manage-edit btn btn-secondary" type="button">
+				<td class="plg_system_passwordless-cell w-35 text-end">
+					<button class="plg_system_passwordless-manage-edit btn btn-secondary m-1" type="button">
 						<span class="icon-edit " aria-hidden="true"></span>
 						<?= Text::_('PLG_SYSTEM_PASSWORDLESS_MANAGE_BTN_EDIT_LABEL') ?>
 					</button>
-					<button class="plg_system_passwordless-manage-delete btn btn-danger" type="button">
+					<button class="plg_system_passwordless-manage-delete btn btn-danger m-1" type="button">
 						<span class="icon-minus" aria-hidden="true"></span>
 						<?= Text::_('PLG_SYSTEM_PASSWORDLESS_MANAGE_BTN_DELETE_LABEL') ?>
 					</button>
@@ -124,27 +140,46 @@ HTMLHelper::_('bootstrap.tooltip', '.plg_system_passwordless_tooltip');
 	</table>
 
 	<?php if ($allow_add): ?>
-		<p class="akpwl-manage-add-container d-flex">
-			<button
-					type="button"
-					id="plg_system_passwordless-manage-add"
-					class="btn btn-success w-100 plg_system_passwordless_tooltip mx-2"
-					title="<?= Text::_('PLG_SYSTEM_PASSWORDLESS_MANAGE_BTN_ADD_TIP') ?>"
-			>
-				<span class="icon-plus" aria-hidden="true"></span>
-				<?php echo Text::_('PLG_SYSTEM_PASSWORDLESS_MANAGE_BTN_ADD_LABEL') ?>
-			</button>
+		<div class="akpwl-manage-add-container mt-3 mb-2 d-flex">
+			<div class="flex-grow-1 mx-2 d-flex flex-column align-items-center">
+				<button
+						type="button"
+						id="plg_system_passwordless-manage-add"
+						class="btn btn-success w-100"
+				>
+					<span class="icon-plus" aria-hidden="true"></span>
+					<?php echo Text::_('PLG_SYSTEM_PASSWORDLESS_MANAGE_BTN_ADD_LABEL') ?>
+				</button>
+				<span
+						class="badge bg-info mt-3 w-25 p-3 plg_system_passwordless_tooltip"
+						title="<?= Text::_('PLG_SYSTEM_PASSWORDLESS_MANAGE_BTN_ADD_TIP') ?>"
+				>
+					<span class="icon-info" aria-hidden="true"></span>
+						<?= Text::_('PLG_SYSTEM_PASSWORDLESS_MANAGE_LBL_WHATISTHIS') ?>
+					<span class="visually-hidden"><?= Text::_('PLG_SYSTEM_PASSWORDLESS_MANAGE_BTN_ADD_TIP') ?></span>
+				</span>
+			</div>
+
 			<?php if ($allowResident): ?>
-			<button
-					type="button"
-					id="plg_system_passwordless-manage-addresident"
-					class="btn btn-outline-success w-100 plg_system_passwordless_tooltip mx-2"
-					title="<?= Text::_('PLG_SYSTEM_PASSWORDLESS_MANAGE_BTN_ADDRESIDENT_TIP') ?>"
-			>
-				<span class="fas fa-id-card-alt" aria-hidden="true"></span>
-				<?php echo Text::_('PLG_SYSTEM_PASSWORDLESS_MANAGE_BTN_ADDRESIDENT_LABEL') ?>
-			</button>
+				<div class="flex-grow-1 mx-2 d-flex flex-column align-items-center">
+				<button
+						type="button"
+						id="plg_system_passwordless-manage-addresident"
+						class="btn btn-outline-success w-100"
+				>
+					<span class="fas fa-id-card-alt" aria-hidden="true"></span>
+					<?php echo Text::_('PLG_SYSTEM_PASSWORDLESS_MANAGE_BTN_ADDRESIDENT_LABEL') ?>
+				</button>
+					<span
+							class="badge bg-info mt-3 w-25 p-3 plg_system_passwordless_tooltip"
+							title="<?= Text::_('PLG_SYSTEM_PASSWORDLESS_MANAGE_BTN_ADDRESIDENT_TIP') ?>"
+					>
+					<span class="icon-info" aria-hidden="true"></span>
+						<?= Text::_('PLG_SYSTEM_PASSWORDLESS_MANAGE_LBL_WHATISTHIS') ?>
+					<span class="visually-hidden"><?= Text::_('PLG_SYSTEM_PASSWORDLESS_MANAGE_BTN_ADD_TIP') ?></span>
+				</span>
+			</div>
 			<?php endif; ?>
-		</p>
+		</div>
 	<?php endif; ?>
 </div>

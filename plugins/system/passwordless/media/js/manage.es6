@@ -234,17 +234,25 @@ window.akeeba.Passwordless = window.akeeba.Passwordless || {};
 		const elButtons    = elButtonsTD.querySelectorAll("button");
 		const elEdit       = elButtons[0];
 		const elDelete     = elButtons[1];
+		const elLabel      = elLabelTD.querySelectorAll('.plg_system_passwordless-label')[0];
 
 		// Show the editor
-		const oldLabel = elLabelTD.innerText;
+		const oldLabel = elLabel.innerText;
 
 		const elInput        = document.createElement("input");
+		elInput.className    = "flex-grow-1 me-1 mb-1";
 		elInput.type         = "text";
 		elInput.name         = "label";
 		elInput.defaultValue = oldLabel;
 
+		const elGUIContainer = document.createElement('div');
+		elGUIContainer.className = "d-flex flex-column flex-lg-row"
+
+		const elButtonContainer = document.createElement('div');
+		elButtonContainer.className = "d-flex mt-2 mb-3 mt-lg-0 mb-lg-0";
+
 		const elSave     = document.createElement("button");
-		elSave.className = "btn btn-success btn-sm";
+		elSave.className = "btn btn-success btn-sm me-1 mb-1 flex-grow-1";
 		elSave.innerText = Joomla.Text._("PLG_SYSTEM_PASSWORDLESS_MANAGE_BTN_SAVE_LABEL");
 		elSave.addEventListener("click", () => {
 			const elNewLabel = elInput.value;
@@ -300,7 +308,7 @@ window.akeeba.Passwordless = window.akeeba.Passwordless || {};
 				});
 			}
 
-			elLabelTD.innerText = elNewLabel;
+			elLabel.innerText   = elNewLabel;
 			elEdit.disabled     = false;
 			elDelete.disabled   = false;
 
@@ -308,20 +316,23 @@ window.akeeba.Passwordless = window.akeeba.Passwordless || {};
 		}, false);
 
 		const elCancel     = document.createElement("button");
-		elCancel.className = "btn btn-danger btn-sm";
+		elCancel.className = "btn btn-danger btn-sm me-1 mb-1 flex-grow-1";
 		elCancel.innerText = Joomla.Text._("PLG_SYSTEM_PASSWORDLESS_MANAGE_BTN_CANCEL_LABEL");
 		elCancel.addEventListener("click", () => {
-			elLabelTD.innerText = oldLabel;
+			elLabel.innerText   = oldLabel;
 			elEdit.disabled     = false;
 			elDelete.disabled   = false;
 
 			return false;
 		}, false);
 
-		elLabelTD.innerHTML = "";
-		elLabelTD.appendChild(elInput);
-		elLabelTD.appendChild(elSave);
-		elLabelTD.appendChild(elCancel);
+		elButtonContainer.appendChild(elSave);
+		elButtonContainer.appendChild(elCancel);
+
+		elGUIContainer.appendChild(elInput);
+		elGUIContainer.appendChild(elButtonContainer);
+		elLabel.innerHTML = "";
+		elLabel.appendChild(elGUIContainer);
 		elEdit.disabled   = true;
 		elDelete.disabled = true;
 
