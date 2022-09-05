@@ -24,7 +24,7 @@ Joomla 4.
 
 For PHP minimum version requirement please consult [the composer.json file](composer.json).
 
-MySQL (including compatible servers such as MariaDB) and PostgreSQL are supported but we only test our software with MySQL.
+MySQL (including compatible servers such as MariaDB) and PostgreSQL are supported, but we only test our software with MySQL.
 
 You will need a modern web browser with Web Authentication support and JavaScript enabled to use this plugin.
 
@@ -38,7 +38,7 @@ I wrote this plugin for Joomla 3 when WebAuthn became a W3C standard, before Web
 
 This repository contains the parallel development of this plugin for 4. We can develop this plugin without the constraints of what can be accepted in the Joomla core and when. As a result we can explore new features which wouldn't make it to Joomla in a reasonable amount of time.
 
-In an effort to avoid conflicts with Joomla 4, we renamed this plugin from plg_system_webauthn (which is now the name of the Joomla 4 core plugin) to plg_system_passwordless.
+In an effort to avoid conflicts with Joomla 4, we renamed this plugin from `plg_system_webauthn` (which is now the name of the Joomla 4 core plugin) to `plg_system_passwordless`.
 
 Most notably, this plugin remembers the last user logged into the site. As a result, the next login attempt does not require entering the username, just clicking on the login button. Completely frictionless and perfectly secure.   
  
