@@ -82,6 +82,9 @@ class Passwordless extends CMSPlugin implements SubscriberInterface
 	 */
 	protected $authenticationHelper;
 
+	// Utility methods for setting the events' return values
+	use EventReturnAware;
+
 	// AJAX request handlers
 	use AjaxHandler;
 	use AjaxHandlerInitCreate;
@@ -105,9 +108,6 @@ class Passwordless extends CMSPlugin implements SubscriberInterface
 
 	// Migrate settings from Joomla's WebAuthn
 	use Migration;
-
-	// Utility methods for setting the events' return values
-	use EventReturnAware;
 
 	/**
 	 * Constructor. Registers a custom logger.
@@ -147,11 +147,6 @@ class Passwordless extends CMSPlugin implements SubscriberInterface
 		catch (\Exception $e)
 		{
 			return [];
-		}
-
-		if ($app->isClient('site') || $app->isClient('administrator') || $app->isClient('cli'))
-		{
-			require_once __DIR__ . '/../../vendor/autoload.php';
 		}
 
 		if (!$app->isClient('site') && !$app->isClient('administrator'))

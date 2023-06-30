@@ -69,7 +69,8 @@ trait AdditionalLoginButtons
 		$randomId = 'akpwl-login-' . UserHelper::genRandomPassword(12) . '-' . UserHelper::genRandomPassword(8);
 
 		// Get local path to image
-		$image = HTMLHelper::_('image', 'plg_system_passwordless/webauthn.svg', '', '', true, true);
+		$imgName = $this->app->isClient('administrator') ? 'passkey-white.svg' : 'passkey.svg';
+		$image   = HTMLHelper::_('image', 'plg_system_passwordless/' . $imgName, '', '', true, true);
 
 		// If you can't find the image then skip it
 		$image = $image ? JPATH_ROOT . substr($image, \strlen(Uri::root(true))) : '';

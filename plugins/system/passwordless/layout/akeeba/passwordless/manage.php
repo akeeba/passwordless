@@ -141,45 +141,34 @@ HTMLHelper::_('bootstrap.tooltip', '.plg_system_passwordless_tooltip');
 
 	<?php if ($allow_add): ?>
 		<div class="akpwl-manage-add-container mt-3 mb-2 d-flex">
+			<?php if ($allowResident): ?>
+				<div class="flex-grow-1 mx-2 d-flex flex-column align-items-center">
+					<button
+							type="button"
+							id="plg_system_passwordless-manage-addresident"
+							class="btn btn-dark w-100"
+					>
+						<?= file_get_contents(JPATH_ROOT . '/media/plg_system_passwordless/images/passkey-white.svg') ?: '' ?>
+						<span class="ms-1">
+							<?php echo Text::_('PLG_SYSTEM_PASSWORDLESS_MANAGE_BTN_ADDRESIDENT_LABEL') ?>
+						</span>
+					</button>
+			</div>
+			<?php endif; ?>
+
 			<div class="flex-grow-1 mx-2 d-flex flex-column align-items-center">
 				<button
 						type="button"
 						id="plg_system_passwordless-manage-add"
-						class="btn btn-success w-100"
+						class="btn btn-outline-dark w-100"
 				>
-					<span class="icon-plus" aria-hidden="true"></span>
-					<?php echo Text::_('PLG_SYSTEM_PASSWORDLESS_MANAGE_BTN_ADD_LABEL') ?>
+					<?= file_get_contents(JPATH_ROOT . '/media/plg_system_passwordless/images/webauthn.svg') ?: '' ?>
+					<span class="ms-1">
+						<?php echo Text::_('PLG_SYSTEM_PASSWORDLESS_MANAGE_BTN_ADD_LABEL') ?>
+					</span>
 				</button>
-				<span
-						class="badge bg-info mt-3 w-25 p-3 plg_system_passwordless_tooltip"
-						title="<?= Text::_('PLG_SYSTEM_PASSWORDLESS_MANAGE_BTN_ADD_TIP') ?>"
-				>
-					<span class="icon-info" aria-hidden="true"></span>
-						<?= Text::_('PLG_SYSTEM_PASSWORDLESS_MANAGE_LBL_WHATISTHIS') ?>
-					<span class="visually-hidden"><?= Text::_('PLG_SYSTEM_PASSWORDLESS_MANAGE_BTN_ADD_TIP') ?></span>
-				</span>
 			</div>
 
-			<?php if ($allowResident): ?>
-				<div class="flex-grow-1 mx-2 d-flex flex-column align-items-center">
-				<button
-						type="button"
-						id="plg_system_passwordless-manage-addresident"
-						class="btn btn-outline-success w-100"
-				>
-					<span class="fas fa-id-card-alt" aria-hidden="true"></span>
-					<?php echo Text::_('PLG_SYSTEM_PASSWORDLESS_MANAGE_BTN_ADDRESIDENT_LABEL') ?>
-				</button>
-					<span
-							class="badge bg-info mt-3 w-25 p-3 plg_system_passwordless_tooltip"
-							title="<?= Text::_('PLG_SYSTEM_PASSWORDLESS_MANAGE_BTN_ADDRESIDENT_TIP') ?>"
-					>
-					<span class="icon-info" aria-hidden="true"></span>
-						<?= Text::_('PLG_SYSTEM_PASSWORDLESS_MANAGE_LBL_WHATISTHIS') ?>
-					<span class="visually-hidden"><?= Text::_('PLG_SYSTEM_PASSWORDLESS_MANAGE_BTN_ADD_TIP') ?></span>
-				</span>
-			</div>
-			<?php endif; ?>
 		</div>
 	<?php endif; ?>
 </div>

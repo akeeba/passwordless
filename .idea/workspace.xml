@@ -1,0 +1,714 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="BookmarksViewState">
+    <option name="rewriteBookmarkType" value="true" />
+  </component>
+  <component name="BranchesTreeState">
+    <expand>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+    </expand>
+    <select />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="2e094fe1-3f87-4fef-876b-11d12c079142" name="Default Changelist" comment="Project management">
+      <change afterPath="$PROJECT_DIR$/.idea/phpunit.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/plugins/system/passwordless/media/images/passkey-white.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/plugins/system/passwordless/media/images/passkey.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.github/CODE_OF_CONDUCT.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.github/CONTRIBUTING.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.github/FUNDING.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.github/ISSUE_TEMPLATE/bug_report.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.github/ISSUE_TEMPLATE/documentation.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.github/ISSUE_TEMPLATE/feature_request.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.github/ISSUE_TEMPLATE/other-request.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.github/ISSUE_TEMPLATE/paid-services.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.github/PULL_REQUEST_TEMPLATE.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.github/SECURITY.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.github/SUPPORT.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/php.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/php.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/webauthn.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/webauthn.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CHANGELOG" beforeDir="false" afterPath="$PROJECT_DIR$/CHANGELOG" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RELEASENOTES.md" beforeDir="false" afterPath="$PROJECT_DIR$/RELEASENOTES.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/webauthn_test.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/composer.json" beforeDir="false" afterPath="$PROJECT_DIR$/composer.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/composer.lock" beforeDir="false" afterPath="$PROJECT_DIR$/composer.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/system/passwordless/language/en-GB/plg_system_passwordless.ini" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/system/passwordless/language/en-GB/plg_system_passwordless.ini" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/system/passwordless/language/en-GB/plg_system_passwordless.sys.ini" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/system/passwordless/language/en-GB/plg_system_passwordless.sys.ini" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/system/passwordless/layout/akeeba/passwordless/manage.php" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/system/passwordless/layout/akeeba/passwordless/manage.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/system/passwordless/media/images/webauthn-black.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/system/passwordless/media/images/webauthn-color.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/system/passwordless/media/images/webauthn-white.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/system/passwordless/media/images/webauthn.svg" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/system/passwordless/media/images/webauthn.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/system/passwordless/services/provider.php" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/system/passwordless/services/provider.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/system/passwordless/src/Extension/Passwordless.php" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/system/passwordless/src/Extension/Passwordless.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/system/passwordless/src/MetadataRepository.php" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/system/passwordless/src/MetadataRepository.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/system/passwordless/src/PluginTraits/AdditionalLoginButtons.php" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/system/passwordless/src/PluginTraits/AdditionalLoginButtons.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/system/passwordless/src/PluginTraits/AjaxHandlerChallenge.php" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/system/passwordless/src/PluginTraits/AjaxHandlerChallenge.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/system/passwordless/src/PluginTraits/AjaxHandlerSaveLabel.php" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/system/passwordless/src/PluginTraits/AjaxHandlerSaveLabel.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/system/passwordless/src/PluginTraits/UserDeletion.php" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/system/passwordless/src/PluginTraits/UserDeletion.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/system/passwordless/src/PluginTraits/UserProfileFields.php" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/system/passwordless/src/PluginTraits/UserProfileFields.php" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ChangesViewManager">
+    <option name="groupingKeys">
+      <option value="directory" />
+    </option>
+  </component>
+  <component name="ComposerSettings" doNotAsk="true" synchronizationState="SYNCHRONIZE">
+    <pharConfigPath>$PROJECT_DIR$/composer.json</pharConfigPath>
+    <execution>
+      <executable path="composer" />
+    </execution>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="composer.json" />
+      </list>
+    </option>
+    <option name="SCHEME" value="Project" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="development" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="UPDATE_TYPE" value="REBASE" />
+  </component>
+  <component name="GitSEFilterConfiguration">
+    <file-type-list>
+      <filtered-out-file-type name="LOCAL_BRANCH" />
+      <filtered-out-file-type name="REMOTE_BRANCH" />
+      <filtered-out-file-type name="TAG" />
+      <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
+    </file-type-list>
+  </component>
+  <component name="JoomlaConfiguration" enabled="true">
+    <joomlaConfigPath>$USER_HOME$/Sites/boot4/configuration.php</joomlaConfigPath>
+    <joomlaPath>$PROJECT_DIR$/../../master/joomla4</joomlaPath>
+  </component>
+  <component name="JsBowerSettings">
+    <node-interpreter value="project" />
+    <bower-package value="" />
+    <bower.json value="" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="NamedScopeManager">
+    <order>
+      <scope name="Plugin without vendor" />
+      <scope name="ES6" />
+    </order>
+  </component>
+  <component name="PhpServers">
+    <servers>
+      <server host="boot4.local.web" id="c13f4776-5759-4aba-94ce-3c584a0ffb02" name="Boot4" port="443" use_path_mappings="true">
+        <path_mappings>
+          <mapping local-root="$PROJECT_DIR$" remote-root="/Users/nicholas/Projects/j4-akeeba/passwordless" />
+          <mapping local-root="$USER_HOME$/Sites/boot4" remote-root="/Users/nicholas/Sites/boot4" />
+        </path_mappings>
+      </server>
+    </servers>
+  </component>
+  <component name="PhpWorkspaceProjectConfiguration" interpreter_name="PHP 8.0">
+    <include_path>
+      <path value="$PROJECT_DIR$/../../master/joomla4" />
+      <path value="$USER_HOME$/Sites/boot4--" />
+      <path value="$PROJECT_DIR$/../../dionysopoulos/joomlatypehints/generated_hints" />
+      <path value="$USER_HOME$/Sites/boot4/configuration.php" />
+      <path value="$PROJECT_DIR$/vendor/composer" />
+    </include_path>
+  </component>
+  <component name="ProjectId" id="1fjux2Qq9gOpPXAYAsZybAnUxrT" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "git-widget-placeholder": "feature/refactor",
+    "last_opened_file_path": "/Users/nicholas/Projects/j4-akeeba/passwordless/plugins/system/passwordless/media/images",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "reference.webide.settings.project.settings.php",
+    "vue.rearranger.settings.migration": "true"
+  },
+  "keyToStringList": {
+    "com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File": [
+      "GitIgnore",
+      "HTTP Request"
+    ]
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/plugins/system/passwordless/media/images" />
+      <recent name="$PROJECT_DIR$/plugins/system/passwordless/src/PluginTraits" />
+      <recent name="$PROJECT_DIR$/plugins/system/passwordless/src" />
+      <recent name="$PROJECT_DIR$/update" />
+      <recent name="$PROJECT_DIR$/plugins/system/passwordless/sql/updates/postgresql" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/plugins/system/passwordless/media/images" />
+      <recent name="$PROJECT_DIR$/plugins/system/passwordless/forms" />
+      <recent name="$PROJECT_DIR$/build" />
+      <recent name="$PROJECT_DIR$" />
+      <recent name="$PROJECT_DIR$/plugins/system/passwordless/src/Field" />
+    </key>
+  </component>
+  <component name="RunManager" selected="HTTP Request.scratch_1 | #1">
+    <configuration name="scratch_1 | #1" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" nameIsGenerated="true" path="$APPLICATION_CONFIG_DIR$/scratches/scratch_1.http" requestIdentifier="#1" runType="Run single request">
+      <method v="2" />
+    </configuration>
+    <configuration name="webauthn_test.php" type="PhpLocalRunConfigurationType" factoryName="PHP Console" temporary="true" path="$PROJECT_DIR$/build/webauthn_test.php">
+      <CommandLine workingDirectory="$USER_HOME$/Sites/boot4/cli">
+        <PhpTestInterpreterSettings>
+          <option name="interpreterName" value="PHP 8.0" />
+        </PhpTestInterpreterSettings>
+      </CommandLine>
+      <method v="2" />
+    </configuration>
+    <configuration name="build" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="build" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="HTTP Request.scratch_1 | #1" />
+        <item itemvalue="PHP Script.webauthn_test.php" />
+        <item itemvalue="npm.build" />
+        <item itemvalue="npm.build" />
+        <item itemvalue="npm.build" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="2e094fe1-3f87-4fef-876b-11d12c079142" name="Default Changelist" comment="" />
+      <created>1596744067037</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1596744067037</updated>
+      <workItem from="1596744069423" duration="11000" />
+      <workItem from="1596744090333" duration="2554000" />
+      <workItem from="1596746705103" duration="23908000" />
+      <workItem from="1597038599166" duration="12348000" />
+      <workItem from="1597158852103" duration="1000" />
+      <workItem from="1597211576638" duration="608000" />
+      <workItem from="1599737144883" duration="340000" />
+      <workItem from="1599737770142" duration="3034000" />
+      <workItem from="1603901925993" duration="18000" />
+      <workItem from="1606228717222" duration="176000" />
+      <workItem from="1607200902204" duration="279000" />
+      <workItem from="1607201240388" duration="173000" />
+      <workItem from="1608193584464" duration="5000" />
+      <workItem from="1608654343300" duration="77000" />
+      <workItem from="1609593585370" duration="235000" />
+      <workItem from="1611477824340" duration="859000" />
+      <workItem from="1623589142182" duration="7771000" />
+      <workItem from="1627677784283" duration="25000" />
+      <workItem from="1627979660504" duration="17000" />
+      <workItem from="1632309568821" duration="300000" />
+      <workItem from="1646238383925" duration="1509000" />
+      <workItem from="1646297404859" duration="17000" />
+      <workItem from="1646594921774" duration="27723000" />
+      <workItem from="1647261236914" duration="1798000" />
+      <workItem from="1647446165192" duration="202000" />
+      <workItem from="1647540360720" duration="3619000" />
+      <workItem from="1647717346112" duration="1323000" />
+      <workItem from="1647809404339" duration="67000" />
+      <workItem from="1648744365581" duration="1838000" />
+      <workItem from="1650985828137" duration="2392000" />
+      <workItem from="1650993816835" duration="7619000" />
+      <workItem from="1651599311738" duration="3785000" />
+      <workItem from="1651603158383" duration="5570000" />
+      <workItem from="1651611185394" duration="12101000" />
+      <workItem from="1651670272076" duration="5303000" />
+      <workItem from="1651734019782" duration="19009000" />
+      <workItem from="1651933860193" duration="831000" />
+      <workItem from="1656354041471" duration="1123000" />
+      <workItem from="1659638801964" duration="143000" />
+      <workItem from="1660031684504" duration="277000" />
+      <workItem from="1662186503241" duration="151000" />
+      <workItem from="1664287291654" duration="1000" />
+      <workItem from="1667386179386" duration="69000" />
+      <workItem from="1667750915200" duration="28000" />
+      <workItem from="1670411365918" duration="1057000" />
+      <workItem from="1688061892846" duration="6411000" />
+    </task>
+    <task id="LOCAL-00015" summary="Show plugin options depending on Joomla version">
+      <created>1597041771075</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1597041771075</updated>
+    </task>
+    <task id="LOCAL-00016" summary="Logging in must always go through JSession proper">
+      <created>1597042676042</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1597042676042</updated>
+    </task>
+    <task id="LOCAL-00017" summary="Store the userHandle in a cookie&#10;&#10;Allows for single click login">
+      <created>1597048764717</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1597048764717</updated>
+    </task>
+    <task id="LOCAL-00018" summary="Allow toggling the user handle cookie feature">
+      <created>1597069563783</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1597069563783</updated>
+    </task>
+    <task id="LOCAL-00019" summary="Using our own DB installation&#10;&#10;Because Joomla 4 craps its pants and&#10;wets its bed when a non-component&#10;extension has SQL files in the XML&#10;manifest...">
+      <created>1599741474858</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1599741474858</updated>
+    </task>
+    <task id="LOCAL-00020" summary="Don't bork the Joomla 4 CLI application">
+      <created>1606228878715</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1606228878715</updated>
+    </task>
+    <task id="LOCAL-00021" summary="Joomla 4 beta 6 changed how sessions work, breaking everything">
+      <created>1607201161561</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1607201161561</updated>
+    </task>
+    <task id="LOCAL-00022" summary="Updating copyright. Happy New Year!">
+      <created>1609593812943</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1609593812943</updated>
+    </task>
+    <task id="LOCAL-00023" summary="Update dependencies">
+      <created>1611478574738</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1611478574738</updated>
+    </task>
+    <task id="LOCAL-00024" summary="Update NPM build dependencies">
+      <created>1623598513701</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1623598513701</updated>
+    </task>
+    <task id="LOCAL-00025" summary="XML Manifest&#10;&#10;Updates and SQL installation, the Joomla way">
+      <created>1623598592716</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1623598592716</updated>
+    </task>
+    <task id="LOCAL-00026" summary="XML Manifest&#10;&#10;Fancy radio in J3 and J4">
+      <created>1623598602970</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1623598602970</updated>
+    </task>
+    <task id="LOCAL-00027" summary="Remove class no longer used">
+      <created>1623598634193</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1623598634193</updated>
+    </task>
+    <task id="LOCAL-00028" summary="Remove old XML database installation files">
+      <created>1623598644954</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1623598644954</updated>
+    </task>
+    <task id="LOCAL-00029" summary="Remove script no longer used">
+      <created>1623598654746</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1623598654746</updated>
+    </task>
+    <task id="LOCAL-00030" summary="Use SVG icon in Joomla 4">
+      <created>1623598670947</created>
+      <option name="number" value="00030" />
+      <option name="presentableId" value="LOCAL-00030" />
+      <option name="project" value="LOCAL" />
+      <updated>1623598670947</updated>
+    </task>
+    <task id="LOCAL-00031" summary="Update compiled JS">
+      <created>1623598706198</created>
+      <option name="number" value="00031" />
+      <option name="presentableId" value="LOCAL-00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1623598706198</updated>
+    </task>
+    <task id="LOCAL-00032" summary="Use native BS5 styling on J4">
+      <created>1623598737454</created>
+      <option name="number" value="00032" />
+      <option name="presentableId" value="LOCAL-00032" />
+      <option name="project" value="LOCAL" />
+      <updated>1623598737454</updated>
+    </task>
+    <task id="LOCAL-00033" summary="Project management">
+      <created>1623598774008</created>
+      <option name="number" value="00033" />
+      <option name="presentableId" value="LOCAL-00033" />
+      <option name="project" value="LOCAL" />
+      <updated>1623598774008</updated>
+    </task>
+    <task id="LOCAL-00034" summary="Update README">
+      <created>1623598846674</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1623598846674</updated>
+    </task>
+    <task id="LOCAL-00035" summary="Project management">
+      <created>1646595691462</created>
+      <option name="number" value="00035" />
+      <option name="presentableId" value="LOCAL-00035" />
+      <option name="project" value="LOCAL" />
+      <updated>1646595691462</updated>
+    </task>
+    <task id="LOCAL-00036" summary="Remove unused CSS">
+      <created>1646595699736</created>
+      <option name="number" value="00036" />
+      <option name="presentableId" value="LOCAL-00036" />
+      <option name="project" value="LOCAL" />
+      <updated>1646595699736</updated>
+    </task>
+    <task id="LOCAL-00037" summary="Don't run composer install on build&#10;&#10;Due to the use of Rector we only need to do this manually&#10;and very sporadically.">
+      <created>1646595721978</created>
+      <option name="number" value="00037" />
+      <option name="presentableId" value="LOCAL-00037" />
+      <option name="project" value="LOCAL" />
+      <updated>1646595721978</updated>
+    </task>
+    <task id="LOCAL-00038" summary="Yeah, Rector isn't as sharp as it's supposed to be.&#10;&#10;I had to do some manual intervention. Oh well.">
+      <created>1646598164574</created>
+      <option name="number" value="00038" />
+      <option name="presentableId" value="LOCAL-00038" />
+      <option name="project" value="LOCAL" />
+      <updated>1646598164574</updated>
+    </task>
+    <task id="LOCAL-00039" summary="Convert to event subscribers">
+      <created>1646598183626</created>
+      <option name="number" value="00039" />
+      <option name="presentableId" value="LOCAL-00039" />
+      <option name="project" value="LOCAL" />
+      <updated>1646598183626</updated>
+    </task>
+    <task id="LOCAL-00040" summary="Small changes">
+      <created>1646655737717</created>
+      <option name="number" value="00040" />
+      <option name="presentableId" value="LOCAL-00040" />
+      <option name="project" value="LOCAL" />
+      <updated>1646655737717</updated>
+    </task>
+    <task id="LOCAL-00041" summary="Made Rector work more reliably&#10;&#10;Also removed namespacing from the dependencies which are&#10;already included in Joomla. Loading either will work&#10;just fine.">
+      <created>1646658647270</created>
+      <option name="number" value="00041" />
+      <option name="presentableId" value="LOCAL-00041" />
+      <option name="project" value="LOCAL" />
+      <updated>1646658647270</updated>
+    </task>
+    <task id="LOCAL-00042" summary="Implement the authentication in two different ways&#10;&#10;Using the WebAuthn library's Server class and what they&#10;describe as the Hard Way">
+      <created>1646662271624</created>
+      <option name="number" value="00042" />
+      <option name="presentableId" value="LOCAL-00042" />
+      <option name="project" value="LOCAL" />
+      <updated>1646662271624</updated>
+    </task>
+    <task id="LOCAL-00043" summary="OK, let's use the easy way. It's, um, easier">
+      <created>1646665564108</created>
+      <option name="number" value="00043" />
+      <option name="presentableId" value="LOCAL-00043" />
+      <option name="project" value="LOCAL" />
+      <updated>1646665564108</updated>
+    </task>
+    <task id="LOCAL-00044" summary="Separate the login and management JS">
+      <created>1646727723597</created>
+      <option name="number" value="00044" />
+      <option name="presentableId" value="LOCAL-00044" />
+      <option name="project" value="LOCAL" />
+      <updated>1646727723597</updated>
+    </task>
+    <task id="LOCAL-00045" summary="We have ignition!">
+      <created>1646735151856</created>
+      <option name="number" value="00045" />
+      <option name="presentableId" value="LOCAL-00045" />
+      <option name="project" value="LOCAL" />
+      <updated>1646735151856</updated>
+    </task>
+    <task id="LOCAL-00046" summary="Exclude unused files from the vendor directory">
+      <created>1647809466426</created>
+      <option name="number" value="00046" />
+      <option name="presentableId" value="LOCAL-00046" />
+      <option name="project" value="LOCAL" />
+      <updated>1647809466426</updated>
+    </task>
+    <task id="LOCAL-00047" summary="Plugin causes an error when saving a user from Joomla's Users page">
+      <created>1648746203393</created>
+      <option name="number" value="00047" />
+      <option name="presentableId" value="LOCAL-00047" />
+      <option name="project" value="LOCAL" />
+      <updated>1648746203393</updated>
+    </task>
+    <task id="LOCAL-00048" summary="Refactor to the state of my core PR">
+      <created>1651612001799</created>
+      <option name="number" value="00048" />
+      <option name="presentableId" value="LOCAL-00048" />
+      <option name="project" value="LOCAL" />
+      <updated>1651612001799</updated>
+    </task>
+    <task id="LOCAL-00049" summary="Refactor to the state of my core PR">
+      <created>1651612007139</created>
+      <option name="number" value="00049" />
+      <option name="presentableId" value="LOCAL-00049" />
+      <option name="project" value="LOCAL" />
+      <updated>1651612007139</updated>
+    </task>
+    <task id="LOCAL-00050" summary="Adding missing dependencies and make sure it all works">
+      <created>1651656702587</created>
+      <option name="number" value="00050" />
+      <option name="presentableId" value="LOCAL-00050" />
+      <option name="project" value="LOCAL" />
+      <updated>1651656702587</updated>
+    </task>
+    <task id="LOCAL-00051" summary="Option to create passkeys (resident keys)">
+      <created>1651657889109</created>
+      <option name="number" value="00051" />
+      <option name="presentableId" value="LOCAL-00051" />
+      <option name="project" value="LOCAL" />
+      <updated>1651657889109</updated>
+    </task>
+    <task id="LOCAL-00052" summary="Implement login with passkeys (resident keys)">
+      <created>1651667995027</created>
+      <option name="number" value="00052" />
+      <option name="presentableId" value="LOCAL-00052" />
+      <option name="project" value="LOCAL" />
+      <updated>1651667995027</updated>
+    </task>
+    <task id="LOCAL-00053" summary="Don't show the resident authenticator button when the feature is disabled">
+      <created>1651669711246</created>
+      <option name="number" value="00053" />
+      <option name="presentableId" value="LOCAL-00053" />
+      <option name="project" value="LOCAL" />
+      <updated>1651669711246</updated>
+    </task>
+    <task id="LOCAL-00054" summary="Add Apple attestation support">
+      <created>1651684565299</created>
+      <option name="number" value="00054" />
+      <option name="presentableId" value="LOCAL-00054" />
+      <option name="project" value="LOCAL" />
+      <updated>1651684565299</updated>
+    </task>
+    <task id="LOCAL-00055" summary="Simplify">
+      <created>1651686799048</created>
+      <option name="number" value="00055" />
+      <option name="presentableId" value="LOCAL-00055" />
+      <option name="project" value="LOCAL" />
+      <updated>1651686799048</updated>
+    </task>
+    <task id="LOCAL-00056" summary="Remove tooltips from Add authenticator buttons&#10;&#10;Also redo the interface to look cleaner">
+      <created>1651740633273</created>
+      <option name="number" value="00056" />
+      <option name="presentableId" value="LOCAL-00056" />
+      <option name="project" value="LOCAL" />
+      <updated>1651740633273</updated>
+    </task>
+    <task id="LOCAL-00057" summary="Remove tooltips from Add authenticator buttons&#10;&#10;Also redo the interface to look cleaner">
+      <created>1651740693930</created>
+      <option name="number" value="00057" />
+      <option name="presentableId" value="LOCAL-00057" />
+      <option name="project" value="LOCAL" />
+      <updated>1651740693930</updated>
+    </task>
+    <task id="LOCAL-00058" summary="Remove tooltips from Add authenticator buttons&#10;&#10;Also redo the interface to look cleaner">
+      <created>1651741520891</created>
+      <option name="number" value="00058" />
+      <option name="presentableId" value="LOCAL-00058" />
+      <option name="project" value="LOCAL" />
+      <updated>1651741520891</updated>
+    </task>
+    <task id="LOCAL-00059" summary="User-controlled option to disable logins with password">
+      <created>1651749122156</created>
+      <option name="number" value="00059" />
+      <option name="presentableId" value="LOCAL-00059" />
+      <option name="project" value="LOCAL" />
+      <updated>1651749122156</updated>
+    </task>
+    <task id="LOCAL-00060" summary="Update the changelog with the work so far">
+      <created>1651749257712</created>
+      <option name="number" value="00060" />
+      <option name="presentableId" value="LOCAL-00060" />
+      <option name="project" value="LOCAL" />
+      <updated>1651749257712</updated>
+    </task>
+    <task id="LOCAL-00061" summary="Migration from Joomla's WebAuthn">
+      <created>1651756246280</created>
+      <option name="number" value="00061" />
+      <option name="presentableId" value="LOCAL-00061" />
+      <option name="project" value="LOCAL" />
+      <updated>1651756246280</updated>
+    </task>
+    <task id="LOCAL-00062" summary="Remove unnecessary version attribute from XML manifests">
+      <created>1667750937694</created>
+      <option name="number" value="00062" />
+      <option name="presentableId" value="LOCAL-00062" />
+      <option name="project" value="LOCAL" />
+      <updated>1667750937694</updated>
+    </task>
+    <task id="LOCAL-00063" summary="Project management">
+      <created>1670423063479</created>
+      <option name="number" value="00063" />
+      <option name="presentableId" value="LOCAL-00063" />
+      <option name="project" value="LOCAL" />
+      <updated>1670423063479</updated>
+    </task>
+    <option name="localTasksCounter" value="64" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="OPEN_GENERIC_TABS">
+      <map>
+        <entry key="ab6fdb77-fde7-44fb-877b-46c36d1edab2" value="TOOL_WINDOW" />
+      </map>
+    </option>
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+        <entry key="ab6fdb77-fde7-44fb-877b-46c36d1edab2">
+          <value>
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="HEAD" />
+                      </list>
+                    </value>
+                  </entry>
+                  <entry key="roots">
+                    <value>
+                      <list>
+                        <option value="$PROJECT_DIR$" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+              <option name="SHOW_ONLY_AFFECTED_CHANGES" value="true" />
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Remove unused CSS" />
+    <MESSAGE value="Don't run composer install on build&#10;&#10;Due to the use of Rector we only need to do this manually&#10;and very sporadically." />
+    <MESSAGE value="Yeah, Rector isn't as sharp as it's supposed to be.&#10;&#10;I had to do some manual intervention. Oh well." />
+    <MESSAGE value="Convert to event subscribers" />
+    <MESSAGE value="Small changes" />
+    <MESSAGE value="Made Rector work more reliably&#10;&#10;Also removed namespacing from the dependencies which are&#10;already included in Joomla. Loading either will work&#10;just fine." />
+    <MESSAGE value="Implement the authentication in two different ways&#10;&#10;Using the WebAuthn library's Server class and what they&#10;describe as the Hard Way" />
+    <MESSAGE value="OK, let's use the easy way. It's, um, easier" />
+    <MESSAGE value="Separate the login and management JS" />
+    <MESSAGE value="We have ignition!" />
+    <MESSAGE value="Exclude unused files from the vendor directory" />
+    <MESSAGE value="Plugin causes an error when saving a user from Joomla's Users page" />
+    <MESSAGE value="Refactor to the state of my core PR" />
+    <MESSAGE value="Adding missing dependencies and make sure it all works" />
+    <MESSAGE value="Option to create passkeys (resident keys)" />
+    <MESSAGE value="Implement login with passkeys (resident keys)" />
+    <MESSAGE value="Don't show the resident authenticator button when the feature is disabled" />
+    <MESSAGE value="Add Apple attestation support" />
+    <MESSAGE value="Simplify" />
+    <MESSAGE value="Remove tooltips from Add authenticator buttons&#10;&#10;Also redo the interface to look cleaner" />
+    <MESSAGE value="User-controlled option to disable logins with password" />
+    <MESSAGE value="Update the changelog with the work so far" />
+    <MESSAGE value="Migration from Joomla's WebAuthn" />
+    <MESSAGE value="Remove unnecessary version attribute from XML manifests" />
+    <MESSAGE value="Project management" />
+    <option name="LAST_COMMIT_MESSAGE" value="Project management" />
+  </component>
+  <component name="WordPressConfiguration">
+    <wordpressPath />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="php">
+          <url>file://$PROJECT_DIR$/plugins/system/passwordless/src/PluginTraits/AjaxHandler.php</url>
+          <line>42</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
+  </component>
+</project>

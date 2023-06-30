@@ -39,8 +39,6 @@ return new class implements ServiceProviderInterface {
 		$container->set(
 			PluginInterface::class,
 			function (Container $container) {
-				require_once __DIR__ . '/../vendor/autoload.php';
-
 				$config  = (array) PluginHelper::getPlugin('system', 'passwordless');
 				$subject = $container->get(DispatcherInterface::class);
 

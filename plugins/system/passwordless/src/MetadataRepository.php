@@ -116,45 +116,7 @@ class MetadataRepository implements MetadataStatementRepository
 	{
 		$this->mdsCache = [];
 		$this->mdsMap   = [];
-		$jwtFilename    = JPATH_CACHE . '/fido.jwt';
-
-		// If the file exists and it's over one month old do retry loading it.
-		if (file_exists($jwtFilename) && filemtime($jwtFilename) < (time() - 2592000))
-		{
-			$force = true;
-		}
-
-		/**
-		 * Try to load the MDS source from the FIDO Alliance and cache it.
-		 *
-		 * We use a short timeout limit to avoid delaying the page load for way too long. If we fail
-		 * to download the file in a reasonable amount of time we write an empty string in the
-		 * file which causes this method to not proceed any further.
-		 */
-		if (!file_exists($jwtFilename) || $force)
-		{
-			// Only try to download anything if we can actually cache it!
-			if ((file_exists($jwtFilename) && is_writable($jwtFilename)) || (!file_exists($jwtFilename) && is_writable(JPATH_CACHE)))
-			{
-				$http     = HttpFactory::getHttp();
-				$response = $http->get('https://mds.fidoalliance.org/', [], 5);
-				$content  = ($response->code < 200 || $response->code > 299) ? '' : $response->body;
-			}
-
-			/**
-			 * If we could not download anything BUT a non-empty file already exists we must NOT
-			 * overwrite it.
-			 *
-			 * This allows, for example, the site owner to manually place the FIDO MDS cache file
-			 * in administrator/cache/fido.jwt. This would be useful for high security sites which
-			 * require attestation BUT are behind a firewall (or disconnected from the Internet),
-			 * therefore cannot download the MDS cache!
-			 */
-			if (!empty($content) || !file_exists($jwtFilename) || filesize($jwtFilename) <= 1024)
-			{
-				file_put_contents($jwtFilename, $content);
-			}
-		}
+		$jwtFilename    = JPATH_PLUGINS . '/system/webauthn/fido.jwt';
 
 		$rawJwt = file_get_contents($jwtFilename);
 
@@ -180,28 +142,11 @@ class MetadataRepository implements MetadataStatementRepository
 
 		unset($rawJwt);
 
-		// Do I need to forcibly update the cache? The JWT has the nextUpdate claim to tell us when to do that.
-		try
-		{
-			$nextUpdate = new Date($token->claims()->get('nextUpdate', '2020-01-01'));
-
-			if (!$force && !$nextUpdate->diff(new Date)->invert)
-			{
-				$this->load(true);
-
-				return;
-			}
-		}
-		catch (Exception $e)
-		{
-			// OK, don't worry if don't know when the next update is.
-		}
-
-		$entriesMapper = function (array $entry)
+		$entriesMapper = function (object $entry)
 		{
 			try
 			{
-				$array = json_decode(json_encode($entry['metadataStatement']), true);
+				$object = json_decode(json_encode($entry->metadataStatement), true);
 
 				/**
 				 * This prevents an error when we're asking for attestation on authenticators which
@@ -209,12 +154,12 @@ class MetadataRepository implements MetadataStatementRepository
 				 * requiring an attestation is the only way we can get the AAGUID of the
 				 * authenticator.
 				 */
-				if (isset($array['attestationTypes']))
+				if (isset($object->attestationTypes))
 				{
-					unset($array['attestationTypes']);
+					unset($object->attestationTypes);
 				}
 
-				return MetadataStatement::createFromArray($array);
+				return MetadataStatement::createFromArray((array) $object);
 			}
 			catch (Exception $e)
 			{

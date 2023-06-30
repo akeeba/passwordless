@@ -18,8 +18,6 @@ use Joomla\Utilities\ArrayHelper;
 
 trait UserDeletion
 {
-	use EventReturnAware;
-
 	/**
 	 * Remove all passwordless credential information for the given user ID.
 	 *

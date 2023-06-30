@@ -1,8 +1,7 @@
 Passwordless Login 2.0.0
 --------------------------------------------------------------------------------
 - Removed cookie which remembers the last logged in user
-+ Support for resident keys
-+ Support for passkeys (synchronised authenticators)
++ Support for passkeys (resident, synchronised authenticators)
 + Support for TouchID/FaceID on newer Apple mobile devices (iOS 15.4+)
 + User-controlled option to disable logins with password
 + Migration from Joomla's WebAuthn

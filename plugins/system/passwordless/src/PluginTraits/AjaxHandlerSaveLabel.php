@@ -23,8 +23,6 @@ use Joomla\Event\Event;
  */
 trait AjaxHandlerSaveLabel
 {
-	use EventReturnAware;
-
 	/**
 	 * Handle the callback to rename an authenticator
 	 *

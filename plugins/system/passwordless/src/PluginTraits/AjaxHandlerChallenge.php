@@ -28,8 +28,6 @@ use Joomla\Event\Event;
  */
 trait AjaxHandlerChallenge
 {
-	use EventReturnAware;
-
 	/**
 	 * Returns the JSON-encoded Public Key Credential Request
 	 *
