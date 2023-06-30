@@ -225,7 +225,7 @@ window.akeeba.Passwordless = window.akeeba.Passwordless || {};
 		const elUsername      = Passwordless.lookForField(elFormContainer, 'input[name=username]');
 		const elReturn        = Passwordless.lookForField(elFormContainer, 'input[name=return]');
 		const pluginParams    = Joomla.getOptions('plg_system_passwordless');
-		const allowNoUsername = pluginParams['allowResident'] ?? true;
+		const allowNoUsername = true;
 
 		if (!allowNoUsername && elUsername === null)
 		{

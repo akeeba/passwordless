@@ -46,20 +46,11 @@ trait AjaxHandlerLogin
 		$session       = $this->app->getSession();
 		$returnUrl     = $session->get('plg_system_passwordless.returnUrl', Uri::base());
 		$userId        = $session->get('plg_system_passwordless.userId', 0);
-		$allowResident = $this->params->get('allowResident', 1) == 1;
 
 		try
 		{
 			// Validate the authenticator response and get the user handle
 			$credentialRepository = $this->authenticationHelper->getCredentialsRepository();
-
-			// If a user ID is NOT present in the session but we don't allow resident keys we fail.
-			if (!$allowResident && empty($userId))
-			{
-				Log::add('Cannot determine the user ID', Log::NOTICE, 'plg_system_passwordless');
-
-				throw new RuntimeException(Text::_('PLG_SYSTEM_PASSWORDLESS_ERR_CREATE_INVALID_LOGIN_REQUEST'));
-			}
 
 			// Login Flow 1: Login with a non-resident key
 			if (!empty($userId))

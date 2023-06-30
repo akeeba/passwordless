@@ -125,11 +125,6 @@ trait AdditionalLoginButtons
 		Text::script('PLG_SYSTEM_PASSWORDLESS_ERR_INVALID_USERNAME');
 		Text::script('PLG_SYSTEM_PASSWORDLESS_ERR_EMPTY_USERNAME');
 
-		// Send some plugin options to the frontend
-		$document->addScriptOptions('plg_system_passwordless', [
-			'allowResident' => $this->params->get('allowResident', 1) == 1,
-		]);
-
 		// Store the current URL as the default return URL after login (or failure)
 		$this->app->getSession()->set('plg_system_passwordless.returnUrl', Uri::current());
 	}

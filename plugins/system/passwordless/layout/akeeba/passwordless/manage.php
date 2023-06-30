@@ -29,7 +29,6 @@ use Joomla\CMS\User\User;
  * @var   array      $knownAuthenticators Metadata of known authenticator devices by AAGUID
  * @var   bool       $attestationSupport  Is attestation support enabled?
  * @var   bool       $showImages          Should I show maker logos next to the registered authenticators?
- * @var   bool       $allowResident       Do we allow Passkeys / resident WebAuthn credentials?
  */
 
 // Extract the data. Do not remove until the unset() line.
@@ -41,7 +40,6 @@ extract(array_merge([
 	'knownAuthenticators' => [],
 	'attestationSupport'  => true,
 	'showImages'          => true,
-	'allowResident'       => true,
 ], $displayData));
 
 // Ensure the GMP or BCmath extension (or a polyfill) is loaded in PHP - this is required by the third party library.
@@ -141,20 +139,18 @@ HTMLHelper::_('bootstrap.tooltip', '.plg_system_passwordless_tooltip');
 
 	<?php if ($allow_add): ?>
 		<div class="akpwl-manage-add-container mt-3 mb-2 d-flex">
-			<?php if ($allowResident): ?>
-				<div class="flex-grow-1 mx-2 d-flex flex-column align-items-center">
-					<button
-							type="button"
-							id="plg_system_passwordless-manage-addresident"
-							class="btn btn-dark w-100"
-					>
-						<?= file_get_contents(JPATH_ROOT . '/media/plg_system_passwordless/images/passkey-white.svg') ?: '' ?>
-						<span class="ms-1">
-							<?php echo Text::_('PLG_SYSTEM_PASSWORDLESS_MANAGE_BTN_ADDRESIDENT_LABEL') ?>
-						</span>
-					</button>
+			<div class="flex-grow-1 mx-2 d-flex flex-column align-items-center">
+				<button
+						type="button"
+						id="plg_system_passwordless-manage-addresident"
+						class="btn btn-dark w-100"
+				>
+					<?= file_get_contents(JPATH_ROOT . '/media/plg_system_passwordless/images/passkey-white.svg') ?: '' ?>
+					<span class="ms-1">
+						<?php echo Text::_('PLG_SYSTEM_PASSWORDLESS_MANAGE_BTN_ADDRESIDENT_LABEL') ?>
+					</span>
+				</button>
 			</div>
-			<?php endif; ?>
 
 			<div class="flex-grow-1 mx-2 d-flex flex-column align-items-center">
 				<button

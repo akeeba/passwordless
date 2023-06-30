@@ -42,9 +42,6 @@ trait AjaxHandlerChallenge
 		$session      = $this->app->getSession();
 		$input        = $this->app->input;
 
-		// Get plugin configuration
-		$allowResident = $this->params->get('allowResident', 1) == 1;
-
 		// Retrieve data from the request
 		$username  = $input->getUsername('username', '');
 		$returnUrl = base64_encode($session->get('plg_system_passwordless.returnUrl', Uri::current()));
@@ -61,29 +58,14 @@ trait AjaxHandlerChallenge
 		// Get the return URL
 		$session->set('plg_system_passwordless.returnUrl', $returnUrl);
 
-		// Do I have a username?
-		if (!$allowResident && empty($username))
-		{
-			$this->returnFromEvent($event, false);
-
-			return;
-		}
-
 		// Is the username valid?
 		try
 		{
-			$userId = ($allowResident && empty($username)) ? 0 : UserHelper::getUserId($username);
+			$userId = empty($username) ? 0 : UserHelper::getUserId($username);
 		}
 		catch (Exception $e)
 		{
 			$userId = 0;
-		}
-
-		if ($userId <= 0 && !$allowResident)
-		{
-			$this->returnFromEvent($event, false);
-
-			return;
 		}
 
 		try
@@ -95,14 +77,7 @@ trait AjaxHandlerChallenge
 			$myUser = new User;
 		}
 
-		if (!$allowResident && ($myUser->id != $userId || $myUser->guest))
-		{
-			$this->returnFromEvent($event, false);
-
-			return;
-		}
-
-		$effectiveUser = ($allowResident && $userId === 0) ? null : $myUser;
+		$effectiveUser = $userId === 0 ? null : $myUser;
 		$publicKeyCredentialRequestOptions = $this->authenticationHelper->getPubkeyRequestOptions($effectiveUser);
 
 		$session->set('plg_system_passwordless.userId', $userId);
