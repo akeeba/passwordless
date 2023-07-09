@@ -65,8 +65,6 @@ class PasswordlessField extends FormField
 			                                ->loadUserById($userId),
 			'allow_add'           => $userId == $app->getIdentity()->id,
 			'credentials'         => $authenticationHelper->getCredentialsRepository()->getAll($userId),
-			'knownAuthenticators' => $authenticationHelper->getKnownAuthenticators(),
-			'attestationSupport'  => $authenticationHelper->hasAttestationSupport(),
 			'showImages'          => $plugin->params->get('showImages', 1) == 1,
 		]);
 	}

@@ -40,17 +40,17 @@ trait AjaxHandler
 	 */
 	public function onAjaxPasswordless(Event $event)
 	{
-		$input = $this->app->input;
+		$input = $this->getApplication()->input;
 
 		// Get the return URL from the session
-		$returnURL = $this->app->getSession()->get('plg_system_webauthn.returnUrl', Uri::base());
+		$returnURL = $this->getApplication()->getSession()->get('plg_system_webauthn.returnUrl', Uri::base());
 		$result    = null;
 
 		try
 		{
 			Log::add('Received AJAX callback.', Log::DEBUG, 'plg_system_passwordless');
 
-			if (!($this->app instanceof CMSApplication))
+			if (!($this->getApplication() instanceof CMSApplication))
 			{
 				Log::add("This is not a CMS application", Log::NOTICE, 'plg_system_passwordless');
 
@@ -59,7 +59,7 @@ trait AjaxHandler
 
 			$akaction = $input->getCmd('akaction');
 
-			if (!$this->app->checkToken('request'))
+			if (!$this->getApplication()->checkToken('request'))
 			{
 				throw new RuntimeException(Text::_('JERROR_ALERTNOAUTHOR'));
 			}
@@ -73,7 +73,7 @@ trait AjaxHandler
 			// Call the plugin event onAjaxPasswordlessSomething where Something is the akaction param.
 			$eventName = 'onAjaxPasswordless' . ucfirst($akaction);
 			$event     = new GenericEvent($eventName, []);
-			$result    = $this->app->getDispatcher()->dispatch($eventName, $event);
+			$result    = $this->getApplication()->getDispatcher()->dispatch($eventName, $event);
 			$results   = !isset($result['result']) || \is_null($result['result']) ? [] : $result['result'];
 			$result    = null;
 			$reducer   = function ($carry, $result)
@@ -86,9 +86,9 @@ trait AjaxHandler
 		{
 			Log::add(sprintf('Callback failure, redirecting to %s.', $returnURL), Log::DEBUG, 'plg_system_passwordless');
 
-			$this->app->getSession()->set('plg_system_passwordless.returnUrl', null);
-			$this->app->enqueueMessage($e->getMessage(), 'error');
-			$this->app->redirect($returnURL);
+			$this->getApplication()->getSession()->set('plg_system_passwordless.returnUrl', null);
+			$this->getApplication()->enqueueMessage($e->getMessage(), 'error');
+			$this->getApplication()->redirect($returnURL);
 
 			return;
 		}
@@ -109,7 +109,7 @@ trait AjaxHandler
 					if (isset($result['message']))
 					{
 						$type = $result['type'] ?? 'info';
-						$this->app->enqueueMessage($result['message'], $type);
+						$this->getApplication()->enqueueMessage($result['message'], $type);
 
 						$modifiers = " and setting a system message of type $type";
 					}
@@ -117,12 +117,12 @@ trait AjaxHandler
 					if (isset($result['url']))
 					{
 						Log::add(sprintf('Callback complete, performing redirection to %s%s.', $result['url'], $modifiers), Log::DEBUG, 'plg_system_passwordless');
-						$this->app->redirect($result['url']);
+						$this->getApplication()->redirect($result['url']);
 					}
 
 
 					Log::add(sprintf('Callback complete, performing redirection to %s%s.', $result, $modifiers), Log::DEBUG, 'plg_system_passwordless');
-					$this->app->redirect($result);
+					$this->getApplication()->redirect($result);
 
 					return;
 
@@ -134,12 +134,12 @@ trait AjaxHandler
 					break;
 			}
 
-			$this->app->close(200);
+			$this->getApplication()->close(200);
 		}
 
 		Log::add(sprintf('Null response from AJAX callback, redirecting to %s', $returnURL). Log::DEBUG, 'plg_system_passwordless');
 
-		$this->app->getSession()->set('plg_system_passwordless.returnUrl', null);
-		$this->app->redirect($returnURL);
+		$this->getApplication()->getSession()->set('plg_system_passwordless.returnUrl', null);
+		$this->getApplication()->redirect($returnURL);
 	}
 }

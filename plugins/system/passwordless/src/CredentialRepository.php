@@ -12,6 +12,7 @@ namespace Akeeba\Plugin\System\Passwordless;
 // Protect from unauthorized access
 defined('_JEXEC') or die();
 
+use Akeeba\Plugin\System\Passwordless\Extension\Passwordless;
 use Exception;
 use InvalidArgumentException;
 use Joomla\CMS\Date\Date;
@@ -22,7 +23,6 @@ use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\Database\DatabaseAwareTrait;
 use Joomla\Database\DatabaseDriver;
 use Joomla\Database\DatabaseInterface;
-use Akeeba\Plugin\System\Passwordless\Extension\Passwordless;
 use Joomla\Registry\Registry;
 use JsonException;
 use RuntimeException;
@@ -198,10 +198,7 @@ class CredentialRepository implements PublicKeyCredentialSourceRepository
 	{
 		// Default values for saving a new credential source
 		/** @var Passwordless $plugin */
-		$plugin              = Factory::getApplication()->bootPlugin('passwordless', 'system');
-		$knownAuthenticators = $plugin->getAuthenticationHelper()->getKnownAuthenticators();
-		$aaguid              = (string) ($publicKeyCredentialSource->getAaguid() ?? '');
-		$defaultName         = ($knownAuthenticators[$aaguid] ?? $knownAuthenticators[''])->description;
+		$defaultName         = Text::_('PLG_SYSTEM_PASSWORDLESS_LBL_DEFAULT_AUTHENTICATOR');
 		$credentialId        = base64_encode($publicKeyCredentialSource->getPublicKeyCredentialId());
 		$user                = Factory::getApplication()->getIdentity();
 		$o                   = (object) [

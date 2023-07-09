@@ -15,6 +15,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\User;
 use Joomla\CMS\User\UserHelper;
+use Joomla\Database\DatabaseDriver;
 use Joomla\Database\ParameterType;
 use Joomla\Event\Event;
 
@@ -55,11 +56,11 @@ trait UserLogin
 		// Logout the user and close the session.
 		$logoutOptions = [];
 
-		$this->app->logout($user->id, $logoutOptions);
-		$this->app->getSession()->close();
+		$this->getApplication()->logout($user->id, $logoutOptions);
+		$this->getApplication()->getSession()->close();
 
 		// Get a valid return URL.
-		$return = $this->app->input->getBase64('return', '');
+		$return = $this->getApplication()->input->getBase64('return', '');
 		$return = !empty($return) ? @base64_decode($return) : '';
 		$return = $return ?: Uri::base();
 
@@ -71,16 +72,16 @@ trait UserLogin
 		}
 
 		// Redirect the user and display a message notifying them they have to log in with Passwordless.
-		$this->app->enqueueMessage(
+		$this->getApplication()->enqueueMessage(
 			Text::_('PLG_SYSTEM_PASSWORDLESS_ERR_NOPASSWORDLOGIN'),
 			CMSApplication::MSG_WARNING
 		);
 		// -- This is intentional; it will confuse attackers by making impossible to tell if the password was wrong.
-		$this->app->enqueueMessage(
+		$this->getApplication()->enqueueMessage(
 			Text::_('JGLOBAL_AUTH_INVALID_PASS'),
 			CMSApplication::MSG_WARNING
 		);
-		$this->app->redirect($return);
+		$this->getApplication()->redirect($return);
 	}
 
 	/**
@@ -119,7 +120,7 @@ trait UserLogin
 		}
 
 		// Let's muddy the waters
-		$this->app->enqueueMessage(
+		$this->getApplication()->enqueueMessage(
 			Text::_('PLG_SYSTEM_PASSWORDLESS_ERR_NOPASSWORDLOGIN'),
 			CMSApplication::MSG_WARNING
 		);
@@ -142,7 +143,8 @@ trait UserLogin
 		}
 
 		// Does this user prefer to only use passwordless login?
-		$db         = $this->db;
+		/** @var DatabaseDriver $db */
+		$db         = $this->getDatabase();
 		$userId     = $user->id;
 		$profileKey = 'passwordless.noPassword';
 		$query      = $db->getQuery(true)

@@ -47,12 +47,12 @@ trait AjaxHandlerCreate
 		 * someone else's Webauthn configuration thus mitigating a major privacy and security risk. So, please, DO NOT
 		 * remove this sanity check!
 		 */
-		$session      = $this->app->getSession();
+		$session      = $this->getApplication()->getSession();
 		$storedUserId = $session->get('plg_system_passwordless.registration_user_id', 0);
 		$thatUser     = empty($storedUserId)
 			? Factory::getApplication()->getIdentity()
 			: Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($storedUserId);
-		$myUser       = $this->app->getIdentity() ?? new User();
+		$myUser       = $this->getApplication()->getIdentity() ?? new User();
 
 		if ($thatUser->guest || ($thatUser->id != $myUser->id))
 		{
@@ -70,7 +70,7 @@ trait AjaxHandlerCreate
 		// Try to validate the browser data. If there's an error I won't save anything and pass the message to the GUI.
 		try
 		{
-			$input = $this->app->input;
+			$input = $this->getApplication()->input;
 
 			// Retrieve the data sent by the device
 			$data = $input->get('data', '', 'raw');
@@ -99,8 +99,6 @@ trait AjaxHandlerCreate
 			'user'                => $thatUser,
 			'allow_add'           => $thatUser->id == $myUser->id,
 			'credentials'         => $credentialRepository->getAll($thatUser->id),
-			'knownAuthenticators' => $this->authenticationHelper->getKnownAuthenticators(),
-			'attestationSupport'  => $this->authenticationHelper->hasAttestationSupport(),
 			'showImages'          => $this->params->get('showImages', 1) == 1,
 		];
 

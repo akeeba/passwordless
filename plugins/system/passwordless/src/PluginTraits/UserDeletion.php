@@ -12,6 +12,7 @@ defined('_JEXEC') or die();
 
 use Exception;
 use Joomla\CMS\Log\Log;
+use Joomla\Database\DatabaseDriver;
 use Joomla\Database\ParameterType;
 use Joomla\Event\Event;
 use Joomla\Utilities\ArrayHelper;
@@ -49,7 +50,8 @@ trait UserDeletion
 		{
 			Log::add(sprintf('Removing Akeeba Passwordless Login information for deleted user #%s', $userId),  Log::DEBUG, 'plg_system_passwordless');
 
-			$db    = $this->db;
+			/** @var DatabaseDriver $db */
+			$db    = $this->getDatabase();
 			$query = $db->getQuery(true)
 				->delete($db->qn('#__passwordless_credentials'))
 				->where($db->qn('user_id') . ' = :userId')

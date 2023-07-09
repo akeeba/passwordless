@@ -69,7 +69,7 @@ trait AdditionalLoginButtons
 		$randomId = 'akpwl-login-' . UserHelper::genRandomPassword(12) . '-' . UserHelper::genRandomPassword(8);
 
 		// Get local path to image
-		$imgName = $this->app->isClient('administrator') ? 'passkey-white.svg' : 'passkey.svg';
+		$imgName = $this->getApplication()->isClient('administrator') ? 'passkey-white.svg' : 'passkey.svg';
 		$image   = HTMLHelper::_('image', 'plg_system_passwordless/' . $imgName, '', '', true, true);
 
 		// If you can't find the image then skip it
@@ -104,12 +104,12 @@ trait AdditionalLoginButtons
 
 		$this->injectedCSSandJS = true;
 
-		if (!($this->app instanceof CMSApplication))
+		if (!($this->getApplication() instanceof CMSApplication))
 		{
 			return;
 		}
 
-		$document = $this->app->getDocument();
+		$document = $this->getApplication()->getDocument();
 
 		if (!($document instanceof HtmlDocument))
 		{
@@ -126,7 +126,7 @@ trait AdditionalLoginButtons
 		Text::script('PLG_SYSTEM_PASSWORDLESS_ERR_EMPTY_USERNAME');
 
 		// Store the current URL as the default return URL after login (or failure)
-		$this->app->getSession()->set('plg_system_passwordless.returnUrl', Uri::current());
+		$this->getApplication()->getSession()->set('plg_system_passwordless.returnUrl', Uri::current());
 	}
 
 	/**
@@ -139,19 +139,19 @@ trait AdditionalLoginButtons
 	private function mustDisplayButton(): bool
 	{
 		// We must have a valid application
-		if (!($this->app instanceof CMSApplication))
+		if (!($this->getApplication() instanceof CMSApplication))
 		{
 			return false;
 		}
 
 		// This plugin only applies to the frontend and administrator applications
-		if (!$this->app->isClient('site') && !$this->app->isClient('administrator'))
+		if (!$this->getApplication()->isClient('site') && !$this->app->isClient('administrator'))
 		{
 			return false;
 		}
 
 		// We must have a valid user
-		if (empty($this->app->getIdentity()))
+		if (empty($this->getApplication()->getIdentity()))
 		{
 			return false;
 		}
@@ -163,7 +163,7 @@ trait AdditionalLoginButtons
 			/**
 			 * Do not add a WebAuthn login button if we are already logged in
 			 */
-			if (!$this->app->getIdentity()->guest)
+			if (!$this->getApplication()->getIdentity()->guest)
 			{
 				return false;
 			}
@@ -173,7 +173,7 @@ trait AdditionalLoginButtons
 			 */
 			try
 			{
-				$document = $this->app->getDocument();
+				$document = $this->getApplication()->getDocument();
 			}
 			catch (Exception $e)
 			{

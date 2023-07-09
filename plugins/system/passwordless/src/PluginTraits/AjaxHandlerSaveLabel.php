@@ -33,7 +33,7 @@ trait AjaxHandlerSaveLabel
 	public function onAjaxPasswordlessSavelabel(Event $event): void
 	{
 		// Initialize objects
-		$input      = $this->app->input;
+		$input      = $this->getApplication()->input;
 		$repository = $this->authenticationHelper->getCredentialsRepository();
 
 		// Retrieve data from the request
@@ -61,7 +61,7 @@ trait AjaxHandlerSaveLabel
 		try
 		{
 			$credentialHandle = $repository->getUserHandleFor($credentialId);
-			$user             = $this->app->getIdentity() ?? new User();
+			$user             = $this->getApplication()->getIdentity() ?? new User();
 			$myHandle         = $repository->getHandleFromUserId($user->id);
 		}
 		catch (Exception $e)

@@ -26,8 +26,6 @@ use Joomla\CMS\User\User;
  * @var   bool       $allow_add           Are we allowed to add passwordless login methods
  * @var   array      $credentials         The already stored credentials for the user
  * @var   string     $error               Any error messages
- * @var   array      $knownAuthenticators Metadata of known authenticator devices by AAGUID
- * @var   bool       $attestationSupport  Is attestation support enabled?
  * @var   bool       $showImages          Should I show maker logos next to the registered authenticators?
  */
 
@@ -37,8 +35,6 @@ extract(array_merge([
 	'allow_add'           => false,
 	'credentials'         => [],
 	'error'               => '',
-	'knownAuthenticators' => [],
-	'attestationSupport'  => true,
 	'showImages'          => true,
 ], $displayData));
 
@@ -84,36 +80,10 @@ HTMLHelper::_('bootstrap.tooltip', '.plg_system_passwordless_tooltip');
 		<tbody>
 		<?php foreach ($credentials as $method): ?>
 			<tr data-credential_id="<?= $method['id'] ?>">
-				<?php
-				if ($attestationSupport):
-				$aaguid = ($method['credential'] instanceof \Webauthn\PublicKeyCredentialSource) ? $method['credential']->getAaguid() : '';
-				$aaguid = is_string($aaguid) ? $aaguid : $aaguid->toString();
-				$authMetadata = $knownAuthenticators[$aaguid] ?? $knownAuthenticators[''];
-				endif; ?>
 				<th scope="row" class="plg_system_passwordless-cell">
-					<?php if ($attestationSupport): ?>
-					<div class="d-flex align-items-center ">
-						<?php if ($showImages): ?>
-						<div class="bg-secondary flex-shrink-1 me-1 border border-black rounded-3">
-							<img class="img-fluid"
-								 style="max-height: 3rem; max-width: 6rem"
-								 src="<?php echo $authMetadata->icon ?>"
-								 aria-hidden="true"
-							>
-						</div>
-						<?php endif ?>
-						<span class="plg_system_passwordless-label flex-grow-1">
-							<?= htmlentities($method['label']) ?>
-						</span>
-					</div>
-					<div class="text-muted small mt-1">
-						<?php echo $authMetadata->description ?>
-					</div>
-					<?php else: ?>
-						<span class="plg_system_passwordless-label flex-grow-1">
-							<?= htmlentities($method['label']) ?>
-						</span>
-					<?php endif; ?>
+					<span class="plg_system_passwordless-label flex-grow-1">
+						<?= htmlentities($method['label']) ?>
+					</span>
 				</th>
 				<td class="plg_system_passwordless-cell w-35 text-end">
 					<button class="plg_system_passwordless-manage-edit btn btn-secondary m-1" type="button">
@@ -129,7 +99,7 @@ HTMLHelper::_('bootstrap.tooltip', '.plg_system_passwordless_tooltip');
 		<?php endforeach; ?>
 		<?php if (empty($credentials)): ?>
 			<tr>
-				<td colspan="<?= $attestationSupport ? 3 : 2 ?>">
+				<td colspan="2">
 					<?= Text::_('PLG_SYSTEM_PASSWORDLESS_MANAGE_HEADER_NOMETHODS_LABEL') ?>
 				</td>
 			</tr>

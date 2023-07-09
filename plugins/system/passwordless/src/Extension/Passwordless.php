@@ -7,14 +7,7 @@
 
 namespace Akeeba\Plugin\System\Passwordless\Extension;
 
-use Joomla\CMS\Application\CMSApplication;
-use Joomla\CMS\Factory;
-use Joomla\CMS\Log\Log;
-use Joomla\CMS\Plugin\CMSPlugin;
-use Joomla\Database\DatabaseDriver;
-use Joomla\Event\DispatcherInterface;
-use Joomla\Event\SubscriberInterface;
-use Akeeba\Plugin\System\Passwordless\Authentication;
+use Akeeba\Plugin\System\Passwordless\Authentication\AuthenticationInterface;
 use Akeeba\Plugin\System\Passwordless\PluginTraits\AdditionalLoginButtons;
 use Akeeba\Plugin\System\Passwordless\PluginTraits\AjaxHandler;
 use Akeeba\Plugin\System\Passwordless\PluginTraits\AjaxHandlerChallenge;
@@ -28,6 +21,12 @@ use Akeeba\Plugin\System\Passwordless\PluginTraits\Migration;
 use Akeeba\Plugin\System\Passwordless\PluginTraits\UserDeletion;
 use Akeeba\Plugin\System\Passwordless\PluginTraits\UserLogin;
 use Akeeba\Plugin\System\Passwordless\PluginTraits\UserProfileFields;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Log\Log;
+use Joomla\CMS\Plugin\CMSPlugin;
+use Joomla\Database\DatabaseAwareInterface;
+use Joomla\Database\DatabaseAwareTrait;
+use Joomla\Event\SubscriberInterface;
 
 // Protect from unauthorized access
 defined('_JEXEC') or die();
@@ -40,23 +39,9 @@ defined('_JEXEC') or die();
  *
  * @since 1.0.0
  */
-class Passwordless extends CMSPlugin implements SubscriberInterface
+class Passwordless extends CMSPlugin implements SubscriberInterface, DatabaseAwareInterface
 {
-	/**
-	 * The CMS application we are running in
-	 *
-	 * @var   CMSApplication
-	 * @since 1.0.0
-	 */
-	protected $app;
-
-	/**
-	 * The application's database driver object
-	 *
-	 * @var   DatabaseDriver
-	 * @since 1.0.0
-	 */
-	protected $db;
+	use DatabaseAwareTrait;
 
 	/**
 	 * Autoload the language files
@@ -77,10 +62,10 @@ class Passwordless extends CMSPlugin implements SubscriberInterface
 	/**
 	 * The WebAuthn authentication helper object
 	 *
-	 * @var   Authentication
+	 * @var   AuthenticationInterface
 	 * @since 2.0.0
 	 */
-	protected $authenticationHelper;
+	protected AuthenticationInterface $authenticationHelper;
 
 	// Utility methods for setting the events' return values
 	use EventReturnAware;
@@ -109,18 +94,8 @@ class Passwordless extends CMSPlugin implements SubscriberInterface
 	// Migrate settings from Joomla's WebAuthn
 	use Migration;
 
-	/**
-	 * Constructor. Registers a custom logger.
-	 *
-	 * @param   DispatcherInterface  &$subject  The object to observe
-	 * @param   array                 $config   An optional associative array of configuration settings.
-	 *                                          Recognized key values include 'name', 'group', 'params', 'language'
-	 *                                          (this list is not meant to be comprehensive).
-	 */
-	public function __construct($subject, array $config = [], Authentication $authHelper = null)
+	public function setUpLogging()
 	{
-		parent::__construct($subject, $config);
-
 		// Register a debug log file writer
 		$logLevels = Log::ERROR | Log::CRITICAL | Log::ALERT | Log::EMERGENCY;
 
@@ -133,9 +108,11 @@ class Passwordless extends CMSPlugin implements SubscriberInterface
 			'text_file'         => "plg_system_passwordless.php",
 			'text_entry_format' => '{DATETIME}	{PRIORITY} {CLIENTIP}	{MESSAGE}',
 		], $logLevels, ["plg_system_passwordless",]);
+	}
 
-		$this->authenticationHelper = $authHelper ?? (new Authentication());
-		$this->authenticationHelper->setAttestationSupport($this->params->get('attestationSupport', 1) == 1);
+	public function setAuthenticationHelper(AuthenticationInterface $authHelper): void
+	{
+		$this->authenticationHelper = $authHelper;
 	}
 
 	public static function getSubscribedEvents(): array
@@ -176,11 +153,11 @@ class Passwordless extends CMSPlugin implements SubscriberInterface
 	/**
 	 * Returns the Authentication helper object
 	 *
-	 * @return Authentication
+	 * @return AuthenticationInterface
 	 *
 	 * @since  2.0.0
 	 */
-	public function getAuthenticationHelper(): Authentication
+	public function getAuthenticationHelper(): AuthenticationInterface
 	{
 		return $this->authenticationHelper;
 	}

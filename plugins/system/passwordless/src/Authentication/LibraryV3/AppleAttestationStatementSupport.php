@@ -1,27 +1,19 @@
 <?php
 /**
  * @package   AkeebaPasswordlessLogin
- * @copyright Copyright (c)2018-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2018-2023 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
-namespace Akeeba\Plugin\System\Passwordless\Hotfix;
+namespace Akeeba\Plugin\System\Passwordless\Authentication\LibraryV3;
 
 // Protect from unauthorized access
 defined('_JEXEC') or die();
 
 use Assert\Assertion;
 use Assert\AssertionFailedException;
-use CBOR\CBORObject;
 use CBOR\Decoder;
-use CBOR\OtherObject\DoublePrecisionFloatObject;
-use CBOR\OtherObject\FalseObject;
-use CBOR\OtherObject\HalfPrecisionFloatObject;
-use CBOR\OtherObject\NullObject;
 use CBOR\OtherObject\OtherObjectManager;
-use CBOR\OtherObject\SimpleObject;
-use CBOR\OtherObject\SinglePrecisionFloatObject;
-use CBOR\OtherObject\TrueObject;
 use CBOR\Tag\TagObjectManager;
 use Cose\Key\Ec2Key;
 use Cose\Key\Key;
@@ -44,7 +36,7 @@ use function count;
  *
  * @since       2.0.0
  */
-class AppleAttestationStatementSupport implements AttestationStatementSupport
+final class AppleAttestationStatementSupport implements AttestationStatementSupport
 {
 	private Decoder $decoder;
 

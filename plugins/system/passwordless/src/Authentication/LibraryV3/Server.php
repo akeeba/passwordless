@@ -1,11 +1,11 @@
 <?php
 /**
  * @package   AkeebaPasswordlessLogin
- * @copyright Copyright (c)2018-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2018-2023 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
-namespace Akeeba\Plugin\System\Passwordless\Hotfix;
+namespace Akeeba\Plugin\System\Passwordless\Authentication\LibraryV3;
 
 // Protect from unauthorized access
 defined('_JEXEC') or die();
@@ -19,7 +19,6 @@ use Cose\Algorithm\Signature\RSA;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Webauthn\AttestationStatement\AndroidSafetyNetAttestationStatementSupport;
 use Webauthn\AttestationStatement\AttestationObjectLoader;
 use Webauthn\AttestationStatement\AttestationStatementSupportManager;
 use Webauthn\AttestationStatement\NoneAttestationStatementSupport;
@@ -32,7 +31,6 @@ use Webauthn\AuthenticatorAssertionResponseValidator;
 use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\AuthenticatorAttestationResponseValidator;
 use Webauthn\AuthenticatorSelectionCriteria;
-use Webauthn\MetadataService\MetadataStatementRepository;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialLoader;
@@ -121,12 +119,6 @@ class Server extends \Webauthn\Server
 	private $selectedAlgorithms;
 
 	/**
-	 * @var   MetadataStatementRepository|null
-	 * @since 2.0.0
-	 */
-	private $metadataStatementRepository;
-
-	/**
 	 * @var   ClientInterface
 	 * @since 2.0.0
 	 */
@@ -149,15 +141,13 @@ class Server extends \Webauthn\Server
 	 *
 	 * @param   PublicKeyCredentialRpEntity          $relayingParty                        Obvious
 	 * @param   PublicKeyCredentialSourceRepository  $publicKeyCredentialSourceRepository  Obvious
-	 * @param   MetadataStatementRepository|null     $metadataStatementRepository          Obvious
 	 *
 	 * @since        2.0.0
 	 * @noinspection PhpMissingParentConstructorInspection
 	 */
 	public function __construct(
 		PublicKeyCredentialRpEntity         $relayingParty,
-		PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository,
-		?MetadataStatementRepository        $metadataStatementRepository
+		PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository
 	)
 	{
 		$this->rpEntity = $relayingParty;
@@ -180,7 +170,6 @@ class Server extends \Webauthn\Server
 		$this->publicKeyCredentialSourceRepository = $publicKeyCredentialSourceRepository;
 		$this->tokenBindingHandler                 = new TokenBindingNotSupportedHandler();
 		$this->extensionOutputCheckerHandler       = new ExtensionOutputCheckerHandler();
-		$this->metadataStatementRepository         = $metadataStatementRepository;
 	}
 
 	/**
@@ -409,28 +398,13 @@ class Server extends \Webauthn\Server
 		$attestationStatementSupportManager->add(
 			new PackedAttestationStatementSupport(
 				null,
-				$coseAlgorithmManager,
-				$this->metadataStatementRepository
+				$coseAlgorithmManager
 			)
 		);
-		$attestationStatementSupportManager->add(new TPMAttestationStatementSupport($this->metadataStatementRepository));
-		$attestationStatementSupportManager->add(new FidoU2FAttestationStatementSupport(null, $this->metadataStatementRepository));
+		$attestationStatementSupportManager->add(new TPMAttestationStatementSupport);
+		$attestationStatementSupportManager->add(new FidoU2FAttestationStatementSupport(null));
 		$attestationStatementSupportManager->add(new AppleAttestationStatementSupport());
-		$attestationStatementSupportManager->add(new AndroidKeyAttestationStatementSupport(null, $this->metadataStatementRepository));
-
-		if ($this->metadataStatementRepository !== null)
-		{
-			$attestationStatementSupportManager->add(
-				new AndroidSafetyNetAttestationStatementSupport(
-					$this->httpClient,
-					$this->googleApiKey,
-					$this->requestFactory,
-					2000,
-					60000,
-					$this->metadataStatementRepository
-				)
-			);
-		}
+		$attestationStatementSupportManager->add(new AndroidKeyAttestationStatementSupport(null));
 
 		return $attestationStatementSupportManager;
 	}

@@ -19,6 +19,7 @@ use Joomla\CMS\Log\Log;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\User;
 use Joomla\CMS\User\UserFactoryInterface;
+use Joomla\Database\DatabaseDriver;
 use Joomla\Database\ParameterType;
 use Joomla\Event\Event;
 use Akeeba\Plugin\System\Passwordless\Extension\Passwordless;
@@ -182,8 +183,9 @@ trait UserProfileFields
 		// Load the profile data from the database.
 		try
 		{
+			/** @var DatabaseDriver $db */
+			$db         = $this->getDatabase();
 			$profileKey = 'passwordless.%';
-			$db         = $this->db;
 			$query      = $db->getQuery(true)
 			                 ->select([
 				                 $db->quoteName('profile_key'),
@@ -224,7 +226,8 @@ trait UserProfileFields
 			return;
 		}
 
-		$db         = $this->db;
+		/** @var DatabaseDriver $db */
+		$db         = $this->getDatabase();
 		$profileKey = 'passwordless.%';
 		$query      = $db->getQuery(true)
 		                 ->delete($db->quoteName('#__user_profiles'))
@@ -351,7 +354,7 @@ trait UserProfileFields
 		}
 
 		// Get the currently logged in used
-		$myUser = $this->app->getIdentity() ?? new User();
+		$myUser = $this->getApplication()->getIdentity() ?? new User();
 
 		// I can only edit myself.
 		return $myUser->id == $user->id;

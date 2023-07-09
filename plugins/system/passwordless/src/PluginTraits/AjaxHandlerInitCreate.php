@@ -53,10 +53,10 @@ trait AjaxHandlerInitCreate
 			return;
 		}
 
-		$session = $this->app->getSession();
+		$session = $this->getApplication()->getSession();
 		$session->set('plg_system_passwordless.registration_user_id', $user->id);
 
-		$resident = $this->app->input->getBool('resident', false);
+		$resident = $this->getApplication()->input->getBool('resident', false);
 
 		$this->returnFromEvent($event, $this->authenticationHelper->getPubKeyCreationOptions($user, $resident));
 	}

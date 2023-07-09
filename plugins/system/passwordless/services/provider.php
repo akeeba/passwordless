@@ -7,6 +7,10 @@
 
 defined('_JEXEC') || die;
 
+use Akeeba\Plugin\System\Passwordless\Authentication\AbstractAuthentication;
+use Akeeba\Plugin\System\Passwordless\Authentication\AuthenticationInterface;
+use Akeeba\Plugin\System\Passwordless\CredentialRepository;
+use Akeeba\Plugin\System\Passwordless\Extension\Passwordless;
 use Joomla\Application\ApplicationInterface;
 use Joomla\Application\SessionAwareWebApplicationInterface;
 use Joomla\CMS\Application\CMSApplicationInterface;
@@ -16,12 +20,7 @@ use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\DI\Container;
 use Joomla\DI\ServiceProviderInterface;
 use Joomla\Event\DispatcherInterface;
-use Akeeba\Plugin\System\Passwordless\Extension\Passwordless;
-use Akeeba\Plugin\System\Passwordless\Authentication;
-use Akeeba\Plugin\System\Passwordless\CredentialRepository;
-use Akeeba\Plugin\System\Passwordless\MetadataRepository;
 use Joomla\Session\SessionInterface;
-use Webauthn\MetadataService\MetadataStatementRepository;
 use Webauthn\PublicKeyCredentialSourceRepository;
 
 return new class implements ServiceProviderInterface {
@@ -49,14 +48,18 @@ return new class implements ServiceProviderInterface {
 				$credentialsRepository = $container->has(PublicKeyCredentialSourceRepository::class)
 					? $container->get(PublicKeyCredentialSourceRepository::class)
 					: new CredentialRepository($db);
-				$metadataRepository    = $container->has(MetadataStatementRepository::class)
-					? $container->get(MetadataStatementRepository::class)
-					: new MetadataRepository;
-				$authenticationHelper  = $container->has(Authentication::class)
-					? $container->get(Authentication::class)
-					: new Authentication($app, $session, $credentialsRepository, $metadataRepository);
+				$authenticationHelper  = $container->has(AuthenticationInterface::class)
+					? $container->get(AuthenticationInterface::class)
+					: AbstractAuthentication::create($app, $session, $credentialsRepository);
 
-				return new Passwordless($subject, $config, $authenticationHelper);
+				$plugin = new Passwordless($subject, $config);
+
+				$plugin->setUpLogging();
+				$plugin->setAuthenticationHelper($authenticationHelper);
+				$plugin->setApplication(Factory::getApplication());
+				$plugin->setDatabase($db);
+
+				return $plugin;
 			}
 		);
 	}

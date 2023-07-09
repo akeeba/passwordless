@@ -1,11 +1,11 @@
 <?php
 /**
  * @package   AkeebaPasswordlessLogin
- * @copyright Copyright (c)2018-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2018-2023 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
-namespace Akeeba\Plugin\System\Passwordless\Hotfix;
+namespace Akeeba\Plugin\System\Passwordless\Authentication\LibraryV3;
 
 // Protect from unauthorized access
 defined('_JEXEC') or die();

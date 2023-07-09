@@ -19,6 +19,7 @@ defined('_JEXEC') or die;
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Plugin\PluginHelper;
+use Joomla\Database\DatabaseDriver;
 use Joomla\Database\ParameterType;
 use Joomla\Event\Event;
 use Throwable;
@@ -62,7 +63,8 @@ trait Migration
 	 */
 	private function migrateDatabaseRecords(): void
 	{
-		$db = $this->db;
+		/** @var DatabaseDriver $db */
+		$db = $this->getDatabase();
 
 		$db->lockTable('#__passwordless_credentials');
 		$db->lockTable('#__webauthn_credentials');
@@ -106,7 +108,8 @@ SQL;
 
 		$eid = $plugin->id;
 
-		$db    = $this->db;
+		/** @var DatabaseDriver $db */
+		$db    = $this->getDatabase();
 		$query = $db->getQuery(true)
 		            ->update($db->quoteName('#__extensions'))
 		            ->set($db->quoteName('enabled') . ' = 0')
@@ -135,7 +138,7 @@ SQL;
 			       ->get('cache.controller.factory')
 			       ->createCacheController('callback', [
 				       'defaultgroup' => $group,
-				       'cachebase'    => $this->app->get('cache_path', JPATH_CACHE),
+				       'cachebase'    => $this->getApplication()->get('cache_path', JPATH_CACHE),
 				       'result'       => true,
 			       ])
 				->cache->clean();
@@ -156,10 +159,11 @@ SQL;
 	{
 		$this->params->set('joomlaWebauthn', 0);
 
+		/** @var DatabaseDriver $db */
 		$plugin = PluginHelper::getPlugin($this->_type, $this->_name);
 		$eid    = $plugin->id;
 		$params = $this->params->toString();
-		$db     = $this->db;
+		$db     = $this->getDatabase();
 		$query  = $db->getQuery(true)
 		             ->update($db->quoteName('#__extensions'))
 		             ->set($db->quoteName('params') . ' = :params')
