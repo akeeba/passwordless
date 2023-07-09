@@ -7,7 +7,7 @@
  * @license         GNU General Public License version 2 or later; see LICENSE.txt
  */
 
-namespace Joomla\Plugin\System\Passwordless;
+namespace Akeeba\Plugin\System\Passwordless;
 
 // Protect from unauthorized access
 \defined('_JEXEC') or die();
@@ -21,7 +21,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\User;
-use Joomla\Plugin\System\Passwordless\Hotfix\Server;
+use Akeeba\Plugin\System\Passwordless\Hotfix\Server;
 use Joomla\Session\SessionInterface;
 use Laminas\Diactoros\ServerRequestFactory;
 use RuntimeException;

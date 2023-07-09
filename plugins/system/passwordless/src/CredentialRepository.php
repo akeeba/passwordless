@@ -7,7 +7,7 @@
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
-namespace Joomla\Plugin\System\Passwordless;
+namespace Akeeba\Plugin\System\Passwordless;
 
 // Protect from unauthorized access
 \defined('_JEXEC') or die();
@@ -22,7 +22,7 @@ use Joomla\CMS\MVC\Model\DatabaseAwareTrait;
 use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\Database\DatabaseDriver;
 use Joomla\Database\DatabaseInterface;
-use Joomla\Plugin\System\Passwordless\Extension\Passwordless;
+use Akeeba\Plugin\System\Passwordless\Extension\Passwordless;
 use Joomla\Registry\Registry;
 use JsonException;
 use RuntimeException;

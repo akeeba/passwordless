@@ -5,7 +5,7 @@
  * @license   GNU General Public License version 3, or later
  */
 
-namespace Joomla\Plugin\System\Passwordless\Extension;
+namespace Akeeba\Plugin\System\Passwordless\Extension;
 
 use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Factory;
@@ -14,20 +14,20 @@ use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\Database\DatabaseDriver;
 use Joomla\Event\DispatcherInterface;
 use Joomla\Event\SubscriberInterface;
-use Joomla\Plugin\System\Passwordless\Authentication;
-use Joomla\Plugin\System\Passwordless\PluginTraits\AdditionalLoginButtons;
-use Joomla\Plugin\System\Passwordless\PluginTraits\AjaxHandler;
-use Joomla\Plugin\System\Passwordless\PluginTraits\AjaxHandlerChallenge;
-use Joomla\Plugin\System\Passwordless\PluginTraits\AjaxHandlerCreate;
-use Joomla\Plugin\System\Passwordless\PluginTraits\AjaxHandlerDelete;
-use Joomla\Plugin\System\Passwordless\PluginTraits\AjaxHandlerInitCreate;
-use Joomla\Plugin\System\Passwordless\PluginTraits\AjaxHandlerLogin;
-use Joomla\Plugin\System\Passwordless\PluginTraits\AjaxHandlerSaveLabel;
-use Joomla\Plugin\System\Passwordless\PluginTraits\EventReturnAware;
-use Joomla\Plugin\System\Passwordless\PluginTraits\Migration;
-use Joomla\Plugin\System\Passwordless\PluginTraits\UserDeletion;
-use Joomla\Plugin\System\Passwordless\PluginTraits\UserLogin;
-use Joomla\Plugin\System\Passwordless\PluginTraits\UserProfileFields;
+use Akeeba\Plugin\System\Passwordless\Authentication;
+use Akeeba\Plugin\System\Passwordless\PluginTraits\AdditionalLoginButtons;
+use Akeeba\Plugin\System\Passwordless\PluginTraits\AjaxHandler;
+use Akeeba\Plugin\System\Passwordless\PluginTraits\AjaxHandlerChallenge;
+use Akeeba\Plugin\System\Passwordless\PluginTraits\AjaxHandlerCreate;
+use Akeeba\Plugin\System\Passwordless\PluginTraits\AjaxHandlerDelete;
+use Akeeba\Plugin\System\Passwordless\PluginTraits\AjaxHandlerInitCreate;
+use Akeeba\Plugin\System\Passwordless\PluginTraits\AjaxHandlerLogin;
+use Akeeba\Plugin\System\Passwordless\PluginTraits\AjaxHandlerSaveLabel;
+use Akeeba\Plugin\System\Passwordless\PluginTraits\EventReturnAware;
+use Akeeba\Plugin\System\Passwordless\PluginTraits\Migration;
+use Akeeba\Plugin\System\Passwordless\PluginTraits\UserDeletion;
+use Akeeba\Plugin\System\Passwordless\PluginTraits\UserLogin;
+use Akeeba\Plugin\System\Passwordless\PluginTraits\UserProfileFields;
 
 // Protect from unauthorized access
 defined('_JEXEC') or die();

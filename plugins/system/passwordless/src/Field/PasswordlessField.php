@@ -5,7 +5,7 @@
  * @license   GNU General Public License version 3, or later
  */
 
-namespace Joomla\Plugin\System\Passwordless\Field;
+namespace Akeeba\Plugin\System\Passwordless\Field;
 
 // Prevent direct access
 defined('_JEXEC') or die;
@@ -16,7 +16,7 @@ use Joomla\CMS\Form\FormField;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Layout\FileLayout;
 use Joomla\CMS\User\UserFactoryInterface;
-use Joomla\Plugin\System\Passwordless\Extension\Passwordless;
+use Akeeba\Plugin\System\Passwordless\Extension\Passwordless;
 
 
 class PasswordlessField extends FormField

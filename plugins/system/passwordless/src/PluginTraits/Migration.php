@@ -6,14 +6,14 @@
  */
 
 /**
- * @package     Joomla\Plugin\System\Passwordless\PluginTraits
+ * @package     Akeeba\Plugin\System\Passwordless\PluginTraits
  * @subpackage
  *
  * @copyright   A copyright
  * @license     A "Slug" license name e.g. GPL2
  */
 
-namespace Joomla\Plugin\System\Passwordless\PluginTraits;
+namespace Akeeba\Plugin\System\Passwordless\PluginTraits;
 
 defined('_JEXEC') or die;
 

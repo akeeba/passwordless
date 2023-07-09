@@ -5,7 +5,7 @@
  * @license   GNU General Public License version 3, or later
  */
 
-namespace Joomla\Plugin\System\Passwordless\Hotfix;
+namespace Akeeba\Plugin\System\Passwordless\Hotfix;
 
 // Protect from unauthorized access
 defined('_JEXEC') or die();
@@ -40,7 +40,7 @@ use function count;
  * This is required for parsing the Apple Passkey credentials issued by mobile devices (iOS / iPadOS) as they do not use
  * the 'packed' attestation statement format.
  *
- * @package     Joomla\Plugin\System\Passwordless\Hotfix
+ * @package     Akeeba\Plugin\System\Passwordless\Hotfix
  *
  * @since       2.0.0
  */

@@ -5,7 +5,7 @@
  * @license   GNU General Public License version 3, or later
  */
 
-namespace Joomla\Plugin\System\Passwordless\PluginTraits;
+namespace Akeeba\Plugin\System\Passwordless\PluginTraits;
 
 // Protect from unauthorized access
 defined('_JEXEC') or die();
@@ -21,7 +21,7 @@ use Joomla\CMS\User\User;
 use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\Database\ParameterType;
 use Joomla\Event\Event;
-use Joomla\Plugin\System\Passwordless\Extension\Passwordless;
+use Akeeba\Plugin\System\Passwordless\Extension\Passwordless;
 use Joomla\Registry\Registry;
 use Joomla\Utilities\ArrayHelper;
 

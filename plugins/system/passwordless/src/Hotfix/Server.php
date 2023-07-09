@@ -5,7 +5,7 @@
  * @license   GNU General Public License version 3, or later
  */
 
-namespace Joomla\Plugin\System\Passwordless\Hotfix;
+namespace Akeeba\Plugin\System\Passwordless\Hotfix;
 
 // Protect from unauthorized access
 defined('_JEXEC') or die();

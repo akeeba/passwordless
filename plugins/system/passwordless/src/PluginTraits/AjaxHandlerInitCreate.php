@@ -7,7 +7,7 @@
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
-namespace Joomla\Plugin\System\Passwordless\PluginTraits;
+namespace Akeeba\Plugin\System\Passwordless\PluginTraits;
 
 // Protect from unauthorized access
 \defined('_JEXEC') or die();
