@@ -10,7 +10,7 @@
 namespace Akeeba\Plugin\System\Passwordless;
 
 // Protect from unauthorized access
-\defined('_JEXEC') or die();
+defined('_JEXEC') or die();
 
 use Exception;
 use InvalidArgumentException;
@@ -18,8 +18,8 @@ use Joomla\CMS\Date\Date;
 use Joomla\CMS\Encrypt\Aes;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
-use Joomla\CMS\MVC\Model\DatabaseAwareTrait;
 use Joomla\CMS\User\UserFactoryInterface;
+use Joomla\Database\DatabaseAwareTrait;
 use Joomla\Database\DatabaseDriver;
 use Joomla\Database\DatabaseInterface;
 use Akeeba\Plugin\System\Passwordless\Extension\Passwordless;
@@ -49,7 +49,7 @@ class CredentialRepository implements PublicKeyCredentialSourceRepository
 	 */
 	public function __construct(?DatabaseInterface $db = null)
 	{
-		$this->setDbo($db ?? Factory::getContainer()->get('DatabaseDriver'));
+		$this->setDatabase($db ?? Factory::getContainer()->get('DatabaseDriver'));
 	}
 
 	/**
@@ -64,7 +64,7 @@ class CredentialRepository implements PublicKeyCredentialSourceRepository
 	public function findOneByCredentialId(string $publicKeyCredentialId): ?PublicKeyCredentialSource
 	{
 		/** @var DatabaseDriver $db */
-		$db           = $this->getDbo();
+		$db           = $this->getDatabase();
 		$credentialId = base64_encode($publicKeyCredentialId);
 		$query        = $db->getQuery(true)
 			->select($db->qn('credential'))
@@ -105,7 +105,7 @@ class CredentialRepository implements PublicKeyCredentialSourceRepository
 	public function findAllForUserEntity(PublicKeyCredentialUserEntity $publicKeyCredentialUserEntity): array
 	{
 		/** @var DatabaseDriver $db */
-		$db         = $this->getDbo();
+		$db         = $this->getDatabase();
 		$userHandle = $publicKeyCredentialUserEntity->getId();
 		$query      = $db->getQuery(true)
 			->select('*')
@@ -217,7 +217,7 @@ class CredentialRepository implements PublicKeyCredentialSourceRepository
 		$update              = false;
 
 		/** @var DatabaseDriver $db */
-		$db     = $this->getDbo();
+		$db     = $this->getDatabase();
 
 		// Try to find an existing record
 		try
@@ -288,7 +288,7 @@ class CredentialRepository implements PublicKeyCredentialSourceRepository
 	public function getAll(int $userId): array
 	{
 		/** @var DatabaseDriver $db */
-		$db         = $this->getDbo();
+		$db         = $this->getDatabase();
 		$userHandle = $this->getHandleFromUserId($userId);
 		$query      = $db->getQuery(true)
 			->select('*')
@@ -369,7 +369,7 @@ class CredentialRepository implements PublicKeyCredentialSourceRepository
 	public function has(string $credentialId): bool
 	{
 		/** @var DatabaseDriver $db */
-		$db           = $this->getDbo();
+		$db           = $this->getDatabase();
 		$credentialId = base64_encode($credentialId);
 		$query        = $db->getQuery(true)
 			->select('COUNT(*)')
@@ -402,7 +402,7 @@ class CredentialRepository implements PublicKeyCredentialSourceRepository
 	public function setLabel(string $credentialId, string $label): void
 	{
 		/** @var DatabaseDriver $db */
-		$db           = $this->getDbo();
+		$db           = $this->getDatabase();
 		$credentialId = base64_encode($credentialId);
 		$o            = (object) [
 			'id'    => $credentialId,
@@ -429,7 +429,7 @@ class CredentialRepository implements PublicKeyCredentialSourceRepository
 		}
 
 		/** @var DatabaseDriver $db */
-		$db           = $this->getDbo();
+		$db           = $this->getDatabase();
 		$credentialId = base64_encode($credentialId);
 		$query        = $db->getQuery(true)
 			->delete($db->qn('#__passwordless_credentials'))
@@ -512,7 +512,7 @@ class CredentialRepository implements PublicKeyCredentialSourceRepository
 		}
 
 		/** @var DatabaseDriver $db */
-		$db = $this->getDbo();
+		$db = $this->getDatabase();
 
 		// Check that the userHandle does exist in the database
 		$query = $db->getQuery(true)
@@ -662,9 +662,9 @@ class CredentialRepository implements PublicKeyCredentialSourceRepository
 	 * Format a date for display.
 	 *
 	 * The $tzAware parameter defines whether the formatted date will be timezone-aware. If set to false the formatted
-	 * date will be rendered in the UTC timezone. If set to true the code will automatically try to use the logged in
+	 * date will be rendered in the UTC timezone. If set to true the code will automatically try to use the logged-in
 	 * user's timezone or, if none is set, the site's default timezone (Server Timezone). If set to a positive integer
-	 * the same thing will happen but for the specified user ID instead of the currently logged in user.
+	 * the same thing will happen but for the specified user ID instead of the currently logged-in user.
 	 *
 	 * @param   string|\DateTime  $date     The date to format
 	 * @param   string|null       $format   The format string, default is Joomla's DATE_FORMAT_LC6 (usually "Y-m-d

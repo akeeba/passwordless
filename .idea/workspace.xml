@@ -25,35 +25,13 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2e094fe1-3f87-4fef-876b-11d12c079142" name="Default Changelist" comment="Always allow passkeys">
+    <list default="true" id="2e094fe1-3f87-4fef-876b-11d12c079142" name="Default Changelist" comment="~ Change plugin namespace">
+      <change beforePath="$PROJECT_DIR$/.idea/Akeeba Passwordless Authentication.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Akeeba Passwordless Authentication.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/php.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/php.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CHANGELOG" beforeDir="false" afterPath="$PROJECT_DIR$/CHANGELOG" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/plugins/system/passwordless/forms/passwordless.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/system/passwordless/forms/passwordless.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/plugins/system/passwordless/passwordless.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/system/passwordless/passwordless.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/plugins/system/passwordless/services/provider.php" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/system/passwordless/services/provider.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/plugins/system/passwordless/src/Authentication.php" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/system/passwordless/src/Authentication.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/composer.json" beforeDir="false" afterPath="$PROJECT_DIR$/composer.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/plugins/system/passwordless/src/CredentialRepository.php" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/system/passwordless/src/CredentialRepository.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/plugins/system/passwordless/src/Exception/AjaxNonCmsAppException.php" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/system/passwordless/src/Exception/AjaxNonCmsAppException.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/plugins/system/passwordless/src/Extension/Passwordless.php" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/system/passwordless/src/Extension/Passwordless.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/plugins/system/passwordless/src/Field/PasswordlessField.php" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/system/passwordless/src/Field/PasswordlessField.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/plugins/system/passwordless/src/Hotfix/AndroidKeyAttestationStatementSupport.php" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/system/passwordless/src/Hotfix/AndroidKeyAttestationStatementSupport.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/plugins/system/passwordless/src/Hotfix/AppleAttestationStatementSupport.php" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/system/passwordless/src/Hotfix/AppleAttestationStatementSupport.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/plugins/system/passwordless/src/Hotfix/FidoU2FAttestationStatementSupport.php" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/system/passwordless/src/Hotfix/FidoU2FAttestationStatementSupport.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/plugins/system/passwordless/src/Hotfix/Server.php" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/system/passwordless/src/Hotfix/Server.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/plugins/system/passwordless/src/MetadataRepository.php" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/system/passwordless/src/MetadataRepository.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/plugins/system/passwordless/src/PluginTraits/AdditionalLoginButtons.php" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/system/passwordless/src/PluginTraits/AdditionalLoginButtons.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/plugins/system/passwordless/src/PluginTraits/AjaxHandler.php" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/system/passwordless/src/PluginTraits/AjaxHandler.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/plugins/system/passwordless/src/PluginTraits/AjaxHandlerChallenge.php" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/system/passwordless/src/PluginTraits/AjaxHandlerChallenge.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/plugins/system/passwordless/src/PluginTraits/AjaxHandlerCreate.php" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/system/passwordless/src/PluginTraits/AjaxHandlerCreate.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/plugins/system/passwordless/src/PluginTraits/AjaxHandlerDelete.php" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/system/passwordless/src/PluginTraits/AjaxHandlerDelete.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/plugins/system/passwordless/src/PluginTraits/AjaxHandlerInitCreate.php" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/system/passwordless/src/PluginTraits/AjaxHandlerInitCreate.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/plugins/system/passwordless/src/PluginTraits/AjaxHandlerLogin.php" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/system/passwordless/src/PluginTraits/AjaxHandlerLogin.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/plugins/system/passwordless/src/PluginTraits/AjaxHandlerSaveLabel.php" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/system/passwordless/src/PluginTraits/AjaxHandlerSaveLabel.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/plugins/system/passwordless/src/PluginTraits/EventReturnAware.php" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/system/passwordless/src/PluginTraits/EventReturnAware.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/plugins/system/passwordless/src/PluginTraits/Migration.php" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/system/passwordless/src/PluginTraits/Migration.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/plugins/system/passwordless/src/PluginTraits/UserDeletion.php" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/system/passwordless/src/PluginTraits/UserDeletion.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/plugins/system/passwordless/src/PluginTraits/UserLogin.php" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/system/passwordless/src/PluginTraits/UserLogin.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/plugins/system/passwordless/src/PluginTraits/UserProfileFields.php" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/system/passwordless/src/PluginTraits/UserProfileFields.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -126,7 +104,7 @@
   </component>
   <component name="PhpWorkspaceProjectConfiguration" interpreter_name="PHP 8.0">
     <include_path>
-      <path value="$PROJECT_DIR$/../../master/joomla4" />
+      <path value="$PROJECT_DIR$/../../master/joomla5" />
       <path value="$USER_HOME$/Sites/boot4--" />
       <path value="$PROJECT_DIR$/../../dionysopoulos/joomlatypehints/generated_hints" />
       <path value="$USER_HOME$/Sites/boot4/configuration.php" />
@@ -264,7 +242,7 @@
       <workItem from="1670411365918" duration="1057000" />
       <workItem from="1688061892846" duration="7652000" />
       <workItem from="1688384751781" duration="681000" />
-      <workItem from="1688930839955" duration="408000" />
+      <workItem from="1688930839955" duration="980000" />
     </task>
     <task id="LOCAL-00015" summary="Show plugin options depending on Joomla version">
       <created>1597041771075</created>
@@ -609,7 +587,7 @@
       <option name="project" value="LOCAL" />
       <updated>1670423063479</updated>
     </task>
-    <option name="localTasksCounter" value="66" />
+    <option name="localTasksCounter" value="67" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -657,7 +635,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Yeah, Rector isn't as sharp as it's supposed to be.&#10;&#10;I had to do some manual intervention. Oh well." />
     <MESSAGE value="Convert to event subscribers" />
     <MESSAGE value="Small changes" />
     <MESSAGE value="Made Rector work more reliably&#10;&#10;Also removed namespacing from the dependencies which are&#10;already included in Joomla. Loading either will work&#10;just fine." />
@@ -682,7 +659,8 @@
     <MESSAGE value="Project management" />
     <MESSAGE value="Let's dust this off" />
     <MESSAGE value="Always allow passkeys" />
-    <option name="LAST_COMMIT_MESSAGE" value="Always allow passkeys" />
+    <MESSAGE value="~ Change plugin namespace" />
+    <option name="LAST_COMMIT_MESSAGE" value="~ Change plugin namespace" />
   </component>
   <component name="WordPressConfiguration">
     <wordpressPath />
