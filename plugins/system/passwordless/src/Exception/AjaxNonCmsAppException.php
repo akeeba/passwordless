@@ -5,7 +5,7 @@
  * @license   GNU General Public License version 3, or later
  */
 
-namespace Joomla\Plugin\System\Passwordless\Exception;
+namespace Akeeba\Plugin\System\Passwordless\Exception;
 
 // Protect from unauthorized access
 defined('_JEXEC') or die();

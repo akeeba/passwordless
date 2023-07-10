@@ -16,7 +16,7 @@
 			"minify",
 			{
 				"builtIns": false,
-				"removeConsole": true
+				"removeConsole": false
 			}
 		]
 	],

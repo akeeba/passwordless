@@ -162,7 +162,7 @@ window.akeeba.Passwordless = window.akeeba.Passwordless || {};
 
 		if (!publicKey.challenge)
 		{
-			Passwordless.handleLoginError(Joomla.JText._("PLG_SYSTEM_PASSWORDLESS_ERR_INVALID_USERNAME"));
+			Passwordless.handleLoginError(Joomla.Text._("PLG_SYSTEM_PASSWORDLESS_ERR_INVALID_USERNAME"));
 
 			return;
 		}
@@ -198,8 +198,10 @@ window.akeeba.Passwordless = window.akeeba.Passwordless || {};
 				};
 
 				// Send the response to your server
-				const paths = Joomla.getOptions('system.paths');
-				window.location = `${paths ? `${paths.base}/index.php` : window.location.pathname}?${Joomla.getOptions('csrf.token')}=1&option=com_ajax&group=system&plugin=passwordless`
+				const paths     = Joomla.getOptions('system.paths');
+				window.location =
+					`${paths ? `${paths.base}/index.php` : window.location.pathname}?${Joomla.getOptions(
+						'csrf.token')}=1&option=com_ajax&group=system&plugin=passwordless`
 					+ `&format=raw&akaction=login&encoding=redirect&data=${
 						btoa(JSON.stringify(publicKeyCredential))}`;
 			})
@@ -220,34 +222,36 @@ window.akeeba.Passwordless = window.akeeba.Passwordless || {};
 	// eslint-disable-next-line no-unused-vars
 	Passwordless.login = (formId) => {
 		const elFormContainer = document.getElementById(formId);
-		const elUsername = Passwordless.lookForField(elFormContainer, 'input[name=username]');
-		const elReturn = Passwordless.lookForField(elFormContainer, 'input[name=return]');
+		const elUsername      = Passwordless.lookForField(elFormContainer, 'input[name=username]');
+		const elReturn        = Passwordless.lookForField(elFormContainer, 'input[name=return]');
+		const pluginParams    = Joomla.getOptions('plg_system_passwordless');
+		const allowNoUsername = true;
 
-		if (elUsername === null)
+		if (!allowNoUsername && elUsername === null)
 		{
-			Passwordless.handleLoginError(Joomla.JText._("PLG_SYSTEM_PASSWORDLESS_ERR_CANNOT_FIND_USERNAME"));
+			Passwordless.handleLoginError(Joomla.Text._("PLG_SYSTEM_PASSWORDLESS_ERR_CANNOT_FIND_USERNAME"));
 
 			return false;
 		}
 
-		const username  = elUsername.value;
+		const username  = elUsername?.value ?? '';
 		const returnUrl = elReturn ? elReturn.value : null;
 
 		// Get the Public Key Credential Request Options (challenge and acceptable public keys)
-		const postBackData = {
-			option:      "com_ajax",
-			group:       "system",
-			plugin:      "passwordless",
-			format:      "raw",
-			akaction:    "challenge",
-			encoding:    "raw",
-			// username,
-			// returnUrl,
-			"username":  username,
-			"returnUrl": returnUrl
+		const postBackData                            = {
+			option:   "com_ajax",
+			group:    "system",
+			plugin:   "passwordless",
+			format:   "raw",
+			akaction: "challenge",
+			encoding: "raw",
+			username,
+			returnUrl,
 		};
+		postBackData[Joomla.getOptions('csrf.token')] = 1;
 
 		const paths = Joomla.getOptions('system.paths');
+		console.log(paths);
 
 		Joomla.request({
 			url:    `${paths ? `${paths.base}/index.php` : window.location.pathname}?${Joomla.getOptions(
@@ -279,7 +283,6 @@ window.akeeba.Passwordless = window.akeeba.Passwordless || {};
 
 				console.log(jsonData);
 
-				const paths = Joomla.getOptions('system.paths');
 				Passwordless.handleLoginChallenge(jsonData);
 			},
 			onError: (xhr) => {
