@@ -7,7 +7,6 @@
 
 namespace Akeeba\Plugin\System\Passwordless\Exception;
 
-// Protect from unauthorized access
 defined('_JEXEC') or die();
 
 use RuntimeException;

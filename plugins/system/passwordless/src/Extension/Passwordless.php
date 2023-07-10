@@ -7,6 +7,8 @@
 
 namespace Akeeba\Plugin\System\Passwordless\Extension;
 
+defined('_JEXEC') or die();
+
 use Akeeba\Plugin\System\Passwordless\Authentication\AuthenticationInterface;
 use Akeeba\Plugin\System\Passwordless\PluginTraits\AdditionalLoginButtons;
 use Akeeba\Plugin\System\Passwordless\PluginTraits\AjaxHandler;
@@ -27,9 +29,6 @@ use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\Database\DatabaseAwareInterface;
 use Joomla\Database\DatabaseAwareTrait;
 use Joomla\Event\SubscriberInterface;
-
-// Protect from unauthorized access
-defined('_JEXEC') or die();
 
 /**
  * Akeeba Passwordless Login plugin providing Webauthn integration.

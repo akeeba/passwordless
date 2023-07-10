@@ -7,7 +7,6 @@
 
 namespace Akeeba\Plugin\System\Passwordless\Authentication\LibraryV3;
 
-// Protect from unauthorized access
 defined('_JEXEC') or die();
 
 use Assert\Assertion;

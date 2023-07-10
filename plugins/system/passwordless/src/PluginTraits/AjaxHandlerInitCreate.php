@@ -9,8 +9,7 @@
 
 namespace Akeeba\Plugin\System\Passwordless\PluginTraits;
 
-// Protect from unauthorized access
-\defined('_JEXEC') or die();
+defined('_JEXEC') or die();
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\User\User;

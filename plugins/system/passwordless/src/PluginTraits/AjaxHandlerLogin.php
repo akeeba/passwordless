@@ -7,9 +7,9 @@
 
 namespace Akeeba\Plugin\System\Passwordless\PluginTraits;
 
-// Protect from unauthorized access
 defined('_JEXEC') or die();
 
+use Akeeba\Plugin\System\Passwordless\CredentialRepository;
 use Exception;
 use Joomla\CMS\Authentication\Authentication;
 use Joomla\CMS\Authentication\AuthenticationResponse;
@@ -22,9 +22,7 @@ use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\User;
 use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\Event\Event;
-use Akeeba\Plugin\System\Passwordless\CredentialRepository;
 use RuntimeException;
-use function Sodium\add;
 
 /**
  * Ajax handler for akaction=login

@@ -7,9 +7,9 @@
 
 namespace Akeeba\Plugin\System\Passwordless\PluginTraits;
 
-// Protect from unauthorized access
 defined('_JEXEC') or die();
 
+use Akeeba\Plugin\System\Passwordless\Extension\Passwordless;
 use Exception;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Form\Form;
@@ -22,7 +22,6 @@ use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\Database\DatabaseDriver;
 use Joomla\Database\ParameterType;
 use Joomla\Event\Event;
-use Akeeba\Plugin\System\Passwordless\Extension\Passwordless;
 use Joomla\Registry\Registry;
 use Joomla\Utilities\ArrayHelper;
 

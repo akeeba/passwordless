@@ -7,17 +7,15 @@
 
 namespace Akeeba\Plugin\System\Passwordless\Field;
 
-// Prevent direct access
 defined('_JEXEC') or die;
 
+use Akeeba\Plugin\System\Passwordless\Extension\Passwordless;
 use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Form\FormField;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Layout\FileLayout;
 use Joomla\CMS\User\UserFactoryInterface;
-use Akeeba\Plugin\System\Passwordless\Extension\Passwordless;
-
 
 class PasswordlessField extends FormField
 {

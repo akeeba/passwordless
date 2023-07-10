@@ -9,7 +9,6 @@
 
 namespace Akeeba\Plugin\System\Passwordless;
 
-// Protect from unauthorized access
 defined('_JEXEC') or die();
 
 use Akeeba\Plugin\System\Passwordless\Extension\Passwordless;

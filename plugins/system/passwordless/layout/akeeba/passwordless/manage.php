@@ -5,6 +5,8 @@
  * @license   GNU General Public License version 3, or later
  */
 
+defined('_JEXEC') or die();
+
 use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;

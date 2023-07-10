@@ -5,15 +5,9 @@
  * @license   GNU General Public License version 3, or later
  */
 
-/**
- * @package     Akeeba\Plugin\System\Passwordless\Authentication
- * @subpackage
- *
- * @copyright   A copyright
- * @license     A "Slug" license name e.g. GPL2
- */
-
 namespace Akeeba\Plugin\System\Passwordless\Authentication;
+
+defined('_JEXEC') or die();
 
 use Cose\Algorithm\Manager;
 use Cose\Algorithm\Signature\ECDSA;
@@ -29,7 +23,6 @@ use Laminas\Diactoros\ServerRequestFactory;
 use ParagonIE\ConstantTime\Base64;
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use RuntimeException;
-use Throwable;
 use Webauthn\AttestationStatement\AndroidKeyAttestationStatementSupport;
 use Webauthn\AttestationStatement\AppleAttestationStatementSupport;
 use Webauthn\AttestationStatement\AttestationObjectLoader;
