@@ -145,7 +145,7 @@ trait AdditionalLoginButtons
 		}
 
 		// This plugin only applies to the frontend and administrator applications
-		if (!$this->getApplication()->isClient('site') && !$this->app->isClient('administrator'))
+		if (!$this->getApplication()->isClient('site') && !$this->getApplication()->isClient('administrator'))
 		{
 			return false;
 		}
