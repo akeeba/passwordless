@@ -86,7 +86,7 @@ abstract class AbstractAuthentication implements AuthenticationInterface
 	{
 		if (!class_exists(\Webauthn\Server::class))
 		{
-			// TODO LibraryV4 support…
+			return new LibraryV4($app, $session, $credRepo);
 		}
 
 		return new LibraryV3($app, $session, $credRepo);

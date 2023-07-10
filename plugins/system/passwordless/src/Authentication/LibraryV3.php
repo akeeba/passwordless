@@ -32,6 +32,11 @@ use Webauthn\PublicKeyCredentialRequestOptions;
 use Webauthn\PublicKeyCredentialRpEntity;
 use Webauthn\PublicKeyCredentialSource;
 
+/**
+ * Authentication helper for the PHP WebAuthn library version 3, included in Joomla 4
+ *
+ * @since       2.0.0
+ */
 class LibraryV3 extends AbstractAuthentication
 {
 	/**
