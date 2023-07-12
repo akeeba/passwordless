@@ -225,7 +225,7 @@ class LibraryV3 extends AbstractAuthentication
 	 * @throws  Exception
 	 * @since    2.0.0
 	 */
-	final private function getWebauthnServer(): \Webauthn\Server
+	private function getWebauthnServer(): \Webauthn\Server
 	{
 		$siteName = $this->app->get('sitename');
 
@@ -261,7 +261,7 @@ class LibraryV3 extends AbstractAuthentication
 	 * @throws  Exception
 	 * @since   2.0.0
 	 */
-	final private function getPKCredentialRequestOptions(): PublicKeyCredentialRequestOptions
+	private function getPKCredentialRequestOptions(): PublicKeyCredentialRequestOptions
 	{
 		$encodedOptions = $this->session->get('plg_system_passwordless.publicKeyCredentialRequestOptions', null);
 

@@ -58,7 +58,7 @@ class LibraryV4 extends AbstractAuthentication
 	/**
 	 * @inheritDoc
 	 */
-	public function getPubKeyCreationOptions(User $user, bool $resident = false): PublicKeyCredentialCreationOptions
+	final public function getPubKeyCreationOptions(User $user, bool $resident = false): PublicKeyCredentialCreationOptions
 	{
 		$siteName = $this->app->get('sitename', 'Joomla! Site');
 
@@ -158,7 +158,7 @@ class LibraryV4 extends AbstractAuthentication
 	/**
 	 * @inheritDoc
 	 */
-	public function validateAttestationResponse(string $data): PublicKeyCredentialSource
+    final public function validateAttestationResponse(string $data): PublicKeyCredentialSource
 	{
 		// Retrieve the PublicKeyCredentialCreationOptions object created earlier and perform sanity checks
 		$encodedOptions = $this->session->get('plg_system_passwordless.publicKeyCredentialCreationOptions', null);
@@ -286,7 +286,7 @@ class LibraryV4 extends AbstractAuthentication
 	/**
 	 * @inheritDoc
 	 */
-	public function getPubkeyRequestOptions(?User $user): ?PublicKeyCredentialRequestOptions
+    final public function getPubkeyRequestOptions(?User $user): ?PublicKeyCredentialRequestOptions
 	{
 		Log::add('Creating PK request options', Log::DEBUG, 'plg_system_passwordless');
 		$registeredPublicKeyCredentialDescriptors    = is_null($user)
@@ -314,7 +314,7 @@ class LibraryV4 extends AbstractAuthentication
 	/**
 	 * @inheritDoc
 	 */
-	public function validateAssertionResponse(string $data, ?User $user): PublicKeyCredentialSource
+    final public function validateAssertionResponse(string $data, ?User $user): PublicKeyCredentialSource
 	{
 		// Make sure the public key credential request options in the session are valid
 		$encodedPkOptions                  = $this->session->get('plg_system_passwordless.publicKeyCredentialRequestOptions', null);
