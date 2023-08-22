@@ -25,10 +25,9 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2e094fe1-3f87-4fef-876b-11d12c079142" name="Default Changelist" comment="Project management">
+    <list default="true" id="2e094fe1-3f87-4fef-876b-11d12c079142" name="Default Changelist" comment="Misplaced final keywords">
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/plugins/system/passwordless/src/Authentication/LibraryV3.php" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/system/passwordless/src/Authentication/LibraryV3.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/plugins/system/passwordless/src/Authentication/LibraryV4.php" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/system/passwordless/src/Authentication/LibraryV4.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -242,7 +241,9 @@
       <workItem from="1688384751781" duration="681000" />
       <workItem from="1688930839955" duration="9010000" />
       <workItem from="1688980129119" duration="1808000" />
-      <workItem from="1689146755109" duration="43000" />
+      <workItem from="1689146755109" duration="55000" />
+      <workItem from="1689665371285" duration="630000" />
+      <workItem from="1689841480757" duration="5000" />
     </task>
     <task id="LOCAL-00015" summary="Show plugin options depending on Joomla version">
       <created>1597041771075</created>
@@ -587,7 +588,7 @@
       <option name="project" value="LOCAL" />
       <updated>1670423063479</updated>
     </task>
-    <option name="localTasksCounter" value="75" />
+    <option name="localTasksCounter" value="76" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -635,7 +636,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Exclude unused files from the vendor directory" />
     <MESSAGE value="Plugin causes an error when saving a user from Joomla's Users page" />
     <MESSAGE value="Refactor to the state of my core PR" />
     <MESSAGE value="Adding missing dependencies and make sure it all works" />
@@ -660,7 +660,8 @@
     <MESSAGE value="Missed a spot" />
     <MESSAGE value="Clean up" />
     <MESSAGE value="Project management" />
-    <option name="LAST_COMMIT_MESSAGE" value="Project management" />
+    <MESSAGE value="Misplaced final keywords" />
+    <option name="LAST_COMMIT_MESSAGE" value="Misplaced final keywords" />
   </component>
   <component name="WordPressConfiguration">
     <wordpressPath />
