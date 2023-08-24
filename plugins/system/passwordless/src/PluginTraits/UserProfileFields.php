@@ -92,7 +92,7 @@ trait UserProfileFields
 		 * @var   Form  $form The form to be altered.
 		 * @var   mixed $data The associated data for the form.
 		 */
-		[$form, $data] = $event->getArguments();
+		[$form, $data] = array_values($event->getArguments());
 
 		// This feature only applies to HTTPS sites.
 		if (!Uri::getInstance()->isSsl())
@@ -148,7 +148,7 @@ trait UserProfileFields
 		 * @var   string|null       $context The context for the data
 		 * @var   array|object|null $data    An object or array containing the data for the form.
 		 */
-		[$context, $data] = $event->getArguments();
+		[$context, $data] = array_values($event->getArguments());
 
 		if (!\in_array($context, ['com_users.profile', 'com_users.user']))
 		{
@@ -217,7 +217,7 @@ trait UserProfileFields
 
 	public function onUserAfterSave(Event $event)
 	{
-		[$data, $isNew, $result, $error] = $event->getArguments();
+		[$data, $isNew, $result, $error] = array_values($event->getArguments());
 
 		$userId = ArrayHelper::getValue($data, 'id', 0, 'int');
 
