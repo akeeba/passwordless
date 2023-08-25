@@ -26,10 +26,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="2e094fe1-3f87-4fef-876b-11d12c079142" name="Default Changelist" comment="Joomla 5 compatibility&#10;&#10;Remove the metadata statement support">
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/plugins/system/passwordless/src/PluginTraits/RunPluginsTrait.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/plugins/system/passwordless/media/joomla.asset.json" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/system/passwordless/media/joomla.asset.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/plugins/system/passwordless/passwordless.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/system/passwordless/passwordless.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CHANGELOG" beforeDir="false" afterPath="$PROJECT_DIR$/CHANGELOG" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/system/passwordless/src/Extension/Passwordless.php" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/system/passwordless/src/Extension/Passwordless.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/system/passwordless/src/PluginTraits/AjaxHandler.php" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/system/passwordless/src/PluginTraits/AjaxHandler.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/system/passwordless/src/PluginTraits/AjaxHandlerLogin.php" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/system/passwordless/src/PluginTraits/AjaxHandlerLogin.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -245,6 +247,7 @@
       <workItem from="1688384751781" duration="681000" />
       <workItem from="1688930839955" duration="9010000" />
       <workItem from="1692908424565" duration="66000" />
+      <workItem from="1692955032323" duration="427000" />
     </task>
     <task id="LOCAL-00015" summary="Show plugin options depending on Joomla version">
       <created>1597041771075</created>

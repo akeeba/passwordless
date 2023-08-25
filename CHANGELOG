@@ -2,6 +2,7 @@ Passwordless Login 2.0.0
 --------------------------------------------------------------------------------
 - Removed cookie which remembers the last logged in user
 ~ Change plugin namespace
+~ Joomla 5 preparation: Normalise plugin event calling
 + Support for passkeys (resident, synchronised authenticators)
 + Support for TouchID/FaceID on newer Apple mobile devices (iOS 15.4+)
 + User-controlled option to disable logins with password

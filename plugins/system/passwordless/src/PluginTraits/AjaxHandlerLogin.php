@@ -10,6 +10,7 @@ namespace Akeeba\Plugin\System\Passwordless\PluginTraits;
 // Protect from unauthorized access
 defined('_JEXEC') or die();
 
+use Akeeba\Plugin\System\Passwordless\CredentialRepository;
 use Exception;
 use Joomla\CMS\Authentication\Authentication;
 use Joomla\CMS\Authentication\AuthenticationResponse;
@@ -22,9 +23,7 @@ use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\User;
 use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\Event\Event;
-use Akeeba\Plugin\System\Passwordless\CredentialRepository;
 use RuntimeException;
-use function Sodium\add;
 
 /**
  * Ajax handler for akaction=login
@@ -43,9 +42,9 @@ trait AjaxHandlerLogin
 	 */
 	public function onAjaxPasswordlessLogin(Event $event): void
 	{
-		$session       = $this->getApplication()->getSession();
-		$returnUrl     = $session->get('plg_system_passwordless.returnUrl', Uri::base());
-		$userId        = $session->get('plg_system_passwordless.userId', 0);
+		$session   = $this->getApplication()->getSession();
+		$returnUrl = $session->get('plg_system_passwordless.returnUrl', Uri::base());
+		$userId    = $session->get('plg_system_passwordless.userId', 0);
 
 		try
 		{
@@ -55,7 +54,7 @@ trait AjaxHandlerLogin
 			// Login Flow 1: Login with a non-resident key
 			if (!empty($userId))
 			{
-				Log::add('Regular WebAuthn credentials login flow',Log::DEBUG, 'plg_system_passwordless');
+				Log::add('Regular WebAuthn credentials login flow', Log::DEBUG, 'plg_system_passwordless');
 
 				// Make sure the user exists
 				$user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($userId);
@@ -73,7 +72,10 @@ trait AjaxHandlerLogin
 
 				if (is_null($userHandle))
 				{
-					Log::add('Cannot retrieve the user handle from the request; the browser did not assert our request.', Log::NOTICE, 'plg_system_passwordless');
+					Log::add(
+						'Cannot retrieve the user handle from the request; the browser did not assert our request.',
+						Log::NOTICE, 'plg_system_passwordless'
+					);
 
 					throw new RuntimeException(Text::_('PLG_SYSTEM_PASSWORDLESS_ERR_CREATE_INVALID_LOGIN_REQUEST'));
 				}
@@ -105,13 +107,16 @@ trait AjaxHandlerLogin
 			}
 
 			// Login Flow 2: Login with a resident key
-			Log::add('Resident WebAuthn credentials (Passkey) login flow',Log::DEBUG, 'plg_system_passwordless');
+			Log::add('Resident WebAuthn credentials (Passkey) login flow', Log::DEBUG, 'plg_system_passwordless');
 
 			$userHandle = $this->getUserHandleFromResponse(null);
 
 			if (is_null($userHandle))
 			{
-				Log::add('Cannot retrieve the user handle from the request; no resident key found.', Log::NOTICE, 'plg_system_passwordless');
+				Log::add(
+					'Cannot retrieve the user handle from the request; no resident key found.', Log::NOTICE,
+					'plg_system_passwordless'
+				);
 
 				throw new RuntimeException(Text::_('PLG_SYSTEM_PASSWORDLESS_ERR_EMPTY_USERNAME'));
 			}
@@ -121,7 +126,10 @@ trait AjaxHandlerLogin
 
 			if (!method_exists($repo, 'getUserIdFromHandle'))
 			{
-				Log::add('The credentials repository provided in the plugin configuration does not allow retrieving user IDs from user handles. Falling back to default implementation.', Log::NOTICE, 'plg_system_passwordless');
+				Log::add(
+					'The credentials repository provided in the plugin configuration does not allow retrieving user IDs from user handles. Falling back to default implementation.',
+					Log::NOTICE, 'plg_system_passwordless'
+				);
 
 				$repo = new CredentialRepository();
 			}
@@ -131,12 +139,18 @@ trait AjaxHandlerLogin
 			// If the user was not found show an error
 			if ($userId <= 0)
 			{
-				Log::add(sprintf('User handle %s does not correspond to a known user.', $userHandle), Log::DEBUG, 'plg_system_passwordless');
+				Log::add(
+					sprintf('User handle %s does not correspond to a known user.', $userHandle), Log::DEBUG,
+					'plg_system_passwordless'
+				);
 
 				throw new RuntimeException(Text::_('PLG_SYSTEM_PASSWORDLESS_ERR_INVALID_USERNAME_RESIDENT'));
 			}
 
-			Log::add(sprintf('Passkey indicates user ID %d; proceeding with login', $userId), Log::DEBUG, 'plg_system_passwordless');
+			Log::add(
+				sprintf('Passkey indicates user ID %d; proceeding with login', $userId), Log::DEBUG,
+				'plg_system_passwordless'
+			);
 
 			// Login the user
 			Log::add('Logging in the user', Log::DEBUG, 'plg_system_passwordless');
@@ -150,7 +164,9 @@ trait AjaxHandlerLogin
 			$response->status        = Authentication::STATUS_UNKNOWN;
 			$response->error_message = $e->getMessage();
 
-			Log::add(sprintf('Received login failure. Message: %s', $e->getMessage()), Log::ERROR, 'plg_system_passwordless');
+			Log::add(
+				sprintf('Received login failure. Message: %s', $e->getMessage()), Log::ERROR, 'plg_system_passwordless'
+			);
 
 			// This also enqueues the login failure message for display after redirection. Look for JLog in that method.
 			$this->processLoginFailure($response);
@@ -242,9 +258,9 @@ trait AjaxHandlerLogin
 
 		// Run the user plugins. They CAN block login by returning boolean false and setting $response->error_message.
 		PluginHelper::importPlugin('user');
-		$event   = new GenericEvent('onUserLogin', [(array) $response, $options]);
-		$result  = $this->getApplication()->getDispatcher()->dispatch($event->getName(), $event);
-		$results = !isset($result['result']) || \is_null($result['result']) ? [] : $result['result'];
+		$results = $this->triggerPluginEvent(
+			'onUserLogin', [(array) $response, $options], null, $this->getApplication()
+		);
 
 		// If there is no boolean FALSE result from any plugin the login is successful.
 		if (in_array(false, $results, true) === false)
@@ -257,15 +273,17 @@ trait AjaxHandlerLogin
 			$options['responseType'] = $response->type;
 
 			// The user is successfully logged in. Run the after login events
-			$event = new GenericEvent('onUserAfterLogin', [$options]);
-			$this->getApplication()->getDispatcher()->dispatch($event->getName(), $event);
+			$this->triggerPluginEvent(
+				'onUserAfterLogin', [$options], null, $this->getApplication()
+			);
 
 			return;
 		}
 
 		// If we are here the plugins marked a login failure. Trigger the onUserLoginFailure Event.
-		$event = new GenericEvent('onUserLoginFailure', [(array) $response]);
-		$this->getApplication()->getDispatcher()->dispatch($event->getName(), $event);
+		$this->triggerPluginEvent(
+			'onUserLoginFailure', [(array) $response], null, $this->getApplication()
+		);
 
 		// Log the failure
 		Log::add($response->error_message, Log::WARNING, 'jerror');
@@ -306,8 +324,9 @@ trait AjaxHandlerLogin
 		// Trigger onUserLoginFailure Event.
 		Log::add("Calling onUserLoginFailure plugin event", Log::INFO, 'plg_system_passwordless');
 
-		$event = new GenericEvent('onUserLoginFailure', [(array) $response]);
-		$this->getApplication()->getDispatcher()->dispatch($event->getName(), $event);
+		$this->triggerPluginEvent(
+			'onUserLoginFailure', [(array) $response], null, $this->getApplication()
+		);
 
 		// If status is success, any error will have been raised by the user plugin
 		$expectedStatus = Authentication::STATUS_SUCCESS;
@@ -322,7 +341,7 @@ trait AjaxHandlerLogin
 		else
 		{
 			$message = 'A login failure was caused by a third party user plugin but it did not return any' .
-				'further information.';
+			           'further information.';
 			Log::add($message, Log::WARNING, 'plg_system_passwordless');
 		}
 

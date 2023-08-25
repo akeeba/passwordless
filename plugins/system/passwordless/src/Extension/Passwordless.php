@@ -18,6 +18,7 @@ use Akeeba\Plugin\System\Passwordless\PluginTraits\AjaxHandlerLogin;
 use Akeeba\Plugin\System\Passwordless\PluginTraits\AjaxHandlerSaveLabel;
 use Akeeba\Plugin\System\Passwordless\PluginTraits\EventReturnAware;
 use Akeeba\Plugin\System\Passwordless\PluginTraits\Migration;
+use Akeeba\Plugin\System\Passwordless\PluginTraits\RunPluginsTrait;
 use Akeeba\Plugin\System\Passwordless\PluginTraits\UserDeletion;
 use Akeeba\Plugin\System\Passwordless\PluginTraits\UserLogin;
 use Akeeba\Plugin\System\Passwordless\PluginTraits\UserProfileFields;
@@ -69,6 +70,7 @@ class Passwordless extends CMSPlugin implements SubscriberInterface, DatabaseAwa
 
 	// Utility methods for setting the events' return values
 	use EventReturnAware;
+	use RunPluginsTrait;
 
 	// AJAX request handlers
 	use AjaxHandler;
