@@ -49,7 +49,7 @@ trait AjaxHandlerCreate
 		$session      = $this->getApplication()->getSession();
 		$storedUserId = $session->get('plg_system_passwordless.registration_user_id', 0);
 		$thatUser     = empty($storedUserId)
-			? Factory::getApplication()->getIdentity()
+			? $this->getApplication()->getIdentity()
 			: Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($storedUserId);
 		$myUser       = $this->getApplication()->getIdentity() ?? new User();
 
@@ -95,10 +95,11 @@ trait AjaxHandlerCreate
 
 		// Render the GUI and return it
 		$layoutParameters = [
-			'user'                => $thatUser,
-			'allow_add'           => $thatUser->id == $myUser->id,
-			'credentials'         => $credentialRepository->getAll($thatUser->id),
-			'showImages'          => $this->params->get('showImages', 1) == 1,
+			'user'        => $thatUser,
+			'allow_add'   => $thatUser->id == $myUser->id,
+			'credentials' => $credentialRepository->getAll($thatUser->id),
+			'showImages'  => $this->params->get('showImages', 1) == 1,
+			'application' => $this->getApplication(),
 		];
 
 		if (isset($error) && !empty($error))

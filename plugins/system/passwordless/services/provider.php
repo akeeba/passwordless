@@ -48,7 +48,7 @@ return new class implements ServiceProviderInterface {
 				$db                    = $container->get(DatabaseInterface::class);
 				$credentialsRepository = $container->has(PublicKeyCredentialSourceRepository::class)
 					? $container->get(PublicKeyCredentialSourceRepository::class)
-					: new CredentialRepository($db);
+					: new CredentialRepository($db, $app);
 				$authenticationHelper  = $container->has(AuthenticationInterface::class)
 					? $container->get(AuthenticationInterface::class)
 					: AbstractAuthentication::create($app, $session, $credentialsRepository);
@@ -57,7 +57,7 @@ return new class implements ServiceProviderInterface {
 
 				$plugin->setUpLogging();
 				$plugin->setAuthenticationHelper($authenticationHelper);
-				$plugin->setApplication(Factory::getApplication());
+				$plugin->setApplication($app);
 				$plugin->setDatabase($db);
 
 				return $plugin;

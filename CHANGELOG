@@ -4,6 +4,7 @@ Passwordless Login 2.0.0
 ~ Change plugin namespace
 ~ Joomla 5 preparation: Use DatabaseInterface instead of DatabaseDriver
 ~ Joomla 5 preparation: Work around backwards incompatible changes in core plugin events
+~ Joomla 5 preparation: Normalise plugin event calling
 + Support for passkeys (resident, synchronised authenticators)
 + Support for TouchID/FaceID on newer Apple mobile devices (iOS 15.4+)
 + User-controlled option to disable logins with password

@@ -25,11 +25,17 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2e094fe1-3f87-4fef-876b-11d12c079142" name="Default Changelist" comment="~ Joomla 5 preparation: Work around backwards incompatible changes in core plugin events">
+    <list default="true" id="2e094fe1-3f87-4fef-876b-11d12c079142" name="Default Changelist" comment="~ Joomla 5 preparation: Normalise plugin event calling">
+      <change beforePath="$PROJECT_DIR$/.idea/php.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/php.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CHANGELOG" beforeDir="false" afterPath="$PROJECT_DIR$/CHANGELOG" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/system/passwordless/layout/akeeba/passwordless/manage.php" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/system/passwordless/layout/akeeba/passwordless/manage.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/plugins/system/passwordless/services/provider.php" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/system/passwordless/services/provider.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/plugins/system/passwordless/src/CredentialRepository.php" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/system/passwordless/src/CredentialRepository.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/system/passwordless/src/Field/PasswordlessField.php" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/system/passwordless/src/Field/PasswordlessField.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/system/passwordless/src/PluginTraits/AjaxHandlerCreate.php" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/system/passwordless/src/PluginTraits/AjaxHandlerCreate.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/system/passwordless/src/PluginTraits/AjaxHandlerInitCreate.php" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/system/passwordless/src/PluginTraits/AjaxHandlerInitCreate.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/system/passwordless/src/PluginTraits/AjaxHandlerLogin.php" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/system/passwordless/src/PluginTraits/AjaxHandlerLogin.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/system/passwordless/src/PluginTraits/UserProfileFields.php" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/system/passwordless/src/PluginTraits/UserProfileFields.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -58,10 +64,11 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="feature/refactor" />
+        <entry key="$PROJECT_DIR$" value="development" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="UPDATE_TYPE" value="REBASE" />
   </component>
   <component name="GitSEFilterConfiguration">
     <file-type-list>
@@ -89,13 +96,12 @@
       <scope name="ES6" />
     </order>
   </component>
-  <component name="PhpDebugGeneral" xdebug_force_break_when_no_path_mapping="false" xdebug_force_break_when_outside_project="false" />
   <component name="PhpServers">
     <servers>
-      <server host="boot5.local.web" id="a3fb205e-1181-4971-8591-322518b0d93f" name="The Boot 5" port="443" use_path_mappings="true">
+      <server host="boot4.local.web" id="c13f4776-5759-4aba-94ce-3c584a0ffb02" name="Boot4" port="443" use_path_mappings="true">
         <path_mappings>
           <mapping local-root="$PROJECT_DIR$" remote-root="/Users/nicholas/Projects/j4-akeeba/passwordless" />
-          <mapping local-root="$PROJECT_DIR$/../../master/joomla5/administrator" remote-root="/Users/nicholas/Projects/master/joomla5/administrator" />
+          <mapping local-root="$USER_HOME$/Sites/boot4" remote-root="/Users/nicholas/Sites/boot4" />
         </path_mappings>
       </server>
     </servers>
@@ -103,44 +109,41 @@
   <component name="PhpWorkspaceProjectConfiguration" interpreter_name="PHP 8.0">
     <include_path>
       <path value="$PROJECT_DIR$/../../master/joomla5" />
-      <path value="$USER_HOME$/Sites/boot4--" />
       <path value="$PROJECT_DIR$/../../dionysopoulos/joomlatypehints/generated_hints" />
-      <path value="$USER_HOME$/Sites/boot4/configuration.php" />
-      <path value="$PROJECT_DIR$/vendor/composer" />
     </include_path>
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "customColor": "",
-  "associatedIndex": 6
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 1
+}</component>
   <component name="ProjectId" id="1fjux2Qq9gOpPXAYAsZybAnUxrT" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;development&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/nicholas/Projects/j4-akeeba/passwordless/plugins/system/passwordless/media/images&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;reference.webide.settings.project.settings.php.debug&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "git-widget-placeholder": "feature/refactor",
+    "last_opened_file_path": "/home/nicholas/Projects/j4-akeeba/passwordless",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "reference.webide.settings.project.settings.php",
+    "vue.rearranger.settings.migration": "true"
   },
-  &quot;keyToStringList&quot;: {
-    &quot;com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File&quot;: [
-      &quot;GitIgnore&quot;,
-      &quot;HTTP Request&quot;
+  "keyToStringList": {
+    "com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File": [
+      "PHP",
+      "GitIgnore",
+      "HTTP Request"
     ]
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/plugins/system/passwordless/media/images" />
@@ -157,8 +160,11 @@
       <recent name="$PROJECT_DIR$/plugins/system/passwordless/src/Field" />
     </key>
   </component>
-  <component name="RunManager" selected="HTTP Request.scratch_1 | #1">
+  <component name="RunManager" selected="PHP Script.scratch_14.php">
     <configuration name="scratch_1 | #1" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" nameIsGenerated="true" path="$APPLICATION_CONFIG_DIR$/scratches/scratch_1.http" requestIdentifier="#1" runType="Run single request">
+      <method v="2" />
+    </configuration>
+    <configuration name="scratch_14.php" type="PhpLocalRunConfigurationType" factoryName="PHP Console" temporary="true" path="$APPLICATION_CONFIG_DIR$/scratches/scratch_14.php">
       <method v="2" />
     </configuration>
     <configuration name="webauthn_test.php" type="PhpLocalRunConfigurationType" factoryName="PHP Console" temporary="true" path="$PROJECT_DIR$/build/webauthn_test.php">
@@ -181,10 +187,10 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="PHP Script.webauthn_test.php" />
-        <item itemvalue="npm.build" />
+        <item itemvalue="PHP Script.scratch_14.php" />
         <item itemvalue="HTTP Request.scratch_1 | #1" />
         <item itemvalue="PHP Script.webauthn_test.php" />
+        <item itemvalue="npm.build" />
         <item itemvalue="npm.build" />
       </list>
     </recent_temporary>
@@ -245,11 +251,10 @@
       <workItem from="1688061892846" duration="7652000" />
       <workItem from="1688384751781" duration="681000" />
       <workItem from="1688930839955" duration="9010000" />
-      <workItem from="1688980129119" duration="1808000" />
-      <workItem from="1689146755109" duration="55000" />
-      <workItem from="1689665371285" duration="630000" />
-      <workItem from="1689841480757" duration="5000" />
-      <workItem from="1693067953504" duration="359000" />
+      <workItem from="1692908424565" duration="66000" />
+      <workItem from="1692955032323" duration="449000" />
+      <workItem from="1692980311040" duration="664000" />
+      <workItem from="1692981657710" duration="5594000" />
     </task>
     <task id="LOCAL-00015" summary="Show plugin options depending on Joomla version">
       <created>1597041771075</created>
@@ -594,7 +599,7 @@
       <option name="project" value="LOCAL" />
       <updated>1670423063479</updated>
     </task>
-    <option name="localTasksCounter" value="77" />
+    <option name="localTasksCounter" value="71" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -642,6 +647,11 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
+    <MESSAGE value="OK, let's use the easy way. It's, um, easier" />
+    <MESSAGE value="Separate the login and management JS" />
+    <MESSAGE value="We have ignition!" />
+    <MESSAGE value="Exclude unused files from the vendor directory" />
+    <MESSAGE value="Plugin causes an error when saving a user from Joomla's Users page" />
     <MESSAGE value="Refactor to the state of my core PR" />
     <MESSAGE value="Adding missing dependencies and make sure it all works" />
     <MESSAGE value="Option to create passkeys (resident keys)" />
@@ -654,23 +664,29 @@
     <MESSAGE value="Update the changelog with the work so far" />
     <MESSAGE value="Migration from Joomla's WebAuthn" />
     <MESSAGE value="Remove unnecessary version attribute from XML manifests" />
+    <MESSAGE value="Project management" />
     <MESSAGE value="Let's dust this off" />
     <MESSAGE value="Always allow passkeys" />
     <MESSAGE value="~ Change plugin namespace" />
     <MESSAGE value="Joomla 5 compatibility&#10;&#10;Replace obsolete DatabaseAwareTrait" />
     <MESSAGE value="Joomla 5 compatibility&#10;&#10;Minimum PHP version is 7.4&#10;&#10;This only applies to Joomla 4.&#10;&#10;Joomla 5 only runs on PHP 8.1 or later." />
     <MESSAGE value="Joomla 5 compatibility&#10;&#10;Remove the metadata statement support" />
-    <MESSAGE value="Merging feature/refactor" />
-    <MESSAGE value="Update lock files" />
-    <MESSAGE value="Missed a spot" />
-    <MESSAGE value="Clean up" />
-    <MESSAGE value="Project management" />
-    <MESSAGE value="Misplaced final keywords" />
-    <MESSAGE value="~ Joomla 5 preparation: Work around backwards incompatible changes in core plugin events" />
-    <option name="LAST_COMMIT_MESSAGE" value="~ Joomla 5 preparation: Work around backwards incompatible changes in core plugin events" />
+    <MESSAGE value="~ Joomla 5 preparation: Normalise plugin event calling" />
+    <option name="LAST_COMMIT_MESSAGE" value="~ Joomla 5 preparation: Normalise plugin event calling" />
   </component>
   <component name="WordPressConfiguration">
     <wordpressPath />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="php">
+          <url>file://$PROJECT_DIR$/plugins/system/passwordless/src/PluginTraits/AjaxHandler.php</url>
+          <line>42</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

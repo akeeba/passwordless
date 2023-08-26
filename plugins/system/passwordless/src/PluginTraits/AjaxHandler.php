@@ -71,19 +71,14 @@ trait AjaxHandler
 
 			// Call the plugin event onAjaxPasswordlessSomething where Something is the akaction param.
 			$eventName = 'onAjaxPasswordless' . ucfirst($akaction);
-			$event     = new GenericEvent($eventName, []);
-			$result    = $this->getApplication()->getDispatcher()->dispatch($eventName, $event);
-			$results   = !isset($result['result']) || \is_null($result['result']) ? [] : $result['result'];
-			$result    = null;
-			$reducer   = function ($carry, $result)
-			{
-				return $carry ?? $result;
-			};
-			$result    = array_reduce($results, $reducer, null);
+			$results   = $this->triggerPluginEvent($eventName, [], GenericEvent::class, $this->getApplication());
+			$result    = array_reduce($results, fn($carry, $result) => $carry ?? $result, null);
 		}
 		catch (Exception $e)
 		{
-			Log::add(sprintf('Callback failure, redirecting to %s.', $returnURL), Log::DEBUG, 'plg_system_passwordless');
+			Log::add(
+				sprintf('Callback failure, redirecting to %s.', $returnURL), Log::DEBUG, 'plg_system_passwordless'
+			);
 
 			$this->getApplication()->getSession()->set('plg_system_passwordless.returnUrl', null);
 			$this->getApplication()->enqueueMessage($e->getMessage(), 'error');
@@ -115,12 +110,18 @@ trait AjaxHandler
 
 					if (isset($result['url']))
 					{
-						Log::add(sprintf('Callback complete, performing redirection to %s%s.', $result['url'], $modifiers), Log::DEBUG, 'plg_system_passwordless');
+						Log::add(
+							sprintf('Callback complete, performing redirection to %s%s.', $result['url'], $modifiers),
+							Log::DEBUG, 'plg_system_passwordless'
+						);
 						$this->getApplication()->redirect($result['url']);
 					}
 
 
-					Log::add(sprintf('Callback complete, performing redirection to %s%s.', $result, $modifiers), Log::DEBUG, 'plg_system_passwordless');
+					Log::add(
+						sprintf('Callback complete, performing redirection to %s%s.', $result, $modifiers), Log::DEBUG,
+						'plg_system_passwordless'
+					);
 					$this->getApplication()->redirect($result);
 
 					return;
@@ -136,7 +137,10 @@ trait AjaxHandler
 			$this->getApplication()->close(200);
 		}
 
-		Log::add(sprintf('Null response from AJAX callback, redirecting to %s', $returnURL). Log::DEBUG, 'plg_system_passwordless');
+		Log::add(
+			sprintf('Null response from AJAX callback, redirecting to %s', $returnURL) . Log::DEBUG,
+			'plg_system_passwordless'
+		);
 
 		$this->getApplication()->getSession()->set('plg_system_passwordless.returnUrl', null);
 		$this->getApplication()->redirect($returnURL);

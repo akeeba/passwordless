@@ -35,7 +35,7 @@ trait AjaxHandlerInitCreate
 	public function onAjaxPasswordlessInitcreate(Event $event): void
 	{
 		// Make sure I have a valid user
-		$user = Factory::getApplication()->getIdentity();
+		$user = $this->getApplication()->getIdentity();
 
 		if (!($user instanceof User) || $user->guest)
 		{

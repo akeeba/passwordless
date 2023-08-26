@@ -8,6 +8,7 @@
 defined('_JEXEC') or die();
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Layout\FileLayout;
@@ -19,26 +20,29 @@ use Joomla\CMS\User\User;
  *
  * Generic data
  *
- * @var   FileLayout $this                The Joomla layout renderer
- * @var   array      $displayData         The data in array format. DO NOT USE.
+ * @var   FileLayout     $this        The Joomla layout renderer
+ * @var   array          $displayData The data in array format. DO NOT USE.
  *
  * Layout specific data
  *
- * @var   User       $user                The Joomla user whose passwordless login we are managing
- * @var   bool       $allow_add           Are we allowed to add passwordless login methods
- * @var   array      $credentials         The already stored credentials for the user
- * @var   string     $error               Any error messages
- * @var   bool       $showImages          Should I show maker logos next to the registered authenticators?
+ * @var   User           $user        The Joomla user whose passwordless login we are managing
+ * @var   bool           $allow_add   Are we allowed to add passwordless login methods
+ * @var   array          $credentials The already stored credentials for the user
+ * @var   string         $error       Any error messages
+ * @var   bool           $showImages  Should I show maker logos next to the registered authenticators?
+ * @var   CMSApplication $application The application
  */
 
 // Extract the data. Do not remove until the unset() line.
 extract(array_merge([
-	'user'                => Factory::getApplication()->getIdentity() ?? new User(),
+	'user'                => null,
 	'allow_add'           => false,
 	'credentials'         => [],
 	'error'               => '',
 	'showImages'          => true,
 ], $displayData));
+
+$user ??= $application->getIdentity();
 
 // Ensure the GMP or BCmath extension (or a polyfill) is loaded in PHP - this is required by the third party library.
 $hasGMP    = function_exists('gmp_intval') !== false;
