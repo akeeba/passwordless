@@ -15,6 +15,7 @@ defined('_JEXEC') or die();
 use Akeeba\Plugin\System\Passwordless\Extension\Passwordless;
 use Exception;
 use InvalidArgumentException;
+use Joomla\CMS\Application\CMSApplicationInterface;
 use Joomla\CMS\Date\Date;
 use Joomla\CMS\Encrypt\Aes;
 use Joomla\CMS\Factory;
@@ -40,6 +41,8 @@ class CredentialRepository implements PublicKeyCredentialSourceRepository
 {
 	use DatabaseAwareTrait;
 
+	private ?CMSApplicationInterface $application;
+
 	/**
 	 * Public constructor.
 	 *
@@ -47,9 +50,10 @@ class CredentialRepository implements PublicKeyCredentialSourceRepository
 	 *
 	 * @since   2.0.0
 	 */
-	public function __construct(?DatabaseInterface $db = null)
+	public function __construct(?DatabaseInterface $db = null, ?CMSApplicationInterface $app = null)
 	{
-		$this->setDatabase($db ?? Factory::getContainer()->get('DatabaseDriver'));
+		$this->setDatabase($db ?? Factory::getContainer()->get(DatabaseInterface::class));
+		$this->application = $app ?? Factory::getApplication();
 	}
 
 	/**
@@ -200,7 +204,7 @@ class CredentialRepository implements PublicKeyCredentialSourceRepository
 		/** @var Passwordless $plugin */
 		$defaultName         = Text::_('PLG_SYSTEM_PASSWORDLESS_LBL_DEFAULT_AUTHENTICATOR');
 		$credentialId        = base64_encode($publicKeyCredentialSource->getPublicKeyCredentialId());
-		$user                = Factory::getApplication()->getIdentity();
+		$user                = $this->application->getIdentity();
 		$o                   = (object) [
 			'id'         => $credentialId,
 			'user_id'    => $this->getHandleFromUserId($user->id),
@@ -642,7 +646,7 @@ class CredentialRepository implements PublicKeyCredentialSourceRepository
 	{
 		try
 		{
-			$app = Factory::getApplication();
+			$app = $this->application;
 			/** @var Registry $config */
 			$config = $app->getConfig();
 			$secret = $config->get('secret', '');
@@ -685,7 +689,7 @@ class CredentialRepository implements PublicKeyCredentialSourceRepository
 
 			try
 			{
-				$tzDefault = Factory::getApplication()->get('offset');
+				$tzDefault = $this->application->get('offset');
 			}
 			catch (\Exception $e)
 			{

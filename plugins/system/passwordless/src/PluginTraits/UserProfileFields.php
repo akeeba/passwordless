@@ -321,7 +321,7 @@ trait UserProfileFields
 		}
 
 		$user = empty($id)
-			? Factory::getApplication()->getIdentity()
+			? $this->getApplication()->getIdentity()
 			: Factory::getContainer()
 			         ->get(UserFactoryInterface::class)
 			         ->loadUserById($id);

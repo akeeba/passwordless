@@ -10,13 +10,13 @@ namespace Akeeba\Plugin\System\Passwordless\Field;
 // Prevent direct access
 defined('_JEXEC') or die;
 
+use Akeeba\Plugin\System\Passwordless\Extension\Passwordless;
 use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Form\FormField;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Layout\FileLayout;
 use Joomla\CMS\User\UserFactoryInterface;
-use Akeeba\Plugin\System\Passwordless\Extension\Passwordless;
 
 
 class PasswordlessField extends FormField
@@ -59,13 +59,16 @@ class PasswordlessField extends FormField
 		$authenticationHelper
 			= $plugin->getAuthenticationHelper();
 
-		return $layoutFile->render([
-			'user'                => Factory::getContainer()
-			                                ->get(UserFactoryInterface::class)
-			                                ->loadUserById($userId),
-			'allow_add'           => $userId == $app->getIdentity()->id,
-			'credentials'         => $authenticationHelper->getCredentialsRepository()->getAll($userId),
-			'showImages'          => $plugin->params->get('showImages', 1) == 1,
-		]);
+		return $layoutFile->render(
+			[
+				'user'        => Factory::getContainer()
+					->get(UserFactoryInterface::class)
+					->loadUserById($userId),
+				'allow_add'   => $userId == $app->getIdentity()->id,
+				'credentials' => $authenticationHelper->getCredentialsRepository()->getAll($userId),
+				'showImages'  => $plugin->params->get('showImages', 1) == 1,
+				'application' => $app,
+			]
+		);
 	}
 }

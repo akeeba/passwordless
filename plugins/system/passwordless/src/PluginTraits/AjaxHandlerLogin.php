@@ -131,7 +131,7 @@ trait AjaxHandlerLogin
 					Log::NOTICE, 'plg_system_passwordless'
 				);
 
-				$repo = new CredentialRepository();
+				$repo = new CredentialRepository($this->getDatabase(), $this->getApplication());
 			}
 
 			$userId = $repo->getUserIdFromHandle($userHandle);
