@@ -25,18 +25,7 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2e094fe1-3f87-4fef-876b-11d12c079142" name="Default Changelist" comment="~ Joomla 5 preparation: Normalise plugin event calling">
-      <change beforePath="$PROJECT_DIR$/.idea/php.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/php.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/plugins/system/passwordless/layout/akeeba/passwordless/manage.php" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/system/passwordless/layout/akeeba/passwordless/manage.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/plugins/system/passwordless/services/provider.php" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/system/passwordless/services/provider.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/plugins/system/passwordless/src/CredentialRepository.php" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/system/passwordless/src/CredentialRepository.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/plugins/system/passwordless/src/Field/PasswordlessField.php" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/system/passwordless/src/Field/PasswordlessField.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/plugins/system/passwordless/src/PluginTraits/AjaxHandlerCreate.php" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/system/passwordless/src/PluginTraits/AjaxHandlerCreate.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/plugins/system/passwordless/src/PluginTraits/AjaxHandlerInitCreate.php" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/system/passwordless/src/PluginTraits/AjaxHandlerInitCreate.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/plugins/system/passwordless/src/PluginTraits/AjaxHandlerLogin.php" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/system/passwordless/src/PluginTraits/AjaxHandlerLogin.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/plugins/system/passwordless/src/PluginTraits/UserProfileFields.php" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/system/passwordless/src/PluginTraits/UserProfileFields.php" afterDir="false" />
-    </list>
+    <list default="true" id="2e094fe1-3f87-4fef-876b-11d12c079142" name="Default Changelist" comment="~ Joomla 5 preparation: Normalise plugin event calling" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -110,6 +99,9 @@
     <include_path>
       <path value="$PROJECT_DIR$/../../master/joomla5" />
       <path value="$PROJECT_DIR$/../../dionysopoulos/joomlatypehints/generated_hints" />
+      <path value="$USER_HOME$/Sites/boot5--" />
+      <path value="$USER_HOME$/Sites/boot5/configuration.php" />
+      <path value="$PROJECT_DIR$/vendor/composer" />
     </include_path>
   </component>
   <component name="ProjectColorInfo">{
@@ -126,7 +118,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "WebServerToolWindowFactoryState": "false",
-    "git-widget-placeholder": "feature/refactor",
+    "git-widget-placeholder": "development",
     "last_opened_file_path": "/home/nicholas/Projects/j4-akeeba/passwordless",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
