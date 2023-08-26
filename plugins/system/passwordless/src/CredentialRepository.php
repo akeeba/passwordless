@@ -48,7 +48,7 @@ class CredentialRepository implements PublicKeyCredentialSourceRepository
 	 */
 	public function __construct(?DatabaseInterface $db = null)
 	{
-		$this->setDatabase($db ?? Factory::getContainer()->get('DatabaseDriver'));
+		$this->setDatabase($db ?? Factory::getContainer()->get(DatabaseInterface::class));
 	}
 
 	/**

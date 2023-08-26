@@ -17,6 +17,7 @@ use Joomla\CMS\Application\CMSApplicationInterface;
 use Joomla\CMS\Extension\PluginInterface;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Plugin\PluginHelper;
+use Joomla\Database\DatabaseInterface;
 use Joomla\DI\Container;
 use Joomla\DI\ServiceProviderInterface;
 use Joomla\Event\DispatcherInterface;
@@ -44,7 +45,7 @@ return new class implements ServiceProviderInterface {
 				$app     = $container->has(ApplicationInterface::class) ? $container->has(ApplicationInterface::class) : $this->getApplication();
 				$session = $container->has('session') ? $container->get('session') : $this->getSession($app);
 
-				$db                    = $container->get('DatabaseDriver');
+				$db                    = $container->get(DatabaseInterface::class);
 				$credentialsRepository = $container->has(PublicKeyCredentialSourceRepository::class)
 					? $container->get(PublicKeyCredentialSourceRepository::class)
 					: new CredentialRepository($db);
