@@ -35,7 +35,7 @@ trait UserLogin
 	public function onUserLogin(Event $event)
 	{
 		// Get the login event arguments
-		[$userData, $options] = $event->getArguments();
+		[$userData, $options] = array_values($event->getArguments());
 		$userData = $userData ?: [];
 
 		// Only trigger when we are logging in with a username and password (auth type 'Joomla').
@@ -102,7 +102,7 @@ trait UserLogin
 	 */
 	public function onUserLoginFailure(Event $event)
 	{
-		[$response] = $event->getArguments();
+		[$response] = array_values($event->getArguments());
 
 		// Only trigger when we are logging in with a username and password (auth type 'Joomla').
 		if (($response['type'] ?? '') !== 'Joomla')
