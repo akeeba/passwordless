@@ -25,9 +25,9 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2e094fe1-3f87-4fef-876b-11d12c079142" name="Default Changelist" comment="Project management">
+    <list default="true" id="2e094fe1-3f87-4fef-876b-11d12c079142" name="Default Changelist" comment="Make sure Joomla will invalidate the autoload_psr4.php file on update.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/plugins/system/passwordless/passwordless.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/system/passwordless/passwordless.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugins/system/passwordless/script.passwordless.php" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/system/passwordless/script.passwordless.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -250,7 +250,8 @@
       <workItem from="1692955032323" duration="449000" />
       <workItem from="1692980311040" duration="664000" />
       <workItem from="1692981657710" duration="5594000" />
-      <workItem from="1693815209813" duration="58000" />
+      <workItem from="1693815209813" duration="201000" />
+      <workItem from="1693825543521" duration="7000" />
     </task>
     <task id="LOCAL-00015" summary="Show plugin options depending on Joomla version">
       <created>1597041771075</created>
@@ -595,7 +596,7 @@
       <option name="project" value="LOCAL" />
       <updated>1670423063479</updated>
     </task>
-    <option name="localTasksCounter" value="72" />
+    <option name="localTasksCounter" value="73" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -643,7 +644,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="OK, let's use the easy way. It's, um, easier" />
     <MESSAGE value="Separate the login and management JS" />
     <MESSAGE value="We have ignition!" />
     <MESSAGE value="Exclude unused files from the vendor directory" />
@@ -668,7 +668,8 @@
     <MESSAGE value="Joomla 5 compatibility&#10;&#10;Remove the metadata statement support" />
     <MESSAGE value="~ Joomla 5 preparation: Normalise plugin event calling" />
     <MESSAGE value="Project management" />
-    <option name="LAST_COMMIT_MESSAGE" value="Project management" />
+    <MESSAGE value="Make sure Joomla will invalidate the autoload_psr4.php file on update." />
+    <option name="LAST_COMMIT_MESSAGE" value="Make sure Joomla will invalidate the autoload_psr4.php file on update." />
   </component>
   <component name="WordPressConfiguration">
     <wordpressPath />
