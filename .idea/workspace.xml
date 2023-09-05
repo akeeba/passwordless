@@ -25,7 +25,7 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2e094fe1-3f87-4fef-876b-11d12c079142" name="Default Changelist" comment="Workaround for Joomla extensions update sucking&#10;&#10;Joomla does not OPcache-invalidate files when updating an extension. I have to do it by myself.">
+    <list default="true" id="2e094fe1-3f87-4fef-876b-11d12c079142" name="Default Changelist" comment="Post-installation script update">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/plugins/system/passwordless/script.passwordless.php" beforeDir="false" afterPath="$PROJECT_DIR$/plugins/system/passwordless/script.passwordless.php" afterDir="false" />
     </list>
@@ -251,7 +251,8 @@
       <workItem from="1692980311040" duration="664000" />
       <workItem from="1692981657710" duration="5594000" />
       <workItem from="1693815209813" duration="201000" />
-      <workItem from="1693825543521" duration="1747000" />
+      <workItem from="1693825543521" duration="1771000" />
+      <workItem from="1693950145571" duration="150000" />
     </task>
     <task id="LOCAL-00015" summary="Show plugin options depending on Joomla version">
       <created>1597041771075</created>
@@ -596,7 +597,7 @@
       <option name="project" value="LOCAL" />
       <updated>1670423063479</updated>
     </task>
-    <option name="localTasksCounter" value="74" />
+    <option name="localTasksCounter" value="75" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -644,7 +645,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="We have ignition!" />
     <MESSAGE value="Exclude unused files from the vendor directory" />
     <MESSAGE value="Plugin causes an error when saving a user from Joomla's Users page" />
     <MESSAGE value="Refactor to the state of my core PR" />
@@ -669,7 +669,8 @@
     <MESSAGE value="Project management" />
     <MESSAGE value="Make sure Joomla will invalidate the autoload_psr4.php file on update." />
     <MESSAGE value="Workaround for Joomla extensions update sucking&#10;&#10;Joomla does not OPcache-invalidate files when updating an extension. I have to do it by myself." />
-    <option name="LAST_COMMIT_MESSAGE" value="Workaround for Joomla extensions update sucking&#10;&#10;Joomla does not OPcache-invalidate files when updating an extension. I have to do it by myself." />
+    <MESSAGE value="Post-installation script update" />
+    <option name="LAST_COMMIT_MESSAGE" value="Post-installation script update" />
   </component>
   <component name="WordPressConfiguration">
     <wordpressPath />
